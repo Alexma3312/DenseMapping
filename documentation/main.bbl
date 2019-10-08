@@ -1,0 +1,345 @@
+% $ biblatex auxiliary file $
+% $ biblatex version 2.5 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated as
+% required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\entry{handa2014benchmark}{inproceedings}{}
+  \name{author}{4}{}{%
+    {{}%
+     {Handa}{H.}%
+     {Ankur}{A.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Whelan}{W.}%
+     {Thomas}{T.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {McDonald}{M.}%
+     {John}{J.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Davison}{D.}%
+     {Andrew~J}{A.~J.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {IEEE}%
+  }
+  \strng{namehash}{HAWTMJDAJ1}
+  \strng{fullhash}{HAWTMJDAJ1}
+  \field{booktitle}{2014 IEEE international conference on Robotics and
+  automation (ICRA)}
+  \field{pages}{1524\bibrangedash 1531}
+  \field{title}{A benchmark for RGB-D visual odometry, 3D reconstruction and
+  SLAM}
+  \field{year}{2014}
+\endentry
+
+\entry{schops2018surfelmeshing}{article}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Sch{\"o}ps}{S.}%
+     {Thomas}{T.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Sattler}{S.}%
+     {Torsten}{T.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Pollefeys}{P.}%
+     {Marc}{M.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{STSTPM1}
+  \strng{fullhash}{STSTPM1}
+  \field{title}{SurfelMeshing: Online Surfel-Based Mesh Reconstruction}
+  \field{journaltitle}{arXiv preprint arXiv:1810.00729}
+  \field{year}{2018}
+\endentry
+
+\entry{pfister2000surfels}{inproceedings}{}
+  \name{author}{4}{}{%
+    {{}%
+     {Pfister}{P.}%
+     {Hanspeter}{H.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Zwicker}{Z.}%
+     {Matthias}{M.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Van~Baar}{V.~B.}%
+     {Jeroen}{J.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Gross}{G.}%
+     {Markus}{M.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {ACM Press/Addison-Wesley Publishing Co.}%
+  }
+  \strng{namehash}{PHZMVBJGM1}
+  \strng{fullhash}{PHZMVBJGM1}
+  \field{booktitle}{Proceedings of the 27th annual conference on Computer
+  graphics and interactive techniques}
+  \field{pages}{335\bibrangedash 342}
+  \field{title}{Surfels: Surface elements as rendering primitives}
+  \field{year}{2000}
+\endentry
+
+\entry{tobor2000rendering}{inproceedings}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Tobor}{T.}%
+     {Ireneusz}{I.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Schlick}{S.}%
+     {Christophe}{C.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Grisoni}{G.}%
+     {Laurent}{L.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{TISCGL1}
+  \strng{fullhash}{TISCGL1}
+  \field{booktitle}{Proceedings of Graphicon}
+  \field{number}{8}
+  \field{pages}{25}
+  \field{title}{Rendering by surfels}
+  \field{volume}{3}
+  \field{year}{2000}
+\endentry
+
+\entry{Wang19icra_surfelDense}{inproceedings}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Wang}{W.}%
+     {Kaixuan}{K.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Gao}{G.}%
+     {Fei}{F.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Shen}{S.}%
+     {Shaojie}{S.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {IEEE}%
+  }
+  \strng{namehash}{WKGFSS1}
+  \strng{fullhash}{WKGFSS1}
+  \field{booktitle}{2019 International Conference on Robotics and Automation
+  (ICRA)}
+  \field{pages}{6919\bibrangedash 6925}
+  \field{title}{Real-time scalable dense surfel mapping}
+  \field{year}{2019}
+\endentry
+
+\entry{sturm12iros_TUM}{inproceedings}{}
+  \name{author}{5}{}{%
+    {{}%
+     {Sturm}{S.}%
+     {J.}{J.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Engelhard}{E.}%
+     {N.}{N.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Endres}{E.}%
+     {F.}{F.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Burgard}{B.}%
+     {W.}{W.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Cremers}{C.}%
+     {D.}{D.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{SJENEFBWCD1}
+  \strng{fullhash}{SJENEFBWCD1}
+  \field{booktitle}{Proc. of the International Conference on Intelligent Robot
+  Systems (IROS)}
+  \field{title}{A Benchmark for the Evaluation of RGB-D SLAM Systems}
+  \field{year}{2012}
+  \warn{\item Invalid format of field 'month'}
+\endentry
+
+\entry{Menze2015CVPR_KITTI}{inproceedings}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Menze}{M.}%
+     {Moritz}{M.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Geiger}{G.}%
+     {Andreas}{A.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{MMGA1}
+  \strng{fullhash}{MMGA1}
+  \field{booktitle}{Conference on Computer Vision and Pattern Recognition
+  (CVPR)}
+  \field{title}{Object Scene Flow for Autonomous Vehicles}
+  \field{year}{2015}
+\endentry
+
+\entry{qin2018vins}{article}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Qin}{Q.}%
+     {Tong}{T.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Li}{L.}%
+     {Peiliang}{P.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Shen}{S.}%
+     {Shaojie}{S.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {IEEE}%
+  }
+  \strng{namehash}{QTLPSS1}
+  \strng{fullhash}{QTLPSS1}
+  \field{number}{4}
+  \field{pages}{1004\bibrangedash 1020}
+  \field{title}{Vins-mono: A robust and versatile monocular visual-inertial
+  state estimator}
+  \field{volume}{34}
+  \field{journaltitle}{IEEE Transactions on Robotics}
+  \field{year}{2018}
+\endentry
+
+\entry{mur2017orb}{article}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Mur-Artal}{M.-A.}%
+     {Raul}{R.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Tard{\'o}s}{T.}%
+     {Juan~D}{J.~D.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {IEEE}%
+  }
+  \strng{namehash}{MARTJD1}
+  \strng{fullhash}{MARTJD1}
+  \field{number}{5}
+  \field{pages}{1255\bibrangedash 1262}
+  \field{title}{Orb-slam2: An open-source slam system for monocular, stereo,
+  and rgb-d cameras}
+  \field{volume}{33}
+  \field{journaltitle}{IEEE Transactions on Robotics}
+  \field{year}{2017}
+\endentry
+
+\entry{achanta2012slic}{article}{}
+  \name{author}{6}{}{%
+    {{}%
+     {Achanta}{A.}%
+     {Radhakrishna}{R.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Shaji}{S.}%
+     {Appu}{A.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Smith}{S.}%
+     {Kevin}{K.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Lucchi}{L.}%
+     {Aurelien}{A.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Fua}{F.}%
+     {Pascal}{P.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {S{\"u}sstrunk}{S.}%
+     {Sabine}{S.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {IEEE}%
+  }
+  \strng{namehash}{ARSASKLAFPSS1}
+  \strng{fullhash}{ARSASKLAFPSS1}
+  \field{number}{11}
+  \field{pages}{2274\bibrangedash 2282}
+  \field{title}{SLIC superpixels compared to state-of-the-art superpixel
+  methods}
+  \field{volume}{34}
+  \field{journaltitle}{IEEE transactions on pattern analysis and machine
+  intelligence}
+  \field{year}{2012}
+\endentry
+
+\entry{Wang19github}{misc}{}
+  \field{howpublished}{https://github.com/HKUST-Aerial-Robotics/DenseSurfelMapping}
+\endentry
+
+\lossort
+\endlossort
+
+\endinput
