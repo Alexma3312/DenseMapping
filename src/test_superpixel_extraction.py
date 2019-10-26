@@ -14,8 +14,8 @@ class TestSuperpixelExtraction(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super(TestSuperpixelExtraction, self).__init__(*args, **kwargs)
-        self.image = plt.imread("src/test_data/test_image.png")
-        self.depth = plt.imread("src/test_data/test_depth.png")
+        self.image = plt.imread("test_data/test_image.png")
+        self.depth = plt.imread("test_data/test_depth.png")
 
     def test_extract_superpixels(self):
         pass
@@ -25,21 +25,29 @@ class TestSuperpixelExtraction(unittest.TestCase):
         """
         sp_size = 20
         expected_centers = [
-            [10, 10], [30, 10], [50, 10], [70, 10], [90, 10],
-            [10, 30], [30, 30], [50, 30], [70, 30], [90, 30],
-            [10, 50], [30, 50], [50, 50], [70, 50], [90, 50],
-            [10, 70], [30, 70], [50, 70], [70, 70], [90, 70],
-            [10, 90], [30, 90], [50, 90], [70, 90], [90, 90]
+            [10, 10], [10, 30], [10, 50], [10, 70], [10, 90],
+            [30, 10], [30, 30], [30, 50], [30, 70], [30, 90],
+            [50, 10], [50, 30], [50, 50], [50, 70], [50, 90],
+            [70, 10], [70, 30], [70, 50], [70, 70], [70, 90],
+            [90, 10], [90, 30], [90, 50], [90, 70], [90, 90]
         ]
         expected_intensities = [
-
+            [100, 0, 0], [100, 0, 0], [100, 0, 0], [100, 0, 100], [100, 0, 100],
+            [0, 100, 0], [0, 100, 0], [0, 100, 0], [100, 0, 100], [100, 0, 100],
+            [0, 0, 100], [0, 0, 100], [0, 0, 100], [100, 100, 100], [100, 100, 100],
+            [100, 100, 0], [100, 100, 0], [100, 100, 0], [100, 100, 100], [100, 100, 100],
+            [0, 100, 100], [0, 100, 100], [0, 100, 100], [100, 100, 100], [100, 100, 100]
         ]
         expected_depths = [
-
+            1, 1, 1, 200, 200,
+            10, 10, 10, 200, 200,
+            50, 50, 50, 250, 250,
+            100, 100, 100, 250, 250,
+            150, 150, 150, 250, 250,
         ]
         passed = [False]*6
 
-        superpixels = init_seeds(test_image, test_depth, sp_size=10)
+        superpixels = init_seeds(self.image, self.depth, sp_size=10)
         self.assertEqual(len(superpixels), len(expected_centers),
             "didn't return the correct number of superpixels")
 
