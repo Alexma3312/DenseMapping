@@ -21,6 +21,18 @@ class SuperpixelExtraction():
         self.Nc = weights['Nc']
         self.Nd = weights['Nd']
         self.sp_size = sp_size
+    
+    def calc_distance(self, superpixels):
+        """calculate distance between each pixel to all the superpixels
+        Member dependencies:
+            image, depth
+        Arguments:
+            superpixels: list of SuperpixelSeed 
+        Returns:
+            distance: N*K numpy array (N: number of pixels, K: number of SuperpixelSeed)
+        """
+        return None
+
 
     def extract_superpixels(self):
         """Extracts superpixels from an RGB image and depth image
