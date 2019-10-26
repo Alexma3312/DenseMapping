@@ -27,6 +27,7 @@ expected_init_intensities = [
     89, 89, 89, 100, 100,
     70, 70, 70, 100, 100
 ]
+expected_init_intensities = [i/255 for i in expected_init_intensities]
 expected_init_depths = [
       1,   1,   1, 200, 200,
      10,  10,  10, 200, 200,
@@ -34,10 +35,11 @@ expected_init_depths = [
     100, 100, 100, 250, 250,
     150, 150, 150, 250, 250,
 ]
+expected_init_depths = [d/255 for d in expected_init_depths]
 
 simple2_init_centers = [ [4, 2], [13, 2], [22, 2] ]
-simple2_init_intensities = [100, 0, 0]
-simple2_init_depths = [100, 200, 200]
+simple2_init_intensities = [100/255, 0, 0]
+simple2_init_depths = [100/255, 200/255, 200/255]
 simple2_superpixels = []
 for i in range(len(simple2_init_centers)):
     simple2_superpixels.append(SuperpixelSeed(
@@ -118,32 +120,36 @@ class TestSuperpixelExtraction(unittest.TestCase):
         self.assertAlmostEqual(superpixels[1].size, 8.0622577483, "superpixel size wrong")
         self.assertAlmostEqual(superpixels[2].size, 8.94427191, "superpixel size wrong")
 
-    @unittest.skip("skip test_init_seeds")
     def test_init_seeds(self):
         """Tests initializing superpixel seeds
         """
-        sp_size = 20
-        passed = [False]*6
+        self.spExtractor.image = self.image
+        self.spExtractor.depth = self.depth
+        self.spExtractor.sp_size = 20
+        passed = [False]*25
 
         superpixels = self.spExtractor.init_seeds()
 
-        self.assertEqual(len(superpixels), len(expected_centers),
+        self.assertEqual(len(superpixels), len(expected_init_centers),
             "didn't return the correct number of superpixels")
 
         for superpixel in superpixels:
-            center = [superpixel.x, superpixel.y]
+            center = [superpixel.y, superpixel.x]
             try:
-                index = expected_centers.index(center)
+                index = expected_init_centers.index(center)
             except ValueError:
                 self.fail("found unexpected superpixel center")
                 continue
             self.assertFalse(passed[index], "duplicate superpixel center")
-
-            expected_init_centers.remove(superpixel.center)
-            self.assertEqual(superpixel.mean_depth, expected_init_depths[index],
-                "depth not initialized properly")
-            self.assertEqual(superpixel.mean_intensity, expected_init_intensities[index],
-                "intensity not initialized properly")
+            
+            print(center)
+            print(index)
+            print(superpixel.mean_depth)
+            print(expected_init_depths[index])
+            self.assertAlmostEqual(superpixel.mean_depth, expected_init_depths[index],
+                msg="depth not initialized properly")
+            self.assertAlmostEqual(superpixel.mean_intensity, expected_init_intensities[index],
+                msg="intensity not initialized properly")
             self.assertEqual(superpixel.size, 0, "size should be init to 0")
             passed[index] = True
 

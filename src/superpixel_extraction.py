@@ -59,11 +59,11 @@ class SuperpixelExtraction():
         """
         superpixels = []
 
-        for row in range(int(self.sp_size/2), self.im_height, self.sp_size):
-            for col in range(int(self.sp_size/2), self.im_width, self.sp_size):
+        for row in range(int(self.sp_size/2)-1, self.im_height, self.sp_size):
+            for col in range(int(self.sp_size/2)-1, self.im_width, self.sp_size):
                 superpixels.append( SuperpixelSeed(
                     col, row, 0, 0,0,0, 0,0,0, 0,
-                    self.depth[row,col], self.image[row,col], False, False, 0,0
+                    self.depth[row, col], self.image[row, col], False, False, 0,0
                 ))
 
         return superpixels
