@@ -3,6 +3,8 @@ tests superpixel extractions
 """
 
 import unittest
+from superpixel_seed import SuperpixelSeed
+from surfel_element import SurfelElement
 
 class TestSuperpixelExtraction(unittest.TestCase):
 

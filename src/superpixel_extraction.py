@@ -2,6 +2,8 @@
 Extract superpixels
 """
 
+from superpixel_seed import SuperpixelSeed
+
 def extract_superpixels(image):
     pass
 
