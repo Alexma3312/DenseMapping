@@ -5,9 +5,9 @@ class SurfelElement():
     def __init__(self, px, py, pz, nx, ny, nz, size, color, weight, update_times, last_update):
         """Surfel Element Data Structure.
         Arguments:
-            px,py,pz:
+            px,py,pz: the surfel center
             nx,ny,nz:
-            size:
+            size: 
             color:
             weight:
             update_times: 
