@@ -5,7 +5,9 @@ Extract superpixels
 import numpy as np
 
 from superpixel_seed import SuperpixelSeed
+import numpy as np
 from typing import Iterable, List
+
 
 class SuperpixelExtraction():
     
@@ -89,7 +91,7 @@ class SuperpixelExtraction():
         Member dependencies:
             image, depth
         Arguments:
-            pixels: array of indices (nxm) which assigns each pixel to the index in 
+            pixels: array of indices (nxm) which assigns each pixel to the index in
                 `superpixels` of the superpixel under which this pixel falls
             superpixels:    list of SuperpixelSeed
         Returns:
@@ -124,13 +126,93 @@ class SuperpixelExtraction():
         Member dependencies:
             image, depth
         Arguments:
-            pixels: array of indices (nxm) which assigns each pixel to the index in 
+            pixels: array of indices (nxm) which assigns each pixel to the index in
                 `superpixels` of the superpixel under which this pixel falls
             superpixels:    list of SuperpixelSeed
         Returns:
             superpixels:    list of SuperpixelSeed with updated norms
         """
         return None
+
+    # ****************************************************************
+    # Sub functions for Calculating the Norms
+    # ****************************************************************
+
+    def back_project(self, u, v, depth):
+        """Back project a pixel to the 3D space.
+        Arguments:
+            u: horizontal pixel coordinate
+            v: vertical pixel coordinate
+            depth: pixel depth information
+        Returns:
+            x, y,z: 3d point coordinate
+        """
+        # x = (u - self.cx) / self.fx * depth
+        # y = (v - self.cy) / self.fy * depth
+        # z = depth
+        # return x, y, z
+        pass
+
+    def calculate_spaces(self):
+        """Recover the 3D point with the depth information for each pixel and store in space map.
+        Returns:
+            space_map: NxMx3 array of back projected 3D points
+        """
+        # space_map = np.zeros((self.im_height, self.im_width, 3))
+        # for row_idx in range(self.im_height):
+        #     for col_idx in range(self.im_width):
+        #         x, y, z = self.depth[row_idx][col_idx]
+        #         space_map[my_index] = np.array(x, y, z)
+        pass
+
+    def calculate_pixels_norms(self, space_map):
+        """Calculate the single pixel normalized norm along x,y,z for all pixels
+        Arguments:
+            space_map: NxMx3 array of 3D points (x,y,z)
+        Returns:
+            norm_map: NxMx3 array of normalized norm along x,y,z axes
+        """
+        pass
+
+    def get_huber_norm(self, gn_nx, gn_ny, gn_nz, gn_nb, pixel_inlier_positions):
+        """Re-estimate norm through Gauss-Newton iterations.
+        Arguments:
+            gn_nx: normal along x for Gauss-Newton initialization
+            gn_ny: normal along y for Gauss-Newton initialization
+            gn_nz: normal along z for Gauss-Newton initialization 
+            gn_nb: bias for Gauss-Newton initialization
+            pixel_inlier_positions:
+        Returns:
+            norm_x: normal along x 
+            norm_y: normal along y
+            norm_z: normal along z 
+            norm_b: bias
+        """
+        pass
+
+    def calculate_sp_depth_norms(self, pixels, superpixels, space_map, norm_map):
+        """Calculate surfel vector from superpixel seeds.
+        Arguments:
+            pixels: array of indices (nxm) which assigns each pixel to the index in
+                `superpixels` of the superpixel under which this pixel falls
+            superpixels: list of SuperpixelSeed
+            space_map: NxMx3 array of 3D points (x,y,z)
+            norm_map: NxMx3 array of normalized norm along x,y,z axes
+        Returns:
+            update_superpixels: list of update SuperpixelSeed
+
+        """
+
+        # Get pixel position and depth for pixel with valid depth.
+
+        # Calculate Huber Norm
+
+        # Back Project the superpixel cluster center to the 3d space
+
+        # Generate View Cos
+
+        pass
+
 
 if __name__ == "__main__":
     pass

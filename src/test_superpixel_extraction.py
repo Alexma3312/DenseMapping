@@ -208,5 +208,32 @@ class TestSuperpixelExtraction(unittest.TestCase):
     def test_calc_norms(self):
         pass
 
+
+    def test_back_project(self):
+
+        pass
+
+    def test_calculate_spaces(self):
+        self.spExtractor.im_width, self.spExtractor.im_height = 2,3
+        self.spExtractor.depth = np.array([[2,2,2],[3,3,3]])
+        expected_space_map = np.array([[[-2,-3,2],[-2,-1,2],[-2,1,2]],[[0,-4.5,3],[0,-1.5,3],[0,1.5,3]]])
+        actual_space_map = self.spExtractor.calculate_spaces()
+        actual_shape = actual_space_map.shape
+        self.assertEqual(actual_space_map, expected_space_map, "Result is wrong ")
+
+    def test_calculate_pixels_norms(self):
+        space_map = np.array([[[0,0,0],[1,2,3]],[[-1,-2,-3],[1,1,1]]])
+        expected_pixels_norm = np.array([[[-2,-3],[-2,-1],[-2,1]],[[0,-4.5],[0,-1.5],[0,1.5]]])
+        space_map = np.array([[[0,0,0],[1,1,1]],[[1,2,3],[1,1,1]]])
+        expected_pixels_norms = np.array([[1/6,-1/3,-1/6]])
+        actual_pixels_norms = self.spExtractor.calculate_pixels_norms(space_map)
+        self.assertEqual(actual_pixels_norms, expected_pixels_norms, "Result is wrong ")
+
+    def test_get_huber_norm(self):
+        pass
+
+    def test_calculate_sp_depth_norms(self):
+        pass
+
 if __name__ == '__main__':
     unittest.main()
