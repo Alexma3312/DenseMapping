@@ -12,16 +12,17 @@ def extract_superpixels(image, depth):
     Returns:
         supepixels: list of SuperpixelSeed
     """
-    pass
+    return None
 
-def init_seeds(dims):
+def init_seeds(dims, sp_size=8):
     """Initializes the centers for the superpixels
     Arguments:
-        dims:   dimensions of image
+        dims:   dimensions of image, in tuple form heightxwidth, i.e. (480, 640)
     Returns:
-        superpixels:    list of SuperpixelSeed
+        superpixels:    list of SuperpixelSeed, has correct x, y (others init to
+            0)
     """
-    pass
+    return None
 
 def assign_pixels(image, depth, superpixels):
     """Assigns each pixel in an image to a superpixel seed
@@ -34,7 +35,7 @@ def assign_pixels(image, depth, superpixels):
             each element in the array represents the index of the superpixel
             which that pixel in the image is assigned to
     """
-    pass
+    return None
 
 def update_seeds(image, depth, pixels, superpixels):
     """Updates the locations of the superpixel seeds
@@ -47,7 +48,7 @@ def update_seeds(image, depth, pixels, superpixels):
     Returns:
         superpixels:    list of SuperpixelSeed with updated positions
     """
-    pass
+    return None
 
 def calc_norms(image, depth, pixels, superpixels):
     """Calculates the norms
@@ -60,7 +61,7 @@ def calc_norms(image, depth, pixels, superpixels):
     Returns:
         superpixels:    list of SuperpixelSeed with updated norms
     """
-    pass
+    return None
 
 if __name__ == "__main__":
     pass
