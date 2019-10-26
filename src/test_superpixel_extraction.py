@@ -79,6 +79,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         superpixels = [SuperpixelSeed(1, 1, 10, 0, 0, 0, 0, 0, 0, 0, 100, 100, False, False, 1, 2)]
         self.spExtractor.image = self.image3
         self.spExtractor.depth = self.depth3
+        (self.spExtractor.im_width, self.spExtractor.im_height) = self.spExtractor.image.shape
         (w, h) = self.image3.shape
         expected_distances = np.zeros((w, h, 1))
         for i in range(w):
@@ -92,6 +93,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
     def test_extract_superpixels(self):
         self.spExtractor.image = self.image2
         self.spExtractor.depth = self.depth2
+        (self.spExtractor.im_width, self.spExtractor.im_height) = self.spExtractor.image.shape
         
         superpixels = self.spExtractor.extract_superpixels()
         
@@ -102,18 +104,18 @@ class TestSuperpixelExtraction(unittest.TestCase):
         self.assertEqual(superpixels[2].x, 22, "superpixel 2 x incorrect")
         self.assertEqual(superpixels[2].y, 2, "superpixel 2 y incorrect")
 
-        self.assertEqual(superpixels[0].mean_intensity, 90,
+        self.assertEqual(superpixels[0].mean_intensity, 90/255,
             "superpixel intensity wrong")
         self.assertEqual(superpixels[1].mean_intensity, 0,
             "superpixel intensity wrong")
         self.assertEqual(superpixels[2].mean_intensity, 0,
             "superpixel intensity wrong")
 
-        self.assertEqual(superpixels[0].mean_depth, 100,
+        self.assertEqual(superpixels[0].mean_depth, 100/255,
             "superpixel depth wrong")
-        self.assertEqual(superpixels[1].mean_depth, 100,
+        self.assertEqual(superpixels[1].mean_depth, 100/255,
             "superpixel depth wrong")
-        self.assertEqual(superpixels[2].mean_depth, 200,
+        self.assertEqual(superpixels[2].mean_depth, 200/255,
             "superpixel depth wrong")
 
         self.assertAlmostEqual(superpixels[0].size, 9.8488578018, "superpixel size wrong")
@@ -125,6 +127,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         """
         self.spExtractor.image = self.image
         self.spExtractor.depth = self.depth
+        (self.spExtractor.im_width, self.spExtractor.im_height) = self.spExtractor.image.shape
         self.spExtractor.sp_size = 20
         passed = [False]*25
 
@@ -160,14 +163,15 @@ class TestSuperpixelExtraction(unittest.TestCase):
     def test_assign_pixels(self):
         self.spExtractor.image = self.image2
         self.spExtractor.depth = self.depth2
+        (self.spExtractor.im_width, self.spExtractor.im_height) = self.spExtractor.image.shape
 
         pixels = self.spExtractor.assign_pixels(simple2_superpixels)
         np.testing.assert_array_equal(pixels, simple2_expected_pixels)
 
-    @unittest.skip("skip test_update_seeds")
     def test_update_seeds(self):
         self.spExtractor.image = self.image2
         self.spExtractor.depth = self.depth2
+        (self.spExtractor.im_width, self.spExtractor.im_height) = self.spExtractor.image.shape
         
         superpixels = self.spExtractor.update_seeds(simple2_expected_pixels,
             simple2_superpixels)
@@ -179,23 +183,26 @@ class TestSuperpixelExtraction(unittest.TestCase):
         self.assertEqual(superpixels[2].x, 22, "new superpixel 2 x incorrect")
         self.assertEqual(superpixels[2].y, 2, "new superpixel 2 y incorrect")
 
-        self.assertEqual(superpixels[0].mean_intensity, 90,
-            "new superpixel intensity wrong")
-        self.assertEqual(superpixels[1].mean_intensity, 0,
-            "new superpixel intensity wrong")
-        self.assertEqual(superpixels[2].mean_intensity, 0,
-            "new superpixel intensity wrong")
+        self.assertAlmostEqual(superpixels[0].mean_intensity*255, 100,
+            places=4, msg="new superpixel intensity wrong")
+        self.assertAlmostEqual(superpixels[1].mean_intensity, 0,
+            places=4, msg="new superpixel intensity wrong")
+        self.assertAlmostEqual(superpixels[2].mean_intensity, 0,
+            places=4, msg="new superpixel intensity wrong")
 
-        self.assertEqual(superpixels[0].mean_depth, 100,
-            "new superpixel depth wrong")
-        self.assertEqual(superpixels[1].mean_depth, 100,
-            "new superpixel depth wrong")
-        self.assertEqual(superpixels[2].mean_depth, 200,
-            "new superpixel depth wrong")
+        self.assertAlmostEqual(superpixels[0].mean_depth*255, 100,
+            places=4, msg="new superpixel depth wrong")
+        self.assertAlmostEqual(superpixels[1].mean_depth*255, 112.5,
+            places=4, msg="new superpixel depth wrong")
+        self.assertAlmostEqual(superpixels[2].mean_depth*255, 200,
+            places=4, msg="new superpixel depth wrong")
 
-        self.assertAlmostEqual(superpixels[0].size, 9.8488578018, "new superpixel size wrong")
-        self.assertAlmostEqual(superpixels[1].size, 8.0622577483, "new superpixel size wrong")
-        self.assertAlmostEqual(superpixels[2].size, 8.94427191, "new superpixel size wrong")
+        self.assertAlmostEqual(superpixels[0].size, 9.8488578018,
+            msg="new superpixel size wrong")
+        self.assertAlmostEqual(superpixels[1].size, 8.0622577483,
+            msg="new superpixel size wrong")
+        self.assertAlmostEqual(superpixels[2].size, 8.94427191,
+            msg="new superpixel size wrong")
 
     @unittest.skip("skip test_calc_norms")
     def test_calc_norms(self):

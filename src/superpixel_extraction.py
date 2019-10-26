@@ -2,6 +2,8 @@
 Extract superpixels
 """
 
+import numpy as np
+
 from superpixel_seed import SuperpixelSeed
 from typing import Iterable, List
 
@@ -82,7 +84,8 @@ class SuperpixelExtraction():
         return None
 
     def update_seeds(self, pixels, superpixels: Iterable[SuperpixelSeed]) -> List[SuperpixelSeed]:
-        """Updates the locations of the superpixel seeds
+        """Updates the locations, intensities, depths, and sizes of the
+            superpixel seeds
         Member dependencies:
             image, depth
         Arguments:
@@ -92,7 +95,29 @@ class SuperpixelExtraction():
         Returns:
             superpixels:    list of SuperpixelSeed with updated positions
         """
-        return None
+        import time
+        t = time.time()
+        for i, sp in enumerate(superpixels):
+            mask = pixels!=i
+            # x/y
+            [row, col] = np.meshgrid(np.arange(self.im_height), np.arange(self.im_width))
+            sp.y = np.ma.array(row, mask=mask).mean()
+            sp.x = np.ma.array(col, mask=mask).mean()
+            # intensity/depth
+            sp.mean_intensity = np.ma.array(self.image, mask=mask).mean()
+            sp.mean_depth = np.ma.array(self.depth, mask=mask).mean()
+            # size
+            maxDist = 0
+            valid_rows = np.ma.array(row, mask=mask).compressed()
+            valid_cols = np.ma.array(col, mask=mask).compressed()
+            valid_rows = np.reshape(valid_rows, (valid_rows.size, 1))
+            valid_cols = np.reshape(valid_cols, (valid_cols.size, 1))
+            dists_x = valid_rows - valid_rows.transpose()
+            dists_y = valid_cols - valid_cols.transpose()
+            dists2 = np.square(dists_x) + np.square(dists_y)
+            sp.size = np.sqrt(np.max(dists2))
+        print("updated seeds in {:0.3f}s".format(time.time() - t))
+        return superpixels
 
     def calc_norms(self, pixels, superpixels):
         """Calculates the norms
