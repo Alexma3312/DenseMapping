@@ -52,11 +52,13 @@ end
 
 figure(1);
 imshow(image); 
-saveas(1, ['test_image.png'],'png');
+imwrite(image,'test_image.png', 'png')
 
 figure(2);
-imshow(uint8(depth));
-saveas(2, ['test_depth.png'],'png');
+depth = uint8(depth);
+imshow(depth);
+imwrite(depth,'test_depth.png', 'png')
+
 
 
 
