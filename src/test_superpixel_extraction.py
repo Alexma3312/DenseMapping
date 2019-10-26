@@ -46,7 +46,7 @@ for i in range(len(simple2_init_centers)):
         0, 0, 0, 0, 0, 0, 0, 0,
         simple2_init_depths[i],
         simple2_init_intensities[i],
-        0, 0, 0, 0
+        False, False, 0, 0
     ))
 
 # recall Ns = 4, Nc = 100, Nd = 200

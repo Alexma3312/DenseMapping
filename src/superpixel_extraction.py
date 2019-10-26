@@ -3,6 +3,7 @@ Extract superpixels
 """
 
 from superpixel_seed import SuperpixelSeed
+from typing import Iterable, List
 
 class SuperpixelExtraction():
     
@@ -34,7 +35,7 @@ class SuperpixelExtraction():
         return None
 
 
-    def extract_superpixels(self):
+    def extract_superpixels(self) -> List[SuperpixelSeed]:
         """Extracts superpixels from an RGB image and depth image
         Member dependencies:
             image, depth
@@ -45,7 +46,7 @@ class SuperpixelExtraction():
         """
         return None
 
-    def init_seeds(self):
+    def init_seeds(self) -> List[SuperpixelSeed]:
         """Initializes the centers for the superpixels
         Member dependencies:
             image, depth:  depth image, sp_size
@@ -56,9 +57,18 @@ class SuperpixelExtraction():
                 and mean_intensity are initialized to the value of the center pixel,
                 and the remaining properties are initialized to 0.
         """
-        return None
+        superpixels = []
 
-    def assign_pixels(self, superpixels):
+        for row in range(int(self.sp_size/2), self.im_height, self.sp_size):
+            for col in range(int(self.sp_size/2), self.im_width, self.sp_size):
+                superpixels.append( SuperpixelSeed(
+                    col, row, 0, 0,0,0, 0,0,0, 0,
+                    self.depth[row,col], self.image[row,col], False, False, 0,0
+                ))
+
+        return superpixels
+
+    def assign_pixels(self, superpixels: Iterable[SuperpixelSeed]):
         """Assigns each pixel in an image to a superpixel seed
         Member dependencies:
             image, depth
@@ -71,7 +81,7 @@ class SuperpixelExtraction():
         """
         return None
 
-    def update_seeds(self, pixels, superpixels):
+    def update_seeds(self, pixels, superpixels: Iterable[SuperpixelSeed]) -> List[SuperpixelSeed]:
         """Updates the locations of the superpixel seeds
         Member dependencies:
             image, depth
