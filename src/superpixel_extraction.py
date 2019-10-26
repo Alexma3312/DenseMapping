@@ -41,7 +41,7 @@ class SuperpixelExtraction():
         Arguments:
             None
         Returns:
-            supepixels: list of SuperpixelSeed
+            superpixels: list of SuperpixelSeed
         """
         return None
 
