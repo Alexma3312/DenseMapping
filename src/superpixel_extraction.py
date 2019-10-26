@@ -111,7 +111,7 @@ class SuperpixelExtraction():
         for i, sp in enumerate(superpixels):
             mask = pixels!=i
             # x/y
-            [col, row] = np.meshgrid(np.arange(self.im_height), np.arange(self.im_width))
+            [col, row] = np.meshgrid(np.arange(self.im_width), np.arange(self.im_height))
             sp.y = np.ma.array(row, mask=mask).mean()
             sp.x = np.ma.array(col, mask=mask).mean()
             # intensity/depth
