@@ -82,3 +82,23 @@ imwrite(image, 'test_image2.png', 'png');
 figure(2);
 imshow(depth);
 imwrite(depth, 'test_depth2.png', 'png');
+
+%%
+clear;
+image = uint8(zeros(3,3));
+depth = image;
+
+image(1,:) = 10;
+image(2,:) = 100;
+image(3,:) = 200;
+
+depth(:,1) = 10;
+depth(:,2) = 100;
+depth(:,3) = 200;
+
+figure(1);
+imshow(image);
+imwrite(image, 'test_image3.png', 'png');
+figure(2);
+imshow(depth);
+imwrite(depth, 'test_depth3.png', 'png');
