@@ -6,7 +6,10 @@ from superpixel_seed import SuperpixelSeed
 
 class SuperpixelExtraction():
     
-    def __init__(self, image, depth, camera_parameters, sp_size=8):
+    def __init__(self, image, depth, camera_parameters,
+        weights={'Ns': 4, 'Nc': 10, 'Nd': 0.05},
+        sp_size=8):
+        
         self.image = image
         self.depth = depth
         (self.im_width, self.im_height) = image.shape
@@ -14,6 +17,9 @@ class SuperpixelExtraction():
         self.fy = camera_parameters['fy']
         self.cx = camera_parameters['cx']
         self.cy = camera_parameters['cy']
+        self.Ns = weights['Ns']
+        self.Nc = weights['Nc']
+        self.Nd = weights['Nd']
         self.sp_size = sp_size
 
     def extract_superpixels(self):
