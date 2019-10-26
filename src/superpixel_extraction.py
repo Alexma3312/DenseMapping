@@ -121,11 +121,9 @@ class SuperpixelExtraction():
             maxDist = 0
             valid_rows = np.ma.array(row, mask=mask).compressed()
             valid_cols = np.ma.array(col, mask=mask).compressed()
-            valid_rows = np.reshape(valid_rows, (valid_rows.size, 1))
-            valid_cols = np.reshape(valid_cols, (valid_cols.size, 1))
-            dists_x = valid_rows - valid_rows.transpose()
-            dists_y = valid_cols - valid_cols.transpose()
-            dists2 = np.square(dists_x) + np.square(dists_y)
+            xs = valid_cols - sp.x
+            ys = valid_rows - sp.y
+            dists2 = np.square(xs) + np.square(ys)
             sp.size = np.sqrt(np.max(dists2))
         print("updated seeds in {:0.3f}s".format(time.time() - t))
         return superpixels
