@@ -17,7 +17,7 @@ class SuperpixelExtraction():
         
         self.image = image
         self.depth = depth
-        (self.im_width, self.im_height) = image.shape
+        (self.im_height, self.im_width) = image.shape
         self.fx = camera_parameters['fx']
         self.fy = camera_parameters['fy']
         self.cx = camera_parameters['cx']
@@ -102,7 +102,7 @@ class SuperpixelExtraction():
         for i, sp in enumerate(superpixels):
             mask = pixels!=i
             # x/y
-            [row, col] = np.meshgrid(np.arange(self.im_height), np.arange(self.im_width))
+            [col, row] = np.meshgrid(np.arange(self.im_height), np.arange(self.im_width))
             sp.y = np.ma.array(row, mask=mask).mean()
             sp.x = np.ma.array(col, mask=mask).mean()
             # intensity/depth

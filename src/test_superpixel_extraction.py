@@ -79,7 +79,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         superpixels = [SuperpixelSeed(1, 1, 10, 0, 0, 0, 0, 0, 0, 0, 100, 100, False, False, 1, 2)]
         self.spExtractor.image = self.image3
         self.spExtractor.depth = self.depth3
-        (self.spExtractor.im_width, self.spExtractor.im_height) = self.spExtractor.image.shape
+        (self.spExtractor.im_height, self.spExtractor.im_width) = self.spExtractor.image.shape
         (w, h) = self.image3.shape
         expected_distances = np.zeros((w, h, 1))
         for i in range(w):
@@ -93,7 +93,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
     def test_extract_superpixels(self):
         self.spExtractor.image = self.image2
         self.spExtractor.depth = self.depth2
-        (self.spExtractor.im_width, self.spExtractor.im_height) = self.spExtractor.image.shape
+        (self.spExtractor.im_height, self.spExtractor.im_width) = self.spExtractor.image.shape
         
         superpixels = self.spExtractor.extract_superpixels()
         
@@ -127,7 +127,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         """
         self.spExtractor.image = self.image
         self.spExtractor.depth = self.depth
-        (self.spExtractor.im_width, self.spExtractor.im_height) = self.spExtractor.image.shape
+        (self.spExtractor.im_height, self.spExtractor.im_width) = self.spExtractor.image.shape
         self.spExtractor.sp_size = 20
         passed = [False]*25
 
@@ -163,7 +163,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
     def test_assign_pixels(self):
         self.spExtractor.image = self.image2
         self.spExtractor.depth = self.depth2
-        (self.spExtractor.im_width, self.spExtractor.im_height) = self.spExtractor.image.shape
+        (self.spExtractor.im_height, self.spExtractor.im_width) = self.spExtractor.image.shape
 
         pixels = self.spExtractor.assign_pixels(simple2_superpixels)
         np.testing.assert_array_equal(pixels, simple2_expected_pixels)
@@ -171,17 +171,17 @@ class TestSuperpixelExtraction(unittest.TestCase):
     def test_update_seeds(self):
         self.spExtractor.image = self.image2
         self.spExtractor.depth = self.depth2
-        (self.spExtractor.im_width, self.spExtractor.im_height) = self.spExtractor.image.shape
+        (self.spExtractor.im_height, self.spExtractor.im_width) = self.spExtractor.image.shape
         
         superpixels = self.spExtractor.update_seeds(simple2_expected_pixels,
             simple2_superpixels)
         
-        self.assertEqual(superpixels[0].x, 4.5, "new superpixel 0 x incorrect")
-        self.assertEqual(superpixels[0].y, 2, "new superpixel 0 y incorrect")
-        self.assertEqual(superpixels[1].x, 13.5, "new superpixel 1 x incorrect")
-        self.assertEqual(superpixels[1].y, 2, "new superpixel 1 y incorrect")
-        self.assertEqual(superpixels[2].x, 22, "new superpixel 2 x incorrect")
-        self.assertEqual(superpixels[2].y, 2, "new superpixel 2 y incorrect")
+        self.assertEqual(superpixels[0].y, 4.5, "new superpixel 0 x incorrect")
+        self.assertEqual(superpixels[0].x, 2, "new superpixel 0 y incorrect")
+        self.assertEqual(superpixels[1].y, 13.5, "new superpixel 1 x incorrect")
+        self.assertEqual(superpixels[1].x, 2, "new superpixel 1 y incorrect")
+        self.assertEqual(superpixels[2].y, 22, "new superpixel 2 x incorrect")
+        self.assertEqual(superpixels[2].x, 2, "new superpixel 2 y incorrect")
 
         self.assertAlmostEqual(superpixels[0].mean_intensity*255, 100,
             places=4, msg="new superpixel intensity wrong")
