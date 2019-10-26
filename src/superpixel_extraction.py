@@ -14,13 +14,16 @@ def extract_superpixels(image, depth):
     """
     return None
 
-def init_seeds(dims, sp_size=8):
+def init_seeds(image, depth, sp_size=8):
     """Initializes the centers for the superpixels
     Arguments:
-        dims:   dimensions of image, in tuple form heightxwidth, i.e. (480, 640)
+        image:  input image (nxmx3)
+        depth:  depth image (nxm)
+        sp_size: initial size of the superpixel grid
     Returns:
-        superpixels:    list of SuperpixelSeed, has correct x, y (others init to
-            0)
+        superpixels:    list of SuperpixelSeed, has correct x, y.  mean_depth
+            and mean_intensity are initialized to the value of the center pixel,
+            and the remaining properties are initialized to 0.
     """
     return None
 
