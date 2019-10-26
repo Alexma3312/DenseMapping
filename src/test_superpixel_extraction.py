@@ -64,15 +64,29 @@ class TestSuperpixelExtraction(unittest.TestCase):
         self.depth = plt.imread("test_data/test_depth.png")
         self.image2 = plt.imread("test_data/test_image2.png")
         self.depth2 = plt.imread("test_data/test_depth2.png")
+        self.image3 = plt.imread("test_data/test_image3.png")
+        self.depth3 = plt.imread("test_data/test_depth3.png")
         (w, h) = self.image.shape
         camera_parameters = {'fx': 1, 'fy': 1, 'cx': w/2, 'cy': h/2}
         weights = {'Ns': 4, 'Nc': 100, 'Nd': 200}
         self.spExtractor = SuperpixelExtraction(self.image, self.depth,
             camera_parameters, weights=weights, sp_size=10)
     
-    def calc_distance(self):
-        pass
+    @unittest.skip("skip test_calc_distance")
+    def test_calc_distance(self):
+        superpixels = [SuperpixelSeed(1, 1, 10, 0, 0, 0, 0, 0, 0, 0, 100, 100, False, False, 1, 2)]
+        self.spExtractor.image = self.image3
+        self.spExtractor.depth = self.depth3
+        (w, h) = self.image3.shape
+        expected_distances = np.zeros((w, h, 1))
+        for i in range(w):
+            for j in range(h):
+                expected_distances[i, j, 1] = (i - 1)**2 / 4.0 + (j - 1)**2 / 100.0 + (self.image3[i, j] - 10)**2 / 200.0
+        
+        actual_distances = self.spExtractor.calc_distances(superpixels)
+        self.assertEqual(actual_distances, expected_distances)
 
+    @unittest.skip("skip test_extract_superpixels")
     def test_extract_superpixels(self):
         self.spExtractor.image = self.image2
         self.spExtractor.depth = self.depth2
@@ -104,6 +118,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         self.assertAlmostEqual(superpixels[1].size, 8.0622577483, "superpixel size wrong")
         self.assertAlmostEqual(superpixels[2].size, 8.94427191, "superpixel size wrong")
 
+    @unittest.skip("skip test_init_seeds")
     def test_init_seeds(self):
         """Tests initializing superpixel seeds
         """
@@ -135,6 +150,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         for elem in passed:
             self.assertTrue(elem, "not all superpixel centers found")
 
+    @unittest.skip("skip test_assign_pixels")
     def test_assign_pixels(self):
         self.spExtractor.image = self.image2
         self.spExtractor.depth = self.depth2
@@ -142,6 +158,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         pixels = self.spExtractor.assign_pixels(simple2_superpixels)
         np.testing.assert_array_equal(pixels, simple2_expected_pixels)
 
+    @unittest.skip("skip test_update_seeds")
     def test_update_seeds(self):
         self.spExtractor.image = self.image2
         self.spExtractor.depth = self.depth2
@@ -174,6 +191,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         self.assertAlmostEqual(superpixels[1].size, 8.0622577483, "new superpixel size wrong")
         self.assertAlmostEqual(superpixels[2].size, 8.94427191, "new superpixel size wrong")
 
+    @unittest.skip("skip test_calc_norms")
     def test_calc_norms(self):
         pass
 
