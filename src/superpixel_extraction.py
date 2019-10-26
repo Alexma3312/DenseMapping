@@ -9,6 +9,8 @@ import numpy as np
 from typing import Iterable, List
 
 
+import numpy as np
+
 class SuperpixelExtraction():
     
     def __init__(self, image, depth, camera_parameters,
@@ -36,8 +38,15 @@ class SuperpixelExtraction():
         Returns:
             distances: N*M*K numpy array (N*M is image size, K: number of SuperpixelSeed)
         """
-        return None
-
+        x = np.arange(self.im_width)
+        y = np.arange(self.im_height)
+        xx, yy = np.meshgrid(x, y)
+        distances = np.zeros((self.im_height, self.im_width, len(superpixels)))
+        for idx, superpixel in enumerate(superpixels):
+            distances[:, :, idx] = ((xx - superpixel.x)**2 + (yy - superpixel.y)**2) / self.Ns \
+            + (self.image - superpixel.mean_intensity)**2 / self.Nc \
+            + (self.depth - superpixel.mean_depth)**2 / self.Nd
+        return distances
 
     def extract_superpixels(self) -> List[SuperpixelSeed]:
         """Extracts superpixels from an RGB image and depth image
