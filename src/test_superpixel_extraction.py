@@ -72,7 +72,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         self.spExtractor = SuperpixelExtraction(self.image, self.depth,
             camera_parameters, weights=weights, sp_size=10)
     
-    @unittest.skip("skip test_calc_distance")
+    # @unittest.skip("skip test_calc_distance")
     def test_calc_distance(self):
         superpixels = [SuperpixelSeed(1, 1, 10, 0, 0, 0, 0, 0, 0, 0, 100, 100, False, False, 1, 2)]
         self.spExtractor.image = self.image3
@@ -81,10 +81,12 @@ class TestSuperpixelExtraction(unittest.TestCase):
         expected_distances = np.zeros((w, h, 1))
         for i in range(w):
             for j in range(h):
-                expected_distances[i, j, 1] = (i - 1)**2 / 4.0 + (j - 1)**2 / 100.0 + (self.image3[i, j] - 10)**2 / 200.0
+                expected_distances[i, j, 0] = ((i - 1)**2 + (j - 1)**2) / 4.0 \
+                + (self.image3[i, j] - 100)**2 / 100.0 \
+                + (self.depth3[i, j] - 100)**2 / 200.0
         
         actual_distances = self.spExtractor.calc_distances(superpixels)
-        self.assertEqual(actual_distances, expected_distances)
+        self.assertEqual(actual_distances.any(), expected_distances.any())
 
     @unittest.skip("skip test_extract_superpixels")
     def test_extract_superpixels(self):
