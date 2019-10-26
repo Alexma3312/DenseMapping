@@ -44,6 +44,9 @@ class TestSuperpixelExtraction(unittest.TestCase):
         camera_parameters = {'fx': 1, 'fy': 1, 'cx': w/2, 'cy': h/2}
         self.spExtractor = SuperpixelExtraction(self.image, self.depth,
             camera_parameters, sp_size=10)
+    
+    def calc_distance(self):
+        pass
 
     def test_extract_superpixels(self):
         pass
@@ -105,7 +108,6 @@ class TestSuperpixelExtraction(unittest.TestCase):
         pass
 
     def test_calc_norms(self):
-
         pass
 
 if __name__ == '__main__':
