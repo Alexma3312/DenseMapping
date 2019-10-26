@@ -6,17 +6,17 @@ class SuperpixelSeed():
         """ Superpixel Seed Data Structure.
         Arguments:
             x, y: (float) 
-            size: ,float
-            norm_x, norm_y, norm_z: ,float 
-            posi_x, posi_y, posi_z: ,float
-            view_cos: ,float
-            mean_depth: ,float
-            mean_intensity: ,float 
-            fused: ,bool 
-            stable: - bool
+            size: (float)
+            norm_x, norm_y, norm_z: (float)
+            posi_x, posi_y, posi_z: (float)
+            view_cos: (float)
+            mean_depth: (float)
+            mean_intensity: (float) 
+            fused: (bool) 
+            stable: (bool)
             # For Debug
-            min_eigen_value:
-            max_eigen_value: 
+            min_eigen_value:(float)
+            max_eigen_value: (float)
         """
         self.x, self.y = x, y
         self.size = size
