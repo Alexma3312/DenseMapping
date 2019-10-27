@@ -74,7 +74,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         self.spExtractor = SuperpixelExtraction(self.image, self.depth,
             camera_parameters, weights=weights, sp_size=10)
     
-    # @unittest.skip("skip test_calc_distance")
+    @unittest.skip("skip test_calc_distance")
     def test_calc_distance(self):
         superpixels = [SuperpixelSeed(1, 1, 10, 0, 0, 0, 0, 0, 0, 0, 100, 100, False, False, 1, 2)]
         self.spExtractor.image = self.image3
@@ -86,7 +86,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
             for j in range(h):
                 expected_distances[i, j, 0] = ((i - 1)**2 + (j - 1)**2) / 4.0 \
                 + (self.image3[i, j] - 100)**2 / 100.0 \
-                + (self.depth3[i, j] - 100)**2 / 200.0
+                + (1.0 / self.depth3[i, j] - 1.0 / 100)**2 / 200.0
         
         actual_distances = self.spExtractor.calc_distances(superpixels)
         self.assertEqual(actual_distances.any(), expected_distances.any())
@@ -211,14 +211,16 @@ class TestSuperpixelExtraction(unittest.TestCase):
 
         pass
 
-    @unittest.skip("skip test_calculate_spaces")
+    # @unittest.skip("skip test_calculate_spaces")
     def test_calculate_spaces(self):
-        self.spExtractor.im_width, self.spExtractor.im_height = 2,3
+        self.spExtractor.im_width, self.spExtractor.im_height = 3,2
         self.spExtractor.depth = np.array([[2,2,2],[3,3,3]])
+        self.spExtractor.cx = self.spExtractor.im_width/2
+        self.spExtractor.cy = self.spExtractor.im_height/2
         expected_space_map = np.array([[[-2,-3,2],[-2,-1,2],[-2,1,2]],[[0,-4.5,3],[0,-1.5,3],[0,1.5,3]]])
         actual_space_map = self.spExtractor.calculate_spaces()
         actual_shape = actual_space_map.shape
-        self.assertEqual(actual_space_map, expected_space_map, "Result is wrong ")
+        self.assertEqual(np.array_equal(actual_space_map, expected_space_map), True, "Result is wrong ")
 
     @unittest.skip("skip test_calculate_pixels_norms")
     def test_calculate_pixels_norms(self):
