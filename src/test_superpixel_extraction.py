@@ -86,7 +86,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
             for j in range(h):
                 expected_distances[i, j, 0] = ((i - 1)**2 + (j - 1)**2) / 4.0 \
                 + (self.image3[i, j] - 100)**2 / 100.0 \
-                + (self.depth3[i, j] - 100)**2 / 200.0
+                + (1.0 / self.depth3[i, j] - 1.0 / 100)**2 / 200.0
         
         actual_distances = self.spExtractor.calc_distances(superpixels)
         self.assertEqual(actual_distances.any(), expected_distances.any())
@@ -157,7 +157,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         for elem in passed:
             self.assertTrue(elem, "not all superpixel centers found")
 
-    @unittest.skip("skip test_assign_pixels")
+    #@unittest.skip("skip test_assign_pixels")
     def test_assign_pixels(self):
         self.spExtractor.image = self.image2
         self.spExtractor.depth = self.depth2

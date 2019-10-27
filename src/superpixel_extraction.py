@@ -45,7 +45,7 @@ class SuperpixelExtraction():
         for idx, superpixel in enumerate(superpixels):
             distances[:, :, idx] = ((xx - superpixel.x)**2 + (yy - superpixel.y)**2) / self.Ns \
             + (self.image - superpixel.mean_intensity)**2 / self.Nc \
-            + (self.depth - superpixel.mean_depth)**2 / self.Nd
+            + (1.0 / self.depth - 1.0 / superpixel.mean_depth)**2 / self.Nd
         return distances
 
     def extract_superpixels(self) -> List[SuperpixelSeed]:
@@ -88,11 +88,15 @@ class SuperpixelExtraction():
         Arguments:
             superpixels:    list of SuperpixelSeed
         Returns:
-            pixels:    nxm array of indices, where nxm is the size of the image and
+            superpixel_idx:    nxm array of indices, where nxm is the size of the image and
                 each element in the array represents the index of the superpixel
                 which that pixel in the image is assigned to
         """
-        return None
+        print("first", self.calc_distances(superpixels)[:,:,0])
+        print("second", self.calc_distances(superpixels)[:,:,1])
+        print("third", self.calc_distances(superpixels)[:,:,2])
+        superpixel_idx = np.argmin(self.calc_distances(superpixels), axis = -1)   
+        return superpixel_idx
 
     def update_seeds(self, pixels, superpixels: Iterable[SuperpixelSeed]) -> List[SuperpixelSeed]:
         """Updates the locations, intensities, depths, and sizes of the
