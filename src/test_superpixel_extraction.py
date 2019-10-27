@@ -195,11 +195,11 @@ class TestSuperpixelExtraction(unittest.TestCase):
         self.assertAlmostEqual(superpixels[2].mean_depth*255, 200,
             places=4, msg="new superpixel depth wrong")
 
-        self.assertAlmostEqual(superpixels[0].size, 9.8488578018,
+        self.assertAlmostEqual(superpixels[0].size, 9.8488578018/2,
             msg="new superpixel size wrong")
-        self.assertAlmostEqual(superpixels[1].size, 8.0622577483,
+        self.assertAlmostEqual(superpixels[1].size, 8.0622577483/2,
             msg="new superpixel size wrong")
-        self.assertAlmostEqual(superpixels[2].size, 8.94427191,
+        self.assertAlmostEqual(superpixels[2].size, 8.94427191/2,
             msg="new superpixel size wrong")
 
     @unittest.skip("skip test_calc_norms")
