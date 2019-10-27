@@ -43,8 +43,8 @@ simple2_init_depths = [100/255, 200/255, 200/255]
 simple2_superpixels = []
 for i in range(len(simple2_init_centers)):
     simple2_superpixels.append(SuperpixelSeed(
-        simple2_init_centers[i][0],
         simple2_init_centers[i][1],
+        simple2_init_centers[i][0],
         0, 0, 0, 0, 0, 0, 0, 0,
         simple2_init_depths[i],
         simple2_init_intensities[i],
@@ -74,7 +74,6 @@ class TestSuperpixelExtraction(unittest.TestCase):
         self.spExtractor = SuperpixelExtraction(self.image, self.depth,
             camera_parameters, weights=weights, sp_size=10)
     
-    @unittest.skip("skip test_calc_distance")
     def test_calc_distance(self):
         superpixels = [SuperpixelSeed(1, 1, 10, 0, 0, 0, 0, 0, 0, 0, 100, 100, False, False, 1, 2)]
         self.spExtractor.image = self.image3
@@ -157,7 +156,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         for elem in passed:
             self.assertTrue(elem, "not all superpixel centers found")
 
-    @unittest.skip("skip test_assign_pixels")
+    # @unittest.skip("skip test_assign_pixels")
     def test_assign_pixels(self):
         self.spExtractor.image = self.image2
         self.spExtractor.depth = self.depth2
@@ -208,10 +207,8 @@ class TestSuperpixelExtraction(unittest.TestCase):
 
     @unittest.skip("skip test_back_project")
     def test_back_project(self):
-
         pass
 
-    # @unittest.skip("skip test_calculate_spaces")
     def test_calculate_spaces(self):
         self.spExtractor.im_width, self.spExtractor.im_height = 3,2
         self.spExtractor.depth = np.array([[2,2,2],[3,3,3]])
