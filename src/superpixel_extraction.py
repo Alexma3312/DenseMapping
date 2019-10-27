@@ -169,12 +169,19 @@ class SuperpixelExtraction():
         Returns:
             space_map: NxMx3 array of back projected 3D points
         """
-        # space_map = np.zeros((self.im_height, self.im_width, 3))
-        # for row_idx in range(self.im_height):
-        #     for col_idx in range(self.im_width):
-        #         x, y, z = self.depth[row_idx][col_idx]
-        #         space_map[my_index] = np.array(x, y, z)
-        pass
+        [col, row] = np.meshgrid(np.arange(self.im_width), np.arange(self.im_height))
+        # Generate the z value matrix
+        depth = np.copy(self.depth)
+        # (x-cx)/fx*depth
+        col = np.multiply((col - self.cx)/self.fx, self.depth)
+        # (y-cy)/fy*depth
+        row = np.multiply((row - self.cy)/self.fy, self.depth)
+
+        col = np.expand_dims(col,axis=2)
+        row = np.expand_dims(row,axis=2)
+        depth = np.expand_dims(depth,axis=2)
+        space_map = np.concatenate((row,col,depth),axis=2)
+        return space_map
 
     def calculate_pixels_norms(self, space_map):
         """Calculate the single pixel normalized norm along x,y,z for all pixels
