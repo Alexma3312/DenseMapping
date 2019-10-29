@@ -277,17 +277,37 @@ class SuperpixelExtraction():
             max_dist: This is a distance in the image coordinate. The maximum distance of the border towards the center. 
             valid_depth_num: number of pixels with valid depths within a surfel
         """
-        pass
+        # Reshape depth from (3,3,1) into (3,3)
+        depth = self.depth.reshape(3,3) 
+        mask1 = pixels!=superpixel_seed_index
+        mask2 = depth<=0.05
+        mask = np.add(mask1,mask2)
 
-    def huber_filter(self, mean_depth, pixel_depth):
+        [col, row] = np.meshgrid(
+            np.arange(self.im_width), np.arange(self.im_height))
+        col = np.ma.array(col,mask=mask) - superpixel_center[0]
+        row = np.ma.array(row,mask=mask) - superpixel_center[1]
+
+        diff = np.ma.multiply(col,col)+ np.ma.multiply(row,row)
+        max_dist = np.max(diff)
+
+        pixel_depths = depth[~mask].reshape(1,-1)
+        valid_depth_num = pixel_depths.shape[1]
+        pixel_positions = space_map[~mask].reshape(1,valid_depth_num,3)
+        pixel_norms = norm_map[~mask[:-1,:-1]].reshape(1,valid_depth_num,3)
+        return pixel_depths, pixel_norms, pixel_positions, max_dist, valid_depth_num
+
+
+    def huber_filter(self, mean_depth, pixel_depth, pixel_positions, HUBER_RANGE= 0.4):
         """ Use Huber Kernel filter outliers.
         Arguments:
-            mean_depth:
-            pixel_depth:
+            mean_depth: mean depth of current superpoint seed 
+            pixel_depth: 1xNx1 array, N is the number of valid pixel within current superpixel seed
+            pixel_positions: 1xNx3 array, N is the number of valid pixel within current superpixel seed 
         Returns:
-            norm_x, norm_y, norm_z:
-            inlier_num:
-            pixel_inlier_positions:
+            norm_x, norm_y, norm_z: normal along x,y,z axes
+            inlier_num: the number of valid points
+            pixel_inlier_positions: 1xNx3 array, N is the number of valid pixel within current superpixel seed
         """
         pass
 
