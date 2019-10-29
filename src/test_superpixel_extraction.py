@@ -227,24 +227,45 @@ class TestSuperpixelExtraction(unittest.TestCase):
         mask = np.array([[[True,True,True]]])
         expected_pixels_norms = np.array([[[0,0,0]]])
         actual_pixels_norms = self.spExtractor.calculate_pixels_norms(space_map)
-        np.testing.assert_array_almost_equal(actual_pixels_norms, expected_pixels_norms)
+        np.testing.assert_array_almost_equal(actual_pixels_norms, expected_pixels_norms,err_msg="Bad view angles test fail.")
         # Test for return result
         space_map = np.array([[[2,2,2],[2.1,2.1,2.1]],[[1.9,2.1,1.9],[1,1,1]]])
         mask = np.array([[[False,False,False]]])
         expected_pixels_norms = np.array([[[-1/2**(1/2),0,1/2**(1/2)]]])
         expected_pixels_norms = np.ma.array(expected_pixels_norms, mask=mask)
         actual_pixels_norms = self.spExtractor.calculate_pixels_norms(space_map)
-        np.testing.assert_array_almost_equal(actual_pixels_norms, expected_pixels_norms)
+        np.testing.assert_array_almost_equal(actual_pixels_norms, expected_pixels_norms,err_msg="Return Result test fail.")
 
     @unittest.skip("skip test_get_huber_norm")
     def test_get_huber_norm(self):
         pass
 
-    def test_get_superpixel_cluster(self):
-        pass
+    def test_initial_superpixel_cluster(self):
+        superpixel_seed_index = 1
+        pixels = np.zeros((3,3), dtype=np.uint8)
+        pixels[0:1, 0:1] = 1
+        self.spExtractor.depths = np.array([[1],[2],[3],[0.1],[5],[6],[7],[8],[9]])
+        space_map = np.array([[[0,0,1],[0,0,2],[0,0,3]],[[0,0,0.1],[0,0,5],[0,0,6]],[[0,0,7],[0,0,8],[0,0,9]]])
+        norm_map = np.array([[[0,0,1],[0,0,2]],[[0,0,0.1],[0,0,5]]])
+
+        expected_pixel_depth = np.array([[1],[2],[5]])
+        expected_pixel_norms = np.array([[0,0,1],[0,0,2],[0,0,5]])
+        expected_pixel_positions = np.array([[0,0,1],[0,0,2],[0,0,5]])
+        expected_max_dist = 2**(1/2)
+        expected_valid_depth_num = 3
+
+        self.spExtractor.initial_superpixel_cluster((0,0), 1, pixels, space_map, norm_map)
+        np.testing.assert_array_almost_equal(expected_pixel_depth, expected_pixel_depth,err_msg="pixel depth wrong")
+        np.testing.assert_array_almost_equal(expected_pixel_norms, expected_pixel_norms,err_msg="pixel norms wrong")
+        np.testing.assert_array_almost_equal(expected_pixel_positions, expected_pixel_positions,err_msg="pixel positions wrong")
+        self.assertEqual(expected_max_dist, expected_max_dist, "Max Distance is wrong ")
+        self.assertEqual(expected_valid_depth_num, expected_valid_depth_num, "Valid depth num is wrong ")
 
     def test_calc_view_cos(self):
-        pass
+        norm_x, norm_y, norm_z = 2,3,4
+        avg_x, avg_y, avg_z =  1,2,3
+        expected_norm_x, expected_norm_y, expected_norm_z = 2,3,4
+        expected_view_cos = 3
 
     @unittest.skip("skip test_calculate_sp_depth_norms")
     def test_calculate_sp_depth_norms(self):

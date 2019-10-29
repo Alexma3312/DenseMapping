@@ -207,9 +207,12 @@ class SuperpixelExtraction():
                                           :, 0], right[:, :, 1], right[:, :, 2]
         down_x, down_y, down_z = down[:, :, 0], down[:, :, 1], down[:, :, 2]
 
-        norm_x = np.ma.multiply(right_y, down_z) - np.ma.multiply(right_z, down_y)
-        norm_y = np.ma.multiply(right_z, down_x) - np.ma.multiply(right_x, down_z)
-        norm_z = np.ma.multiply(right_x, down_y) - np.ma.multiply(right_y, down_x)
+        norm_x = np.ma.multiply(right_y, down_z) - \
+            np.ma.multiply(right_z, down_y)
+        norm_y = np.ma.multiply(right_z, down_x) - \
+            np.ma.multiply(right_x, down_z)
+        norm_z = np.ma.multiply(right_x, down_y) - \
+            np.ma.multiply(right_y, down_x)
 
         norm_length = np.ma.sqrt(np.ma.multiply(
             norm_x, norm_x) + np.ma.multiply(norm_y, norm_y)+np.ma.multiply(norm_z, norm_z))
@@ -256,18 +259,23 @@ class SuperpixelExtraction():
         """
         pass
 
-    def get_superpixel_cluster(self, superpixel_seed, superpixel_seed_index, pixels, space_map, norm_map):
+    def initial_superpixel_cluster(self, superpixel_center,superpixel_seed_index, pixels, space_map, norm_map):
         """ Generate superpixel pixels
+        Member dependencies:
+            depth: nxmx1 depth image
         Arguments:
-            superpixel_seed:
-            superpixel_seed_index:
-            pixels:
-            space_map:
-            norm_map:
+            superpixel_center: (x,y)
+            superpixel_seed_index: the index of the current SuperpixelSeed in the list
+            pixels: array of indices (nxm) which assigns each pixel to the index in
+                `superpixels` of the superpixel under which this pixel falls
+            space_map: NxMx3 array of 3D points (x,y,z)
+            norm_map: (N-1)x(M-1)x3 array of normalized norm along x,y,z axes
         Returns:
-            superpixel_cluster: pixel_depth,pixel_norms, pixel_positions
-            max_dist: a list of maximum distances of each superpixel seed, same length as superpixel seeds
-            valid_depth_num: a list of valid depth pixel number of each superpixel seed, same length as superpixel seeds
+            pixel_depth: 1xNx1 array, N is the number of valid pixel within current superpixel seed    
+            pixel_norms: 1xNx3 array, N is the number of valid pixel within current superpixel seed
+            pixel_positions: 1xNx3 array, N is the number of valid pixel within current superpixel seed
+            max_dist: This is a distance in the image coordinate. The maximum distance of the border towards the center. 
+            valid_depth_num: number of pixels with valid depths within a surfel
         """
         pass
 
@@ -292,7 +300,7 @@ class SuperpixelExtraction():
             norm_x, norm_y, norm_z: normal along x,y,z axes
             avg_x, avg_y, avg_z: average x,y,z point, the center of the surfel
         Returns:
-            [norm_x, norm_y, norm_z]: surfel normal along x,y,z axes
+            new_norm_x, new_norm_y, new_norm_z: surfel normal along x,y,z axes
             view_cos: cosine value between surfel normal and the surfel center vector
         """
         pass
