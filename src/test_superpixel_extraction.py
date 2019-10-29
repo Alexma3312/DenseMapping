@@ -156,7 +156,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         for elem in passed:
             self.assertTrue(elem, "not all superpixel centers found")
 
-    # @unittest.skip("skip test_assign_pixels")
+    @unittest.skip("skip test_assign_pixels")
     def test_assign_pixels(self):
         self.spExtractor.image = self.image2
         self.spExtractor.depth = self.depth2
@@ -205,10 +205,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
     def test_calc_norms(self):
         pass
 
-    @unittest.skip("skip test_back_project")
-    def test_back_project(self):
-        pass
-
+    @unittest.skip("skip test_calculate_spaces")
     def test_calculate_spaces(self):
         self.spExtractor.im_width, self.spExtractor.im_height = 3,2
         self.spExtractor.depth = np.array([[2,2,2],[3,3,3]])
@@ -221,15 +218,32 @@ class TestSuperpixelExtraction(unittest.TestCase):
 
     @unittest.skip("skip test_calculate_pixels_norms")
     def test_calculate_pixels_norms(self):
-        space_map = np.array([[[0,0,0],[1,2,3]],[[-1,-2,-3],[1,1,1]]])
-        expected_pixels_norm = np.array([[[-2,-3],[-2,-1],[-2,1]],[[0,-4.5],[0,-1.5],[0,1.5]]])
-        space_map = np.array([[[0,0,0],[1,1,1]],[[1,2,3],[1,1,1]]])
-        expected_pixels_norms = np.array([[1/6,-1/3,-1/6]])
+        # Test for bad depths filter
+        space_map = np.array([[[0,0,0],[0,0,1]],[[0,0,-1],[1,1,1]]])
         actual_pixels_norms = self.spExtractor.calculate_pixels_norms(space_map)
-        self.assertEqual(actual_pixels_norms, expected_pixels_norms, "Result is wrong ")
+        self.assertEqual(actual_pixels_norms,None,"If no pixel is valid return None")
+        # Test for bad view angles
+        space_map = np.array([[[0,0,1],[-1,0,1]],[[1,0,1],[1,1,1]]])
+        mask = np.array([[[True,True,True]]])
+        expected_pixels_norms = np.array([[[0,0,0]]])
+        actual_pixels_norms = self.spExtractor.calculate_pixels_norms(space_map)
+        np.testing.assert_array_almost_equal(actual_pixels_norms, expected_pixels_norms)
+        # Test for return result
+        space_map = np.array([[[2,2,2],[2.1,2.1,2.1]],[[1.9,2.1,1.9],[1,1,1]]])
+        mask = np.array([[[False,False,False]]])
+        expected_pixels_norms = np.array([[[-1/2**(1/2),0,1/2**(1/2)]]])
+        expected_pixels_norms = np.ma.array(expected_pixels_norms, mask=mask)
+        actual_pixels_norms = self.spExtractor.calculate_pixels_norms(space_map)
+        np.testing.assert_array_almost_equal(actual_pixels_norms, expected_pixels_norms)
 
     @unittest.skip("skip test_get_huber_norm")
     def test_get_huber_norm(self):
+        pass
+
+    def test_get_superpixel_cluster(self):
+        pass
+
+    def test_calc_view_cos(self):
         pass
 
     @unittest.skip("skip test_calculate_sp_depth_norms")
