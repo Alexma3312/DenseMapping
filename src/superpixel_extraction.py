@@ -271,9 +271,9 @@ class SuperpixelExtraction():
             space_map: NxMx3 array of 3D points (x,y,z)
             norm_map: (N-1)x(M-1)x3 array of normalized norm along x,y,z axes
         Returns:
-            pixel_depths: 1xNx1 array, N is the number of valid pixel within current superpixel seed    
-            pixel_norms: 1xNx3 array, N is the number of valid pixel within current superpixel seed
-            pixel_positions: 1xNx3 array, N is the number of valid pixel within current superpixel seed
+            pixel_depths: Nx1 array, N is the number of valid pixel within current superpixel seed    
+            pixel_norms: Nx3 array, N is the number of valid pixel within current superpixel seed
+            pixel_positions: Nx3 array, N is the number of valid pixel within current superpixel seed
             max_dist: This is a distance in the image coordinate. The maximum distance of the border towards the center. 
             valid_depth_num: number of pixels with valid depths within a surfel
         """
@@ -291,10 +291,10 @@ class SuperpixelExtraction():
         diff = np.ma.multiply(col,col)+ np.ma.multiply(row,row)
         max_dist = np.max(diff)
 
-        pixel_depths = depth[~mask].reshape(1,-1)
-        valid_depth_num = pixel_depths.shape[1]
-        pixel_positions = space_map[~mask].reshape(1,valid_depth_num,3)
-        pixel_norms = norm_map[~mask[:-1,:-1]].reshape(1,valid_depth_num,3)
+        pixel_depths = depth[~mask].reshape(-1,1)
+        valid_depth_num = pixel_depths.shape[0]
+        pixel_positions = space_map[~mask].reshape(valid_depth_num,3)
+        pixel_norms = norm_map[~mask[:-1,:-1]].reshape(valid_depth_num,3)
         return pixel_depths, pixel_norms, pixel_positions, max_dist, valid_depth_num
 
 
@@ -302,12 +302,12 @@ class SuperpixelExtraction():
         """ Use Huber Kernel filter outliers.
         Arguments:
             mean_depth: mean depth of current superpoint seed 
-            pixel_depth: 1xNx1 array, N is the number of valid pixel within current superpixel seed
-            pixel_positions: 1xNx3 array, N is the number of valid pixel within current superpixel seed 
+            pixel_depth: Nx1 array, N is the number of valid pixel within current superpixel seed
+            pixel_positions: Nx3 array, N is the number of valid pixel within current superpixel seed 
         Returns:
             norm_x, norm_y, norm_z: normal along x,y,z axes
             inlier_num: the number of valid points
-            pixel_inlier_positions: 1xNx3 array, N is the number of valid pixel within current superpixel seed
+            pixel_inlier_positions: Nx3 array, N is the number of valid pixel within current superpixel seed
         """
         pass
 
@@ -325,9 +325,9 @@ class SuperpixelExtraction():
     def update_superpixel_cluster_with_huber(self, pixel_depths, pixel_norms, pixel_positions):
         """
         Arguments:
-            pixel_depths: 1xNx1 array, N is the number of valid pixel within current superpixel seed    
-            pixel_norms: 1xNx3 array, N is the number of valid pixel within current superpixel seed
-            pixel_positions: 1xNx3 array, N is the number of valid pixel within current superpixel seed
+            pixel_depths: Nx1 array, N is the number of valid pixel within current superpixel seed    
+            pixel_norms: Nx3 array, N is the number of valid pixel within current superpixel seed
+            pixel_positions: Nx3 array, N is the number of valid pixel within current superpixel seed
         Returns:
             norm_x,norm_y,norm_z: normal along x,y,z axes
             avg_x,avg_y,avg_z: average point (x,y,z), the center of the surfel
@@ -353,6 +353,7 @@ class SuperpixelExtraction():
 
         def sp_update(i, superpixel_seed):
             # Initialize superpixel cluster
+            # superpixel_center = (superpixel_seed.x,superpixel_seed.y)
             # self.initial_superpixel_cluster
 
             # Filter superpixel seed with valid number of depth value
@@ -360,6 +361,7 @@ class SuperpixelExtraction():
             #     continue
 
             # Huber Range Filter
+            # mean_depth = superpixel_seed.mean_depth
             # self.huber_filter
             # if (inlier_num / pixel_depth.size() < 0.8):
             #     continue
