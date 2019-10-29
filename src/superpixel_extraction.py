@@ -271,7 +271,7 @@ class SuperpixelExtraction():
             space_map: NxMx3 array of 3D points (x,y,z)
             norm_map: (N-1)x(M-1)x3 array of normalized norm along x,y,z axes
         Returns:
-            pixel_depth: 1xNx1 array, N is the number of valid pixel within current superpixel seed    
+            pixel_depths: 1xNx1 array, N is the number of valid pixel within current superpixel seed    
             pixel_norms: 1xNx3 array, N is the number of valid pixel within current superpixel seed
             pixel_positions: 1xNx3 array, N is the number of valid pixel within current superpixel seed
             max_dist: This is a distance in the image coordinate. The maximum distance of the border towards the center. 
@@ -279,31 +279,44 @@ class SuperpixelExtraction():
         """
         pass
 
-    def update_superpixel_cluster_with_huber(self, superpixel_cluster):
-        """
+    def huber_filter(self, mean_depth, pixel_depth):
+        """ Use Huber Kernel filter outliers.
         Arguments:
-            superpixel_cluster:
-
-        Returns:
-            update_superpixel_cluster: pixel_depth,pixel_norms, pixel_positions
             mean_depth:
-            [norm_x,norm_y,norm_z]:
-            [avg_x,avg_y,avg_z]:
-
+            pixel_depth:
+        Returns:
+            norm_x, norm_y, norm_z:
+            inlier_num:
+            pixel_inlier_positions:
         """
-
         pass
 
     def calc_view_cos(self, norm_x, norm_y, norm_z, avg_x, avg_y, avg_z):
         """
         Arguments:
             norm_x, norm_y, norm_z: normal along x,y,z axes
-            avg_x, avg_y, avg_z: average x,y,z point, the center of the surfel
+            avg_x, avg_y, avg_z: average point (x,y,z), the center of the surfel
         Returns:
             new_norm_x, new_norm_y, new_norm_z: surfel normal along x,y,z axes
             view_cos: cosine value between surfel normal and the surfel center vector
         """
         pass
+
+    def update_superpixel_cluster_with_huber(self, pixel_depths, pixel_norms, pixel_positions):
+        """
+        Arguments:
+            pixel_depths: 1xNx1 array, N is the number of valid pixel within current superpixel seed    
+            pixel_norms: 1xNx3 array, N is the number of valid pixel within current superpixel seed
+            pixel_positions: 1xNx3 array, N is the number of valid pixel within current superpixel seed
+        Returns:
+            norm_x,norm_y,norm_z: normal along x,y,z axes
+            avg_x,avg_y,avg_z: average point (x,y,z), the center of the surfel
+            view_cos: cosine value between surfel normal and the surfel center vector
+        """
+
+        pass
+
+
 
     def calculate_sp_depth_norms(self, pixels, superpixel_seeds, space_map, norm_map):
         """Calculate surfel vector from superpixel seeds.
@@ -314,18 +327,34 @@ class SuperpixelExtraction():
             space_map: NxMx3 array of 3D points (x,y,z)
             norm_map: NxMx3 array of normalized norm along x,y,z axes
         Returns:
-            update_superpixels: list of update SuperpixelSeed
+            new_superpixel_seeds: list of update SuperpixelSeed
 
         """
 
-        # Get pixel position and depth for pixel with valid depth.
-        # Filter pixels with depth value
+        def sp_update(i, superpixel_seed):
+            # Initialize superpixel cluster
+            # self.initial_superpixel_cluster
 
-        # Calculate Surfel Depth withHuber Norm
+            # Filter superpixel seed with valid number of depth value
+            # if (valid_depth_num < 16):
+            #     continue
 
-        # Generate View Cos
+            # Huber Range Filter
+            # self.huber_filter
+            # if (inlier_num / pixel_depth.size() < 0.8):
+            #     continue
 
-        pass
+            # Update superpixel cluster with huber
+            # self.update_superpixel_cluster_with_huber
+
+            # Create new superpixel_seed
+            # superpixel_seed = 
+            pass
+
+        # }
+        new_superpixel_seeds = [ sp_update(i, superpixel_seed) for i, superpixel_seed in enumerate(superpixel_seeds)]
+
+        return new_superpixel_seeds
 
 
 if __name__ == "__main__":
