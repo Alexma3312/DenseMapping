@@ -347,10 +347,23 @@ class SuperpixelExtraction():
             view_cos: cosine value between surfel normal and the surfel center vector
             mean_depth: mean depth of current superpoint seed 
         """
+        # TODO: Gerry, do we need this?
         center = np.mean(pixel_inlier_positions, axis=0)
-        norm = calc_huber_norm(center, pixel_inlier_positions, pixel_norms)
+        # Calculate Huber Normal
+        norm = calc_huber_norm(sum_norm, pixel_inlier_positions)
+        # back project
+        avg_x = (superpixel_center[0] - self.cx) / self.fx * mean_depth
+        avg_y = (superpixel_center[1] - self.cy) / self.fy * mean_depth
+        avg_z = mean_depth
+        # make sure the avg_x, avg_y, and avg_z are one the surfel
+        k = -1 * (avg_x * norm[0] + avg_y * norm[1] + avg_z * norm[2]) - norm[3]
+        avg_x += k * norm[0]
+        avg_y += k * norm[1]
+        avg_z += k * norm[2]
+        mean_depth = avg_z
+        # Calculate view cos and update norm
         norm, view_cos = self.calc_view_cos(norm, center)
-        return norm, center, view_cos
+        return norm, (avg_x, avg_y, avg_z), view_cos, mean_depth
 
     def calculate_sp_depth_norms(self, pixels, superpixel_seeds, space_map, norm_map):
         """Calculate surfel vector from superpixel seeds.
