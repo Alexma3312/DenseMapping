@@ -2,15 +2,13 @@
 Extract superpixels
 """
 
+import time
+from typing import Iterable, List
+
 import numpy as np
 
 from huber import calc_huber_norm
 from superpixel_seed import SuperpixelSeed
-import numpy as np
-from typing import Iterable, List
-
-
-import numpy as np
 
 
 class SuperpixelExtraction():
@@ -43,11 +41,18 @@ class SuperpixelExtraction():
         x = np.arange(self.im_width)
         y = np.arange(self.im_height)
         xx, yy = np.meshgrid(x, y)
-        distances = np.zeros((self.im_height, self.im_width, len(superpixels)))
+        distances = np.ones((self.im_height, self.im_width, len(superpixels))) * 1e99
         for idx, superpixel in enumerate(superpixels):
-            distances[:, :, idx] = ((xx - superpixel.x)**2 + (yy - superpixel.y)**2) / self.Ns \
-                + (self.image - superpixel.mean_intensity)**2 / self.Nc \
-                + (1.0 / self.depth - 1.0 / superpixel.mean_depth)**2 / self.Nd
+            valid = (xx >= 0) & (xx < self.im_width) & \
+                    (yy >= 0) & (yy < self.im_height) & \
+                    (xx > (superpixel.x - superpixel.size*1.5)) & \
+                    (xx < (superpixel.x + superpixel.size*1.5)) & \
+                    (yy > (superpixel.y - superpixel.size*1.5)) & \
+                    (yy < (superpixel.y + superpixel.size*1.5))
+            distances[valid, idx] = \
+                ((xx[valid] - superpixel.x)**2 + (yy[valid] - superpixel.y)**2) / self.Ns \
+                + (self.image[valid] - superpixel.mean_intensity)**2 / self.Nc \
+                + (1.0 / self.depth[valid] - 1.0 / superpixel.mean_depth)**2 / self.Nd
         return distances
 
     def extract_superpixels(self) -> List[SuperpixelSeed]:
@@ -59,7 +64,14 @@ class SuperpixelExtraction():
         Returns:
             superpixels: list of SuperpixelSeed
         """
-        return None
+        superpixels = self.init_seeds()
+        for _ in range(5):
+            superpixel_idx = self.assign_pixels(superpixels)
+            superpixels = self.update_seeds(superpixel_idx, superpixels)
+        
+        # norm update
+
+        return superpixels
 
     def init_seeds(self) -> List[SuperpixelSeed]:
         """Initializes the centers for the superpixels
@@ -68,7 +80,7 @@ class SuperpixelExtraction():
         Arguments:
             None
         Returns:
-            superpixels:    list of SuperpixelSeed, has correct x, y.  mean_depth
+            superpixels:    list of SuperpixelSeed, has correct x, y, size.  mean_depth
                 and mean_intensity are initialized to the value of the center pixel,
                 and the remaining properties are initialized to 0.
         """
@@ -77,7 +89,7 @@ class SuperpixelExtraction():
         for row in range(int(self.sp_size/2)-1, self.im_height, self.sp_size):
             for col in range(int(self.sp_size/2)-1, self.im_width, self.sp_size):
                 superpixels.append(SuperpixelSeed(
-                    col, row, 0, 0, 0, 0, 0, 0, 0, 0,
+                    col, row, self.sp_size/2*1.4142, 0, 0, 0, 0, 0, 0, 0,
                     self.depth[row, col], self.image[row,
                                                      col], False, False, 0, 0
                 ))
@@ -95,7 +107,9 @@ class SuperpixelExtraction():
                 each element in the array represents the index of the superpixel
                 which that pixel in the image is assigned to
         """
+        t = time.time()
         superpixel_idx = np.argmin(self.calc_distances(superpixels), axis=-1)
+        print("assigned pixels in\t{:0.3f}s".format(time.time()-t))
         return superpixel_idx
 
     def update_seeds(self, pixels, superpixels: Iterable[SuperpixelSeed]) -> List[SuperpixelSeed]:
@@ -110,27 +124,24 @@ class SuperpixelExtraction():
         Returns:
             superpixels:    list of SuperpixelSeed with updated positions
         """
-        import time
         t = time.time()
+        [col, row] = np.meshgrid(
+            np.arange(self.im_width), np.arange(self.im_height))
         for i, sp in enumerate(superpixels):
-            mask = pixels != i
+            mask = pixels == i
             # x/y
-            [col, row] = np.meshgrid(
-                np.arange(self.im_width), np.arange(self.im_height))
-            sp.y = np.ma.array(row, mask=mask).mean()
-            sp.x = np.ma.array(col, mask=mask).mean()
+            xs = col[mask]
+            ys = row[mask]
+            sp.y = np.mean(ys)
+            sp.x = np.mean(xs)
             # intensity/depth
-            sp.mean_intensity = np.ma.array(self.image, mask=mask).mean()
-            sp.mean_depth = np.ma.array(self.depth, mask=mask).mean()
+            sp.mean_intensity = np.mean(self.image[mask])
+            sp.mean_depth = np.mean(self.depth[mask])
             # size
-            maxDist = 0
-            valid_rows = np.ma.array(row, mask=mask).compressed()
-            valid_cols = np.ma.array(col, mask=mask).compressed()
-            xs = valid_cols - sp.x
-            ys = valid_rows - sp.y
-            dists2 = np.square(xs) + np.square(ys)
-            sp.size = np.sqrt(np.max(dists2))
-        print("updated seeds in {:0.3f}s".format(time.time() - t))
+            xs = xs - sp.x
+            ys = ys - sp.y
+            sp.size = np.sqrt(np.max(np.square(xs) + np.square(ys)))
+        print("updated seeds in\t{:0.3f}s".format(time.time() - t))
         return superpixels
 
     def calc_norms(self, pixels, superpixels):
