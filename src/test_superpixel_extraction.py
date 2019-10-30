@@ -302,42 +302,89 @@ class TestSuperpixelExtraction(unittest.TestCase):
         pixel_positions = np.array(
             [[0, 0, 1], [0, 0, 2], [0, 0, 2.3]]).reshape(3, 3)
         pixel_norms = np.array([[0, 0, 3], [0, 0, 4], [0, 0, 5]]).reshape(3, 3)
-        
+
         expected_norm = np.array([0, 0, 9])
         expected_inlier_num = 2
         expected_pixel_inlier_positions = np.array(
             [[0, 0, 2], [0, 0, 2.3]]).reshape(2, 3)
 
-        norm, inlier_num, pixel_inlier_positions = self.spExtractor.huber_filter(mean_depth, pixel_depth, pixel_norms, pixel_positions)
-        np.testing.assert_array_almost_equal(norm[0], expected_norm[0], err_msg="norm x is wrong ")
-        np.testing.assert_array_almost_equal(norm[1], expected_norm[1], err_msg="norm y is wrong ")
-        np.testing.assert_array_almost_equal(norm[2], expected_norm[2], err_msg="norm z is wrong ")
-        self.assertEqual(inlier_num, expected_inlier_num, "inlier num is wrong ")
+        norm, inlier_num, pixel_inlier_positions = self.spExtractor.huber_filter(
+            mean_depth, pixel_depth, pixel_norms, pixel_positions)
+        np.testing.assert_array_almost_equal(
+            norm[0], expected_norm[0], err_msg="norm x is wrong ")
+        np.testing.assert_array_almost_equal(
+            norm[1], expected_norm[1], err_msg="norm y is wrong ")
+        np.testing.assert_array_almost_equal(
+            norm[2], expected_norm[2], err_msg="norm z is wrong ")
+        self.assertEqual(inlier_num, expected_inlier_num,
+                         "inlier num is wrong ")
         np.testing.assert_array_almost_equal(
             pixel_inlier_positions, expected_pixel_inlier_positions, err_msg="Pixel_inlier_positions is wrong.")
 
     @unittest.skip("skip test_calc_view_cos")
     def test_calc_view_cos(self):
-        norm = np.array([2.,2.,1.])
-        avg = np.array([1,0,0])
+        norm = np.array([2., 2., 1.])
+        avg = np.array([1, 0, 0])
         expected_norm = np.array([2/3, 2/3, 1/3])
         expected_view_cos = 2/3
         newnorm, view_cos = self.spExtractor.calc_view_cos(norm, avg)
-        np.testing.assert_almost_equal(expected_norm, newnorm, err_msg="norm doesn't match")
-        np.testing.assert_almost_equal(expected_view_cos, view_cos, err_msg="view_cos doesn't match")
-        
-        newnorm, view_cos = self.spExtractor.calc_view_cos(norm, -avg)
-        np.testing.assert_almost_equal(expected_norm, -newnorm, err_msg="norm doesn't match")
-        np.testing.assert_almost_equal(expected_view_cos, view_cos, err_msg="view_cos doesn't match")
+        np.testing.assert_almost_equal(
+            expected_norm, newnorm, err_msg="norm doesn't match")
+        np.testing.assert_almost_equal(
+            expected_view_cos, view_cos, err_msg="view_cos doesn't match")
 
+        newnorm, view_cos = self.spExtractor.calc_view_cos(norm, -avg)
+        np.testing.assert_almost_equal(
+            expected_norm, -newnorm, err_msg="norm doesn't match")
+        np.testing.assert_almost_equal(
+            expected_view_cos, view_cos, err_msg="view_cos doesn't match")
 
     @unittest.skip("skip test_update_superpixel_cluster_with_hubers")
     def test_update_superpixel_cluster_with_hubers(self):
-        pass
+        sum_norm = []
+        pixel_inlier_positions = []
+        superpixel_center = []
+        mean_depth = []
+
+        expected_norm = []
+        expected_avg_x = []
+        expected_avg_y = []
+        expected_avg_z = []
+        expected_view_cos = []
+        expected_mean_depth = []
+
+        norm, (avg_x, avg_y, avg_z), view_cos, mean_depth = self.spExtractor.update_superpixel_cluster_with_huber(
+            sum_norm, pixel_inlier_positions, superpixel_center, mean_depth)
+        np.testing.assert_almost_equal(
+            expected_norm, norm, err_msg="norm doesn't match")
+        np.testing.assert_almost_equal(
+            expected_avg_x, avg_x, err_msg="avg_x doesn't match")
+        np.testing.assert_almost_equal(
+            expected_avg_y, avg_y, err_msg="avg_y doesn't match")
+        np.testing.assert_almost_equal(
+            expected_avg_z, avg_z, err_msg="avg_z doesn't match")
+        np.testing.assert_almost_equal(
+            expected_view_cos, view_cos, err_msg="view_cos doesn't match")
+        np.testing.assert_almost_equal(
+            expected_mean_depth, mean_depth, err_msg="mean_depth doesn't match")
 
     @unittest.skip("skip test_calculate_sp_depth_norms")
     def test_calculate_sp_depth_norms(self):
-        pass
+        pixels = []
+        superpixel_seeds = []
+        space_map = []
+        norm_map = []
+
+        expected_norm = []
+        expected_avg_x = []
+        expected_avg_y = []
+        expected_avg_z = []
+        expected_view_cos = []
+        expected_mean_depth = []
+        expected_superpixel_seed = []
+        expected_new_superpixel_seeds_length = 1
+        new_superpixel_seeds = self.spExtractor.calculate_sp_depth_norms(
+            pixels, superpixel_seeds, space_map, norm_map)
 
 
 if __name__ == '__main__':

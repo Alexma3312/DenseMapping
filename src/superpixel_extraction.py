@@ -413,6 +413,8 @@ class SuperpixelExtraction():
 
         new_superpixel_seeds = [sp_update(
             i, superpixel_seed) for i, superpixel_seed in enumerate(superpixel_seeds)]
+        # Filter None in the list  
+        new_superpixel_seeds = list(filter(None.__ne__, new_superpixel_seeds))
 
         return new_superpixel_seeds
 
