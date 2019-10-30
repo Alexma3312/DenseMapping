@@ -95,10 +95,7 @@ class SuperpixelExtraction():
                 each element in the array represents the index of the superpixel
                 which that pixel in the image is assigned to
         """
-        print("first", self.calc_distances(superpixels)[:, :, 0])
-        print("second", self.calc_distances(superpixels)[:, :, 1])
-        print("third", self.calc_distances(superpixels)[:, :, 2])
-        superpixel_idx = np.argmin(self.calc_distances(superpixels), axis=-1)
+        superpixel_idx = np.argmin(self.calc_distances(superpixels), axis = -1)   
         return superpixel_idx
 
     def update_seeds(self, pixels, superpixels: Iterable[SuperpixelSeed]) -> List[SuperpixelSeed]:
