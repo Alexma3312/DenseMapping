@@ -4,6 +4,7 @@ Extract superpixels
 
 import numpy as np
 
+from huber import calc_huber_norm
 from superpixel_seed import SuperpixelSeed
 import numpy as np
 from typing import Iterable, List
@@ -311,16 +312,21 @@ class SuperpixelExtraction():
         """
         pass
 
-    def calc_view_cos(self, norm_x, norm_y, norm_z, avg_x, avg_y, avg_z):
+    def calc_view_cos(self, norm, avg):
         """
         Arguments:
-            norm_x, norm_y, norm_z: normal along x,y,z axes
-            avg_x, avg_y, avg_z: average point (x,y,z), the center of the surfel
+            norm: normal along x,y,z axes (3-vector)
+            avg: average point (x,y,z), the center of the surfel (3-vector)
         Returns:
             new_norm_x, new_norm_y, new_norm_z: surfel normal along x,y,z axes
             view_cos: cosine value between surfel normal and the surfel center vector
         """
-        pass
+        norm = norm / np.linalg.norm(norm)
+        view_cos = np.dot(norm, avg) / np.linalg.norm(avg)
+        if (view_cos<0):
+            view_cos = -view_cos
+            norm = -norm
+        return norm, view_cos
 
     def update_superpixel_cluster_with_huber(self, pixel_depths, pixel_norms, pixel_positions):
         """
@@ -329,14 +335,14 @@ class SuperpixelExtraction():
             pixel_norms: Nx3 array, N is the number of valid pixel within current superpixel seed
             pixel_positions: Nx3 array, N is the number of valid pixel within current superpixel seed
         Returns:
-            norm_x,norm_y,norm_z: normal along x,y,z axes
-            avg_x,avg_y,avg_z: average point (x,y,z), the center of the surfel
+            norm: normal along x,y,z axes
+            avg: average point (x,y,z), the center of the surfel
             view_cos: cosine value between surfel normal and the surfel center vector
         """
-
-        pass
-
-
+        center = np.mean(pixel_positions, axis=0)
+        norm = calc_huber_norm(center, pixel_positions, pixel_norms)
+        norm, view_cos = self.calc_view_cos(norm, center)
+        return norm, center, view_cos
 
     def calculate_sp_depth_norms(self, pixels, superpixel_seeds, space_map, norm_map):
         """Calculate surfel vector from superpixel seeds.

@@ -304,10 +304,17 @@ class TestSuperpixelExtraction(unittest.TestCase):
         pass
 
     def test_calc_view_cos(self):
-        norm_x, norm_y, norm_z = 2, 3, 4
-        avg_x, avg_y, avg_z = 1, 2, 3
-        expected_norm_x, expected_norm_y, expected_norm_z = 2, 3, 4
-        expected_view_cos = 3
+        norm = np.array([2.,2.,1.])
+        avg = np.array([1,0,0])
+        expected_norm = np.array([2/3, 2/3, 1/3])
+        expected_view_cos = 2/3
+        newnorm, view_cos = self.spExtractor.calc_view_cos(norm, avg)
+        np.testing.assert_almost_equal(expected_norm, newnorm, err_msg="norm doesn't match")
+        np.testing.assert_almost_equal(expected_view_cos, view_cos, err_msg="view_cos doesn't match")
+        
+        newnorm, view_cos = self.spExtractor.calc_view_cos(norm, -avg)
+        np.testing.assert_almost_equal(expected_norm, -newnorm, err_msg="norm doesn't match")
+        np.testing.assert_almost_equal(expected_view_cos, view_cos, err_msg="view_cos doesn't match")
 
     @unittest.skip("skip test_calculate_sp_depth_norms")
     def test_calculate_sp_depth_norms(self):
