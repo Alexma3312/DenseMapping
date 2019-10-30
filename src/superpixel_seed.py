@@ -5,7 +5,7 @@ class SuperpixelSeed():
     def __init__(self, x, y, size, norm_x, norm_y, norm_z, position_x, position_y, position_z, view_cos, mean_depth, mean_intensity, fused, stable, min_eigen_value, max_eigen_value):
         """ Superpixel Seed Data Structure.
         Arguments:
-            x, y: center of the superpixel cluster
+            x, y: center of the superpixel cluster, x is the col mean and y is the row mean
             size: 
             norm_x, norm_y, norm_z: 
             posi_x, posi_y, posi_z: 
