@@ -26,6 +26,7 @@ def plot_sp(image, superpixel_idx, superpixels):
         [sp.x*image.shape[0]/superpixel_idx.shape[0] for sp in superpixels],
         [sp.y*image.shape[0]/superpixel_idx.shape[0] for sp in superpixels], s=1)
     plt.draw();plt.pause(0.001)
+    return image_sp
 
 def main():
 
@@ -52,15 +53,15 @@ def main():
     for _ in range(15):
         superpixel_idx = spExtractor.assign_pixels(superpixels)
         superpixels = spExtractor.update_seeds(superpixel_idx, superpixels)
-        # plt.subplot(1,2,1).clear()
-        # plot_sp(image, superpixel_idx, superpixels)
+    # superpixels = spExtractor.calc_norms(superpixel_idx, superpixels)
+
+    # plotting
     plt.subplot(1,2,1)
-    plot_sp(image_full, superpixel_idx, superpixels)
+    image_sp = plot_sp(image_full, superpixel_idx, superpixels)
     plt.subplot(1,2,2)
-    plot_sp(depth_full, superpixel_idx, superpixels)
-
-
-    # TODO: norm update
+    depth_sp = plot_sp(depth_full, superpixel_idx, superpixels)
+    plt.imsave('../dataset/results/superpixels_rgb', image_sp)
+    plt.imsave('../dataset/results/superpixels_depth', depth_sp)
 
     print('done!')
 

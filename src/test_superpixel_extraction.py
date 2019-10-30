@@ -159,7 +159,8 @@ class TestSuperpixelExtraction(unittest.TestCase):
                                    msg="depth not initialized properly")
             self.assertAlmostEqual(superpixel.mean_intensity, expected_init_intensities[index],
                                    msg="intensity not initialized properly")
-            self.assertEqual(superpixel.size, 0, "size should be init to 0")
+            self.assertAlmostEqual(superpixel.size, 14.142135, places=2,
+                                   msg="size should be sqrt(2)*init_radius")
             passed[index] = True
 
         for elem in passed:

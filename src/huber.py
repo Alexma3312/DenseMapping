@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize import minimize
 
-import gtsam
+# import gtsam
 
 def calc_huber_norm(center, points, norms, bias=0, huber_radius=0.4):
     """Calculate the normal vector for a superpixel using huber loss on pixel

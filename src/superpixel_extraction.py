@@ -29,32 +29,6 @@ class SuperpixelExtraction():
         self.Nd = weights['Nd']
         self.sp_size = sp_size
 
-    def calc_distances(self, superpixels):
-        """calculate distances between each pixel to all the superpixels
-        Member dependencies:
-            image, depth
-        Arguments:
-            superpixels: list of SuperpixelSeed 
-        Returns:
-            distances: N*M*K numpy array (N*M is image size, K: number of SuperpixelSeed)
-        """
-        x = np.arange(self.im_width)
-        y = np.arange(self.im_height)
-        xx, yy = np.meshgrid(x, y)
-        distances = np.ones((self.im_height, self.im_width, len(superpixels))) * 1e99
-        for idx, superpixel in enumerate(superpixels):
-            valid = (xx >= 0) & (xx < self.im_width) & \
-                    (yy >= 0) & (yy < self.im_height) & \
-                    (xx > (superpixel.x - superpixel.size*1.5)) & \
-                    (xx < (superpixel.x + superpixel.size*1.5)) & \
-                    (yy > (superpixel.y - superpixel.size*1.5)) & \
-                    (yy < (superpixel.y + superpixel.size*1.5))
-            distances[valid, idx] = \
-                ((xx[valid] - superpixel.x)**2 + (yy[valid] - superpixel.y)**2) / self.Ns \
-                + (self.image[valid] - superpixel.mean_intensity)**2 / self.Nc \
-                + (1.0 / self.depth[valid] - 1.0 / superpixel.mean_depth)**2 / self.Nd
-        return distances
-
     def extract_superpixels(self) -> List[SuperpixelSeed]:
         """Extracts superpixels from an RGB image and depth image
         Member dependencies:
@@ -69,6 +43,7 @@ class SuperpixelExtraction():
             superpixel_idx = self.assign_pixels(superpixels)
             superpixels = self.update_seeds(superpixel_idx, superpixels)
         
+        superpixels = self.calc_norms(superpixel_idx, superpixels)
         # norm update
 
         return superpixels
@@ -155,7 +130,36 @@ class SuperpixelExtraction():
         Returns:
             superpixels:    list of SuperpixelSeed with updated norms
         """
-        return None
+        space_map = self.calculate_spaces()
+        norm_map = self.calculate_pixels_norms(space_map)
+        return self.calculate_sp_depth_norms(pixels, superpixels, space_map, norm_map)
+
+    # ****************************************************************
+    # Sub functions for assigning pixels to superpixel centers
+    # ****************************************************************
+    def calc_distances(self, superpixels):
+        """calculate distances between each pixel to all the superpixels
+        Member dependencies:
+            image, depth
+        Arguments:
+            superpixels: list of SuperpixelSeed 
+        Returns:
+            distances: N*M*K numpy array (N*M is image size, K: number of SuperpixelSeed)
+        """
+        x = np.arange(self.im_width)
+        y = np.arange(self.im_height)
+        xx, yy = np.meshgrid(x, y)
+        distances = np.ones((self.im_height, self.im_width, len(superpixels))) * 1e99
+        for idx, superpixel in enumerate(superpixels):
+            valid = (xx > (superpixel.x - superpixel.size*1.5)) & \
+                    (xx < (superpixel.x + superpixel.size*1.5)) & \
+                    (yy > (superpixel.y - superpixel.size*1.5)) & \
+                    (yy < (superpixel.y + superpixel.size*1.5))
+            distances[valid, idx] = \
+                ((xx[valid] - superpixel.x)**2 + (yy[valid] - superpixel.y)**2) / self.Ns \
+                + (self.image[valid] - superpixel.mean_intensity)**2 / self.Nc \
+                + (1.0 / self.depth[valid] - 1.0 / superpixel.mean_depth)**2 / self.Nd
+        return distances
 
     # ****************************************************************
     # Sub functions for Calculating the Norms
@@ -428,7 +432,6 @@ class SuperpixelExtraction():
         new_superpixel_seeds = list(filter(None.__ne__, new_superpixel_seeds))
 
         return new_superpixel_seeds
-
 
 if __name__ == "__main__":
     pass
