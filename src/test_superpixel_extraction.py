@@ -261,7 +261,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
     @unittest.skip("skip test_get_huber_norm")
     def test_get_huber_norm(self):
         pass
-    
+
     @unittest.skip("skip test_initial_superpixel_cluster")
     def test_initial_superpixel_cluster(self):
         superpixel_seed_index = 1
@@ -275,9 +275,11 @@ class TestSuperpixelExtraction(unittest.TestCase):
                              0, 0, 5], [0, 0, 6]], [[0, 0, 7], [0, 0, 8], [0, 0, 9]]])
         norm_map = np.array([[[0, 0, 3], [0, 0, 4]], [[0, 0, 0.1], [0, 0, 5]]])
 
-        expected_pixel_depth = np.array([[1], [2], [5]]).reshape(3,1)
-        expected_pixel_norms = np.array([[0, 0, 3], [0, 0, 4], [0, 0, 5]]).reshape(3,3)
-        expected_pixel_positions = np.array([[0, 0, 1], [0, 0, 2], [0, 0, 5]]).reshape(3,3)
+        expected_pixel_depth = np.array([[1], [2], [5]]).reshape(3, 1)
+        expected_pixel_norms = np.array(
+            [[0, 0, 3], [0, 0, 4], [0, 0, 5]]).reshape(3, 3)
+        expected_pixel_positions = np.array(
+            [[0, 0, 1], [0, 0, 2], [0, 0, 5]]).reshape(3, 3)
         expected_max_dist = 2
         expected_valid_depth_num = 3
 
@@ -293,18 +295,28 @@ class TestSuperpixelExtraction(unittest.TestCase):
         self.assertEqual(valid_depth_num, expected_valid_depth_num,
                          "Valid depth num is wrong ")
 
+    @unittest.skip("skip test_huber_filter")
     def test_huber_filter(self):
-        mean_depth = []
-        pixel_depth = []
-        pixel_positions = []
-        # self.huber_filter(mean_depth, pixel_depth, pixel_positions)
+        mean_depth = 2.3
+        pixel_depth = np.array([[1], [2], [2.3]]).reshape(3, 1)
+        pixel_positions = np.array(
+            [[0, 0, 1], [0, 0, 2], [0, 0, 2.3]]).reshape(3, 3)
+        pixel_norms = np.array([[0, 0, 3], [0, 0, 4], [0, 0, 5]]).reshape(3, 3)
+        
+        expected_norm = np.array([0, 0, 9])
+        expected_inlier_num = 2
+        expected_pixel_inlier_positions = np.array(
+            [[0, 0, 2], [0, 0, 2.3]]).reshape(2, 3)
 
-        expected_norm_x, expected_norm_y, expected_norm_z = 1,2,3
-        expected_inlier_num = 1
-        expected_pixel_inlier_positions = []
+        norm, inlier_num, pixel_inlier_positions = self.spExtractor.huber_filter(mean_depth, pixel_depth, pixel_norms, pixel_positions)
+        np.testing.assert_array_almost_equal(norm[0], expected_norm[0], err_msg="norm x is wrong ")
+        np.testing.assert_array_almost_equal(norm[1], expected_norm[1], err_msg="norm y is wrong ")
+        np.testing.assert_array_almost_equal(norm[2], expected_norm[2], err_msg="norm z is wrong ")
+        self.assertEqual(inlier_num, expected_inlier_num, "inlier num is wrong ")
+        np.testing.assert_array_almost_equal(
+            pixel_inlier_positions, expected_pixel_inlier_positions, err_msg="Pixel_inlier_positions is wrong.")
 
-        pass
-
+    @unittest.skip("skip test_calc_view_cos")
     def test_calc_view_cos(self):
         norm = np.array([2.,2.,1.])
         avg = np.array([1,0,0])
@@ -317,6 +329,11 @@ class TestSuperpixelExtraction(unittest.TestCase):
         newnorm, view_cos = self.spExtractor.calc_view_cos(norm, -avg)
         np.testing.assert_almost_equal(expected_norm, -newnorm, err_msg="norm doesn't match")
         np.testing.assert_almost_equal(expected_view_cos, view_cos, err_msg="view_cos doesn't match")
+
+
+    @unittest.skip("skip test_update_superpixel_cluster_with_hubers")
+    def test_update_superpixel_cluster_with_hubers(self):
+        pass
 
     @unittest.skip("skip test_calculate_sp_depth_norms")
     def test_calculate_sp_depth_norms(self):
