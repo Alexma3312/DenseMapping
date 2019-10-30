@@ -349,7 +349,7 @@ class SuperpixelExtraction():
         """
         # TODO: Gerry, do we need this?
         center = np.mean(pixel_inlier_positions, axis=0)
-        # Calculate Huber Normal
+        # Calculate Huber Normal, norm should include norm_x,norm_y,norm_z,and norm_b
         norm = calc_huber_norm(sum_norm, pixel_inlier_positions)
         # back project
         avg_x = (superpixel_center[0] - self.cx) / self.fx * mean_depth
