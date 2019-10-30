@@ -95,7 +95,7 @@ class SuperpixelExtraction():
                 each element in the array represents the index of the superpixel
                 which that pixel in the image is assigned to
         """
-        superpixel_idx = np.argmin(self.calc_distances(superpixels), axis = -1)   
+        superpixel_idx = np.argmin(self.calc_distances(superpixels), axis=-1)
         return superpixel_idx
 
     def update_seeds(self, pixels, superpixels: Iterable[SuperpixelSeed]) -> List[SuperpixelSeed]:
@@ -295,11 +295,11 @@ class SuperpixelExtraction():
         pixel_norms = norm_map[~mask[:-1, :-1]].reshape(valid_depth_num, 3)
         return pixel_depths, pixel_norms, pixel_positions, max_dist, valid_depth_num
 
-    def huber_filter(self, mean_depth, pixel_depth, pixel_norms, pixel_positions, HUBER_RANGE=0.4):
+    def huber_filter(self, mean_depth, pixel_depths, pixel_norms, pixel_positions, HUBER_RANGE=0.4):
         """ Use Huber Kernel filter outliers.
         Arguments:
             mean_depth: mean depth of current superpoint seed 
-            pixel_depth: Nx1 array, N is the number of valid pixel within current superpixel seed
+            pixel_depths: Nx1 array, N is the number of valid pixel within current superpixel seed
             pixel_norms: Nx3 array, N is the number of valid pixel within current superpixel seed
             pixel_positions: Nx3 array, N is the number of valid pixel within current superpixel seed 
         Returns:
@@ -307,15 +307,15 @@ class SuperpixelExtraction():
             inlier_num: the number of valid points
             pixel_inlier_positions: Nx3 array, N is the number of valid pixel within current superpixel seed
         """
-        residual = mean_depth - pixel_depth
-        mask1 = residual < HUBER_RANGE 
+        residual = mean_depth - pixel_depths
+        mask1 = residual < HUBER_RANGE
         mask2 = residual > -HUBER_RANGE
         mask = np.multiply(mask1, mask2)
         inlier_num = np.sum(mask)
-        mask = np.tile(mask,(1,3))
-        pixel_norms = pixel_norms[mask].reshape(inlier_num,3)
-        norm = np.sum(pixel_norms, axis = 0)
-        pixel_inlier_positions = pixel_positions[mask].reshape(inlier_num,3)
+        mask = np.tile(mask, (1, 3))
+        pixel_norms = pixel_norms[mask].reshape(inlier_num, 3)
+        norm = np.sum(pixel_norms, axis=0)
+        pixel_inlier_positions = pixel_positions[mask].reshape(inlier_num, 3)
         return norm, inlier_num, pixel_inlier_positions
 
     def calc_view_cos(self, norm, avg):
@@ -329,24 +329,26 @@ class SuperpixelExtraction():
         """
         norm = norm / np.linalg.norm(norm)
         view_cos = np.dot(norm, avg) / np.linalg.norm(avg)
-        if (view_cos<0):
+        if (view_cos < 0):
             view_cos = -view_cos
             norm = -norm
         return norm, view_cos
 
-    def update_superpixel_cluster_with_huber(self, pixel_depths, pixel_norms, pixel_positions):
+    def update_superpixel_cluster_with_huber(self, sum_norm, pixel_inlier_positions, superpixel_center, mean_depth):
         """
         Arguments:
-            pixel_depths: Nx1 array, N is the number of valid pixel within current superpixel seed    
-            pixel_norms: Nx3 array, N is the number of valid pixel within current superpixel seed
-            pixel_positions: Nx3 array, N is the number of valid pixel within current superpixel seed
+            sum_norm: 1x3 array
+            pixel_inlier_positions: Nx3 array, N is the number of valid pixel within current superpixel seed
+            superpixel_center:(x,y)
+            mean_depth: mean depth of current superpoint seed 
         Returns:
             norm: normal along x,y,z axes
             avg: average point (x,y,z), the center of the surfel
             view_cos: cosine value between surfel normal and the surfel center vector
+            mean_depth: mean depth of current superpoint seed 
         """
-        center = np.mean(pixel_positions, axis=0)
-        norm = calc_huber_norm(center, pixel_positions, pixel_norms)
+        center = np.mean(pixel_inlier_positions, axis=0)
+        norm = calc_huber_norm(center, pixel_inlier_positions, pixel_norms)
         norm, view_cos = self.calc_view_cos(norm, center)
         return norm, center, view_cos
 
@@ -365,27 +367,37 @@ class SuperpixelExtraction():
 
         def sp_update(i, superpixel_seed):
             # Initialize superpixel cluster
-            # superpixel_center = (superpixel_seed.x,superpixel_seed.y)
-            # self.initial_superpixel_cluster
+            superpixel_center = (superpixel_seed.x, superpixel_seed.y)
+            pixel_depths, pixel_norms, pixel_positions, max_dist, valid_depth_num = self.initial_superpixel_cluster(
+                self, superpixel_center, i, pixels, space_map, norm_map)
 
             # Filter superpixel seed with valid number of depth value
-            # if (valid_depth_num < 16):
-            #     continue
+            if (valid_depth_num < 16):
+                pass
 
             # Huber Range Filter
-            # mean_depth = superpixel_seed.mean_depth
-            # self.huber_filter
-            # if (inlier_num / pixel_depth.size() < 0.8):
-            #     continue
+            mean_depth = superpixel_seed.mean_depth
+            sum_norm, inlier_num, pixel_inlier_positions = self.huber_filter(mean_depth, pixel_depths,
+                                                                             pixel_norms, pixel_positions)
+            if (inlier_num / pixel_depths.shape[0] < 0.8):
+                pass
 
             # Update superpixel cluster with huber
-            # self.update_superpixel_cluster_with_huber
+            norm, view_cos, center, mean_depth = self.update_superpixel_cluster_with_huber(
+                sum_norm, pixel_inlier_positions, superpixel_center, mean_depth)
 
             # Create new superpixel_seed
-            # superpixel_seed =
-            pass
+            superpixel_seed.norm_x = norm[0]
+            superpixel_seed.norm_y = norm[1]
+            superpixel_seed.norm_z = norm[2]
+            superpixel_seed.posi_x = center[0]
+            superpixel_seed.posi_y = center[1]
+            superpixel_seed.posi_z = center[2]
+            superpixel_seed.mean_depth = mean_depth
+            superpixel_seed.view_cos = view_cos
+            superpixel_seed.size = np.sqrt(max_dist)
+            return superpixel_seed
 
-        # }
         new_superpixel_seeds = [sp_update(
             i, superpixel_seed) for i, superpixel_seed in enumerate(superpixel_seeds)]
 
