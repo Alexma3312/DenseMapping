@@ -11,6 +11,10 @@ from huber import calc_huber_norm
 from superpixel_seed import SuperpixelSeed
 
 
+import numpy as np
+from scipy.optimize import minimize
+
+
 class SuperpixelExtraction():
 
     def __init__(self, image, depth, camera_parameters,
@@ -41,7 +45,8 @@ class SuperpixelExtraction():
         x = np.arange(self.im_width)
         y = np.arange(self.im_height)
         xx, yy = np.meshgrid(x, y)
-        distances = np.ones((self.im_height, self.im_width, len(superpixels))) * 1e99
+        distances = np.ones(
+            (self.im_height, self.im_width, len(superpixels))) * 1e99
         for idx, superpixel in enumerate(superpixels):
             valid = (xx >= 0) & (xx < self.im_width) & \
                     (yy >= 0) & (yy < self.im_height) & \
@@ -52,7 +57,8 @@ class SuperpixelExtraction():
             distances[valid, idx] = \
                 ((xx[valid] - superpixel.x)**2 + (yy[valid] - superpixel.y)**2) / self.Ns \
                 + (self.image[valid] - superpixel.mean_intensity)**2 / self.Nc \
-                + (1.0 / self.depth[valid] - 1.0 / superpixel.mean_depth)**2 / self.Nd
+                + (1.0 / self.depth[valid] - 1.0 /
+                   superpixel.mean_depth)**2 / self.Nd
         return distances
 
     def extract_superpixels(self) -> List[SuperpixelSeed]:
@@ -68,7 +74,7 @@ class SuperpixelExtraction():
         for _ in range(5):
             superpixel_idx = self.assign_pixels(superpixels)
             superpixels = self.update_seeds(superpixel_idx, superpixels)
-        
+
         # norm update
 
         return superpixels
@@ -155,7 +161,11 @@ class SuperpixelExtraction():
         Returns:
             superpixels:    list of SuperpixelSeed with updated norms
         """
-        return None
+        space_map = self.calculate_spaces()
+        norm_map = self.calculate_pixels_norms(space_map)
+        superpixels = self.calculate_sp_depth_norms(
+            pixels, superpixels, space_map, norm_map)
+        return superpixels
 
     # ****************************************************************
     # Sub functions for Calculating the Norms
@@ -252,21 +262,39 @@ class SuperpixelExtraction():
     # Sub functions for calculate_sp_depth_norms
     # ****************************************************************
 
-    def get_huber_norm(self, gn_nx, gn_ny, gn_nz, gn_nb, pixel_inlier_positions):
+    def get_huber_norm(self, pixel_inlier_norms, pixel_inlier_positions, bias=np.array([0]), huber_radius=0.4):
         """Re-estimate norm through Gauss-Newton iterations.
         Arguments:
-            gn_nx: normal along x for Gauss-Newton initialization
-            gn_ny: normal along y for Gauss-Newton initialization
-            gn_nz: normal along z for Gauss-Newton initialization 
-            gn_nb: bias for Gauss-Newton initialization
-            pixel_inlier_positions:
+            initial_norm: normal along x,y,z for Gauss-Newton initialization
+            pixel_inlier_positions: 3d inlier points, Nx3 array
         Returns:
-            norm_x: normal along x 
-            norm_y: normal along y
-            norm_z: normal along z 
-            norm_b: bias
+            norm: normal along x,y,z and the bias norm, vector 1x4 
+        This based on Huber.py calc_huber_norm.
         """
-        pass
+
+        # Get center of 3D points
+        center = np.mean(pixel_inlier_positions, axis=0)
+        # initialize norm
+        initNorm = np.mean(pixel_inlier_norms, axis=0)
+        initNorm = initNorm / np.linalg.norm(initNorm)
+        initNorm = np.concatenate((initNorm, bias), axis=0)
+        # optimize
+        points = pixel_inlier_positions-center
+
+        def f(norm):
+            toRet = np.sum(
+                np.square(
+                    np.maximum(
+                        np.minimum(
+                            norm[:3].dot(points.transpose())+norm[3], huber_radius), -huber_radius)))
+            return toRet
+
+        def c(norm):
+            return np.linalg.norm(norm[:3])-1
+        constr = {'type': 'eq', 'fun': c}
+        sol = minimize(f, initNorm, constraints=constr, tol=0.0001)
+        norm = sol.x
+        return norm
 
     def initial_superpixel_cluster(self, superpixel_center, superpixel_seed_index, pixels, space_map, norm_map):
         """ Generate superpixel pixels
@@ -358,8 +386,6 @@ class SuperpixelExtraction():
             view_cos: cosine value between surfel normal and the surfel center vector
             mean_depth: mean depth of current superpoint seed 
         """
-        # TODO: Gerry, do we need this?
-        center = np.mean(pixel_inlier_positions, axis=0)
         # Calculate Huber Normal, norm should include norm_x,norm_y,norm_z,and norm_b
         norm = calc_huber_norm(sum_norm, pixel_inlier_positions)
         # back project
@@ -367,13 +393,14 @@ class SuperpixelExtraction():
         avg_y = (superpixel_center[1] - self.cy) / self.fy * mean_depth
         avg_z = mean_depth
         # make sure the avg_x, avg_y, and avg_z are one the surfel
-        k = -1 * (avg_x * norm[0] + avg_y * norm[1] + avg_z * norm[2]) - norm[3]
+        k = -1 * (avg_x * norm[0] + avg_y *
+                  norm[1] + avg_z * norm[2]) - norm[3]
         avg_x += k * norm[0]
         avg_y += k * norm[1]
         avg_z += k * norm[2]
         mean_depth = avg_z
         # Calculate view cos and update norm
-        norm, view_cos = self.calc_view_cos(norm, center)
+        norm, view_cos = self.calc_view_cos(norm, (avg_x, avg_y, avg_z))
         return norm, (avg_x, avg_y, avg_z), view_cos, mean_depth
 
     def calculate_sp_depth_norms(self, pixels, superpixel_seeds, space_map, norm_map):
@@ -420,11 +447,15 @@ class SuperpixelExtraction():
             superpixel_seed.mean_depth = mean_depth
             superpixel_seed.view_cos = view_cos
             superpixel_seed.size = np.sqrt(max_dist)
+
+            # TODO:Surfel size
+            # surfel_size =
+
             return superpixel_seed
 
         new_superpixel_seeds = [sp_update(
             i, superpixel_seed) for i, superpixel_seed in enumerate(superpixel_seeds)]
-        # Filter None in the list  
+        # Filter None in the list
         new_superpixel_seeds = list(filter(None.__ne__, new_superpixel_seeds))
 
         return new_superpixel_seeds

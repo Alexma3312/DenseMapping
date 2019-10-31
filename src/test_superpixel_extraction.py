@@ -258,9 +258,17 @@ class TestSuperpixelExtraction(unittest.TestCase):
         np.testing.assert_array_almost_equal(
             actual_pixels_norms, expected_pixels_norms, err_msg="Return Result test fail.")
 
-    @unittest.skip("skip test_get_huber_norm")
+    # @unittest.skip("skip test_get_huber_norm")
     def test_get_huber_norm(self):
-        pass
+        pixelNorms = np.array([[1,0,0],[0,1,0],[1,0,0],[0.99,0.141,0]])
+        pixelLocs = np.array([[1,3,0], [1,1,0], [1.1,5,5], [0.9,-1, -5]])
+        centerLoc = np.array([1,2,0])
+        expected_norm = np.array([1,0,0,0])
+        norm = self.spExtractor.get_huber_norm(pixelNorms, pixelLocs)
+        np.testing.assert_array_almost_equal(
+            norm[:3], expected_norm[:3], decimal=1 , err_msg="Return Norm test fail.")
+        np.testing.assert_array_almost_equal(
+            norm[3], expected_norm[3], err_msg="Return Bias test fail.")
 
     @unittest.skip("skip test_initial_superpixel_cluster")
     def test_initial_superpixel_cluster(self):
