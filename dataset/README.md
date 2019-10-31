@@ -5,3 +5,5 @@ centerX = 319.5
 centerY = 239.5
 scalingFactor = 5000.0
 
+Width: 640
+Height:480
