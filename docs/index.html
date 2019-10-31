@@ -64,12 +64,14 @@ October 31, 2019
 <p>The number of times that step 2 is repeated depends on the image. For example, the ICL-NIUM dataset image requires only 10 iterations or so to stabilize, but the KITTI dataset image requires roughly 25 to stabilize. One metric that can potentially be used in the future as a stopping criteria is the sum of distances traveled by the superpixels from one iteration to the next. The superpixel iteration is complete when they sufficiently small changes occur from one iteration to the next.</p>
 <h4 id="surfel-generation">Surfel Generation</h4>
 <!-- norm calculation -->
+<p>We are in the process of calculating the norm which is needed for surfel generation. We expect to complete this very soon.</p>
 <h3 id="qualitative-results">Qualitative results</h3>
 <!-- Show several visual examples of inputs/outputs of your system (success cases and failures) that help us better understand your approach. -->
 <p>The images below demonstrate that the superpixels are indeed segmenting properly as they tend to “hug” similarly colored/depthed regions.</p>
 <p><img src="./results/superpixels/kitti_superpixels_rgb.png" style="width:100.0%" alt="superpixel annotation on RGB image" /> <img src="./results/superpixels/kitti_superpixels_depth.png" style="width:100.0%" alt="superpixel annotation on depth image" /></p>
 <h3 id="conclusion-and-future-work">Conclusion and future work</h3>
 <!-- Conclusion would likely make the same points as the abstract. Discuss any future ideas you have to make your approach better. -->
+<p>We will recreate the results of <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense" role="doc-biblioref">2</a>]</span> by creating a surfel cloud given RGBD images and camera poses.</p>
 <h3 id="references">References</h3>
 <!-- List out all the references you have used for your work -->
 <div id="refs" class="references" role="doc-bibliography">

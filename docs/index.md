@@ -121,6 +121,8 @@ iteration to the next.
 
 #### Surfel Generation
 <!-- norm calculation -->
+We are in the process of calculating the norm which is needed for surfel
+generation.  We expect to complete this very soon.
 
 ### Qualitative results
 <!-- Show several visual examples of inputs/outputs of your system (success cases and failures) that help us better understand your approach. -->
@@ -133,6 +135,8 @@ image](./results/superpixels/kitti_superpixels_depth.png){width=100%}
 
 ### Conclusion and future work
 <!-- Conclusion would likely make the same points as the abstract. Discuss any future ideas you have to make your approach better. -->
+We will recreate the results of [@Wang19icra_surfelDense] by creating a surfel
+cloud given RGBD images and camera poses.
 
 ### References
 <!-- List out all the references you have used for your work -->
