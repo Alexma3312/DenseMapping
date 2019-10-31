@@ -6,7 +6,7 @@ class SuperpixelSeed():
         """ Superpixel Seed Data Structure.
         Arguments:
             x, y: center of the superpixel cluster, x is the col mean and y is the row mean
-            size: 
+            size: the number of pixels
             norm_x, norm_y, norm_z: 
             posi_x, posi_y, posi_z: 
             view_cos: 
