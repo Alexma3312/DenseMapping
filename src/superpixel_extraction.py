@@ -198,7 +198,7 @@ class SuperpixelExtraction():
         col = np.expand_dims(col, axis=2)
         row = np.expand_dims(row, axis=2)
         depth = np.expand_dims(depth, axis=2)
-        space_map = np.concatenate((row, col, depth), axis=2)
+        space_map = np.concatenate(( col, row,depth), axis=2)
         return space_map
 
     def calculate_pixels_norms(self, space_map, MAX_ANGLE_COS=0.1):
