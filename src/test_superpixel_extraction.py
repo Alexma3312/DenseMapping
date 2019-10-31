@@ -226,7 +226,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         self.spExtractor.cx = self.spExtractor.im_width/2
         self.spExtractor.cy = self.spExtractor.im_height/2
         expected_space_map = np.array(
-            [[[-2, -3, 2], [-2, -1, 2], [-2, 1, 2]], [[0, -4.5, 3], [0, -1.5, 3], [0, 1.5, 3]]])
+            [[[-3, -2, 2], [-1, -2, 2], [1, -2, 2]], [[-4.5, 0, 3], [-1.5, 0, 3], [1.5, 0, 3]]])
         actual_space_map = self.spExtractor.calculate_spaces()
         actual_shape = actual_space_map.shape
         self.assertEqual(np.array_equal(actual_space_map,
