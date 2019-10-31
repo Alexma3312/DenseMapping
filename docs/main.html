@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>main</title>
+  <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="./main.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="cs6476-final-project">CS6476 Final Project</h1>
+<h2 id="dense-mapping-using-feature-matching-and-superpixel-clustering">Dense Mapping using Feature Matching and Superpixel Clustering</h2>
+<p>Mandy Xie, Shicong Ma, Gerry Chen</p>
+<p>October 31, 2019</p>
+<h3 id="abstract">Abstract</h3>
+<!-- One or two sentences on the motivation behind the problem you are solving. One or two sentences describing the approach you took. One or two sentences on the main result you obtained. -->
+<h3 id="teaser-figure">Teaser figure</h3>
+<!-- A figure that conveys the main idea behind the project or the main application being addressed. -->
+<p><img src="../dataset/results/kitti_superpixels_rgb.gif" style="width:100.0%" alt="superpixel annotation on RGB image" /> <img src="../dataset/results/kitti_superpixels_depth.gif" style="width:100.0%" alt="superpixel annotation on depth image" /></p>
+<h3 id="introduction">Introduction</h3>
+<!-- Motivation behind the problem you are solving, what applications it has, any brief background on the particular domain you are working in (if not regular RBG photographs), etc. If you are using a new way to solve an existing problem, briefly mention and describe the existing approaches and tell us how your approach is new. -->
+<p>One of the fundamental tasks for robot autonomous navigation is to perceive and digitalize the surrounding 3D environment <span class="citation" data-cites="handa2014benchmark">[@handa2014benchmark]</span>. To be usable in mobile robot applications, the mapping system needs to fast and densely recover the environment in order to provide sufficient information for navigation.</p>
+<p>Unlike other 3d reconstruction methods that reconstructs the environment as a 3D point cloud, we hope to extract surfels  based on extracted superpixels from intensity and depth images and construct a surfel cloud. This approach is introduced by <span class="citation" data-cites="Wang19icra_surfelDense">[@Wang19icra_surfelDense]</span> which can greatly reduces the memory burden of mapping system when applied to large-scale missions. More importantly, outliers and noise from low-quality depth maps can be reduced based on extracted superpixels.</p>
+<p>The <strong>goal</strong> of our project is to reproduce results of Wang et al’s, namely implementing superpixel extraction, surfel initialization, and surfel fusion to generate a surfel-based reconstruction given a camera poses from a sparse SLAM implementation. The <strong>input</strong> to our system is an RGB-D video stream with accompanying camera poses and the <strong>output</strong> is a surfel cloud map of the environment, similar to Figures 4b or 8 of the original paper <span class="citation" data-cites="Wang19icra_surfelDense">[@Wang19icra_surfelDense]</span>.</p>
+<h3 id="approach">Approach</h3>
+<p>The idea behind dense mapping is to first generate frame related poses, then reconstruct the dense map based on pre-generated poses and surfels.</p>
+<ol type="1">
+<li><p>Select a RGB-D dataset <span class="citation" data-cites="handa2014benchmark">[@handa2014benchmark,sturm12iros_TUM,Menze2015CVPR_KITTI]</span></p></li>
+<li><p>Read pose information from the dataset / Use a sparse SLAM system (VINS <span class="citation" data-cites="qin2018vins">[@qin2018vins]</span>/ORB-SLAM2 <span class="citation" data-cites="mur2017orb">[@mur2017orb]</span>) to estimate camera poses</p></li>
+<li><p><strong>(Suggested implementation)</strong> – Single frame Superpixels extraction from RGB-D images using a k-means approach adapted from SLIC <span class="citation" data-cites="achanta2012slic">[@achanta2012slic]</span> - IV.D section in <span class="citation" data-cites="Wang19icra_surfelDense">[@Wang19icra_surfelDense]</span></p></li>
+<li><p><strong>(Suggested implementation)</strong> – Single frame surfel generation based on extracted superpixels. - IV.E section in <span class="citation" data-cites="Wang19icra_surfelDense">[@Wang19icra_surfelDense]</span></p></li>
+<li><p><strong>(Suggested implementation)</strong> – Surfel fusion and Surfel Cloud update. - IV.G section in <span class="citation" data-cites="Wang19icra_surfelDense">[@Wang19icra_surfelDense]</span></p></li>
+</ol>
+<!-- 6. 3D mesh with surfel cloud. -->
+<h3 id="experiments-and-results">Experiments and results</h3>
+<!-- Provide details about the experimental set up (number of images/videos, number of datasets you experimented with, train/test split if you used machine learning algorithms, etc.). Describe the evaluation metrics you used to evaluate how well your approach is working. Include clear figures and tables, as well as illustrative qualitative examples if appropriate. Be sure to include obvious baselines to see if your approach is doing better than a naive approach (e.g. for classification accuracy, how well would a classifier do that made random decisions?). Also discuss any parameters of your algorithms, and tell us how you set the values of those parameters. You can also show us how the performance varies as you change those parameter values. Be sure to discuss any trends you see in your results, and explain why these trends make sense. Are the results as expected? Why? -->
+<h4 id="dataset">Dataset</h4>
+<p>We have started with the <em>kt3</em> sequence of the ICL-NIUM dataset <span class="citation" data-cites="handa2014benchmark">[@handa2014benchmark]</span>. Images and depth maps have been extracted and examples shown below.</p>
+<p><img src="../dataset/rgb/0.png" style="width:45.0%" alt="rgb image from ICL-NIUM dataset" /> <img src="../dataset/depth/0.png" style="width:45.0%" alt="depth image from ICL-NIUM dataset" /></p>
+<h4 id="superpixel-extraction">Superpixel Extraction</h4>
+<p>We have completed single-frame superpixel generation. The results are shown below.</p>
+<p><img src="../dataset/results/superpixels_rgb.gif" style="width:45.0%" alt="superpixel annotation on RGB image" /> <img src="../dataset/results/superpixels_depth.gif" style="width:45.0%" alt="superpixel annotation on depth image" /></p>
+<p>We follow the standard implementation as described in the paper: 1. Initialize superpixel seeds - Superpixel seeds are initialized on a grid of predefined size 2. Update superpixels 1. Pixels are assigned to their nearest superpixel 2. Superpixel properties (x, y, size, intensity, depth) are updated accordingly.</p>
+<h4 id="surfel-generation">Surfel Generation</h4>
+<!-- norm calculation -->
+<h3 id="qualitative-results">Qualitative results</h3>
+<!-- Show several visual examples of inputs/outputs of your system (success cases and failures) that help us better understand your approach. -->
+<h3 id="conclusion-and-future-work">Conclusion and future work</h3>
+<!-- Conclusion would likely make the same points as the abstract. Discuss any future ideas you have to make your approach better. -->
+<h3 id="references">References</h3>
+<!-- List out all the references you have used for your work -->
+</body>
+</html>
