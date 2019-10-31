@@ -218,7 +218,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
     def test_calc_norms(self):
         pass
 
-    @unittest.skip("skip test_calculate_spaces")
+    # @unittest.skip("skip test_calculate_spaces")
     def test_calculate_spaces(self):
         self.spExtractor.im_width, self.spExtractor.im_height = 3, 2
         self.spExtractor.depth = np.array([[2, 2, 2], [3, 3, 3]])
@@ -231,7 +231,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         self.assertEqual(np.array_equal(actual_space_map,
                                         expected_space_map), True, "Result is wrong ")
 
-    @unittest.skip("skip test_calculate_pixels_norms")
+    # @unittest.skip("skip test_calculate_pixels_norms")
     def test_calculate_pixels_norms(self):
         # Test for bad depths filter
         space_map = np.array([[[0, 0, 0], [0, 0, 1]], [[0, 0, -1], [1, 1, 1]]])
@@ -260,17 +260,19 @@ class TestSuperpixelExtraction(unittest.TestCase):
 
     # @unittest.skip("skip test_get_huber_norm")
     def test_get_huber_norm(self):
-        pixelNorms = np.array([[1,0,0],[0,1,0],[1,0,0],[0.99,0.141,0]])
-        pixelLocs = np.array([[1,3,0], [1,1,0], [1.1,5,5], [0.9,-1, -5]])
-        centerLoc = np.array([1,2,0])
-        expected_norm = np.array([1,0,0,0])
+        pixelNorms = np.array(
+            [[1, 0, 0], [0, 1, 0], [1, 0, 0], [0.99, 0.141, 0]])
+        pixelLocs = np.array(
+            [[1, 3, 0], [1, 1, 0], [1.1, 5, 5], [0.9, -1, -5]])
+        centerLoc = np.array([1, 2, 0])
+        expected_norm = np.array([1, 0, 0, 0])
         norm = self.spExtractor.get_huber_norm(pixelNorms, pixelLocs)
         np.testing.assert_array_almost_equal(
-            norm[:3], expected_norm[:3], decimal=1 , err_msg="Return Norm test fail.")
+            norm[:3], expected_norm[:3], decimal=1, err_msg="Return Norm test fail.")
         np.testing.assert_array_almost_equal(
             norm[3], expected_norm[3], err_msg="Return Bias test fail.")
 
-    @unittest.skip("skip test_initial_superpixel_cluster")
+    # @unittest.skip("skip test_initial_superpixel_cluster")
     def test_initial_superpixel_cluster(self):
         superpixel_seed_index = 1
         pixels = np.zeros((3, 3), dtype=np.uint8)
@@ -303,7 +305,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         self.assertEqual(valid_depth_num, expected_valid_depth_num,
                          "Valid depth num is wrong ")
 
-    @unittest.skip("skip test_huber_filter")
+    # @unittest.skip("skip test_huber_filter")
     def test_huber_filter(self):
         mean_depth = 2.3
         pixel_depth = np.array([[1], [2], [2.3]]).reshape(3, 1)
@@ -312,24 +314,23 @@ class TestSuperpixelExtraction(unittest.TestCase):
         pixel_norms = np.array([[0, 0, 3], [0, 0, 4], [0, 0, 5]]).reshape(3, 3)
 
         expected_norm = np.array([0, 0, 9])
+        expected_pixel_inlier_norms = np.array(
+            [[0, 0, 4], [0, 0, 5]]).reshape(2, 3)
         expected_inlier_num = 2
         expected_pixel_inlier_positions = np.array(
             [[0, 0, 2], [0, 0, 2.3]]).reshape(2, 3)
 
-        norm, inlier_num, pixel_inlier_positions = self.spExtractor.huber_filter(
+        pixel_inlier_norms, inlier_num, pixel_inlier_positions = self.spExtractor.huber_filter(
             mean_depth, pixel_depth, pixel_norms, pixel_positions)
-        np.testing.assert_array_almost_equal(
-            norm[0], expected_norm[0], err_msg="norm x is wrong ")
-        np.testing.assert_array_almost_equal(
-            norm[1], expected_norm[1], err_msg="norm y is wrong ")
-        np.testing.assert_array_almost_equal(
-            norm[2], expected_norm[2], err_msg="norm z is wrong ")
+
         self.assertEqual(inlier_num, expected_inlier_num,
                          "inlier num is wrong ")
         np.testing.assert_array_almost_equal(
+            pixel_inlier_norms, expected_pixel_inlier_norms, err_msg="Pixel_inlier_norms is wrong.")
+        np.testing.assert_array_almost_equal(
             pixel_inlier_positions, expected_pixel_inlier_positions, err_msg="Pixel_inlier_positions is wrong.")
 
-    @unittest.skip("skip test_calc_view_cos")
+    # @unittest.skip("skip test_calc_view_cos")
     def test_calc_view_cos(self):
         norm = np.array([2., 2., 1.])
         avg = np.array([1, 0, 0])
@@ -349,48 +350,69 @@ class TestSuperpixelExtraction(unittest.TestCase):
 
     @unittest.skip("skip test_update_superpixel_cluster_with_hubers")
     def test_update_superpixel_cluster_with_hubers(self):
-        sum_norm = []
-        pixel_inlier_positions = []
-        superpixel_center = []
-        mean_depth = []
 
-        expected_norm = []
-        expected_avg_x = []
-        expected_avg_y = []
-        expected_avg_z = []
-        expected_view_cos = []
-        expected_mean_depth = []
+        superpixel_center = (0.1, 0.1)
+        mean_depth = 1
+        pixel_inlier_norms = np.array(
+            [[1, 0, 0], [0, 1, 0], [1, 0, 0], [0.99, 0.141, 0]])
+        pixel_inlier_positions = np.array(
+            [[1, 3, 0], [1, 1, 0], [1.1, 5, 5], [0.9, -1, -5]])
+
+        # norm = np.array([2., 2., 1.])
+        # avg = np.array([1, 0, 0])
+
+        # expected_norm = np.array([2/3, 2/3, 1/3])
+        # expected_view_cos = 2/3
+        # expected_avg = np.array([1, 0, 0])
+        # expected_mean_depth = []
 
         norm, (avg_x, avg_y, avg_z), view_cos, mean_depth = self.spExtractor.update_superpixel_cluster_with_huber(
-            sum_norm, pixel_inlier_positions, superpixel_center, mean_depth)
-        np.testing.assert_almost_equal(
-            expected_norm, norm, err_msg="norm doesn't match")
-        np.testing.assert_almost_equal(
-            expected_avg_x, avg_x, err_msg="avg_x doesn't match")
-        np.testing.assert_almost_equal(
-            expected_avg_y, avg_y, err_msg="avg_y doesn't match")
-        np.testing.assert_almost_equal(
-            expected_avg_z, avg_z, err_msg="avg_z doesn't match")
-        np.testing.assert_almost_equal(
-            expected_view_cos, view_cos, err_msg="view_cos doesn't match")
-        np.testing.assert_almost_equal(
-            expected_mean_depth, mean_depth, err_msg="mean_depth doesn't match")
+            pixel_inlier_norms, pixel_inlier_positions, superpixel_center, mean_depth)
+        # np.testing.assert_almost_equal(
+        #     expected_norm, norm, err_msg="norm doesn't match")
+        # np.testing.assert_almost_equal(
+        #     expected_avg_x, avg_x, err_msg="avg_x doesn't match")
+        # np.testing.assert_almost_equal(
+        #     expected_avg_y, avg_y, err_msg="avg_y doesn't match")
+        # np.testing.assert_almost_equal(
+        #     expected_avg_z, avg_z, err_msg="avg_z doesn't match")
+        # np.testing.assert_almost_equal(
+        #     expected_view_cos, view_cos, err_msg="view_cos doesn't match")
+        # np.testing.assert_almost_equal(
+        #     expected_mean_depth, mean_depth, err_msg="mean_depth doesn't match")
 
-    @unittest.skip("skip test_calculate_sp_depth_norms")
+    # @unittest.skip("skip test_calculate_sp_depth_norms")
     def test_calculate_sp_depth_norms(self):
-        pixels = []
+        pixels = np.zeros((3, 20), dtype=np.uint8)
+        pixels[1, :] = 1
+        pixels[2, :] = 2
         superpixel_seeds = []
-        space_map = []
-        norm_map = []
+        for i in range(2):
+            superpixel_seeds.append(SuperpixelSeed(
+                10,
+                i,
+                20, 0, 0, 0, 0, 0, 0, 0,
+                i+0.1,
+                0,
+                False, False, 0, 0
+            ))
+        self.spExtractor.depth = np.zeros((3, 20), dtype=np.uint8)
+        self.spExtractor.depth[1, :] = 1
+        self.spExtractor.depth[2, :] = 2
+        self.spExtractor.im_width = 3
+        self.spExtractor.im_height = 20
 
-        expected_norm = []
-        expected_avg_x = []
-        expected_avg_y = []
-        expected_avg_z = []
-        expected_view_cos = []
-        expected_mean_depth = []
-        expected_superpixel_seed = []
-        expected_new_superpixel_seeds_length = 1
+        space_map = np.zeros((3, 20, 3), dtype=np.uint8)+1
+        norm_map = np.zeros((2, 19, 3), dtype=np.uint8)+1
+
+        # expected_norm = []
+        # expected_avg_x = []
+        # expected_avg_y = []
+        # expected_avg_z = []
+        # expected_view_cos = []
+        # expected_mean_depth = []
+        # expected_superpixel_seed = []
+        # expected_new_superpixel_seeds_length = 1
         new_superpixel_seeds = self.spExtractor.calculate_sp_depth_norms(
             pixels, superpixel_seeds, space_map, norm_map)
 
