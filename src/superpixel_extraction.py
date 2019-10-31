@@ -117,7 +117,10 @@ class SuperpixelExtraction():
             # size
             xs = xs - sp.x
             ys = ys - sp.y
-            sp.size = np.sqrt(np.max(np.square(xs) + np.square(ys)))
+            if xs.shape[0] is 0 or ys.shape[0] is 0:
+                sp.size = 0
+            else:
+                sp.size = np.sqrt(np.max(np.square(xs) + np.square(ys)))
         print("updated seeds in\t{:0.3f}s".format(time.time() - t))
         return superpixels
 
@@ -210,8 +213,7 @@ class SuperpixelExtraction():
         """
         # filter pixel with bad depth
         space_map_mask = space_map[:, :, -1] < 0.1
-        mask = np.add(np.add(
-            space_map_mask[:-1, :-1], space_map_mask[:-1, 1:]), space_map_mask[1:, :-1])
+        mask = space_map_mask[:-1, :-1] | space_map_mask[:-1, 1:] | space_map_mask[1:, :-1]
         mask = np.tile(np.expand_dims(mask, axis=2), (1, 1, 3))
 
         my = space_map[:-1, :-1, :]
@@ -249,21 +251,15 @@ class SuperpixelExtraction():
         view_angle = np.ma.divide(np.ma.multiply(norm_x, my_x) + np.ma.multiply(norm_y, my_y)+np.ma.multiply(
             norm_z, my_z), np.ma.sqrt(np.ma.multiply(my_x, my_x) + np.ma.multiply(my_y, my_y)+np.ma.multiply(my_z, my_z)))
 
-        # angle_mask = view_angle <= -MAX_ANGLE_COS or view_angle >= MAX_ANGLE_COS
-
-        # norm_x = np.ma.expand_dims(
-        #     np.ma.array(norm_x, mask=angle_mask), axis=2)
-        # norm_y = np.ma.expand_dims(
-        #     np.ma.array(norm_y, mask=angle_mask), axis=2)
-        # norm_z = np.ma.expand_dims(
-        #     np.ma.array(norm_z, mask=angle_mask), axis=2)
+        angle_mask = (view_angle > -MAX_ANGLE_COS) & (view_angle < MAX_ANGLE_COS)
 
         norm_x = np.ma.expand_dims(
-            np.ma.masked_outside(norm_x, -MAX_ANGLE_COS, MAX_ANGLE_COS), axis=2)
+            np.ma.array(norm_x, mask=angle_mask), axis=2)
         norm_y = np.ma.expand_dims(
-            np.ma.masked_outside(norm_y, -MAX_ANGLE_COS, MAX_ANGLE_COS), axis=2)
+            np.ma.array(norm_y, mask=angle_mask), axis=2)
         norm_z = np.ma.expand_dims(
-            np.ma.masked_outside(norm_z, -MAX_ANGLE_COS, MAX_ANGLE_COS), axis=2)
+            np.ma.array(norm_z, mask=angle_mask), axis=2)
+
         norm_map = np.ma.concatenate((norm_x, norm_y, norm_z), axis=2)
         return norm_map
 
@@ -331,7 +327,7 @@ class SuperpixelExtraction():
         depth = self.depth.reshape(shape)
         mask1 = pixels != superpixel_seed_index
         mask2 = depth <= 0.05
-        mask = np.add(mask1, mask2)
+        mask = mask1 | mask2
 
         [col, row] = np.meshgrid(
             np.arange(self.im_width), np.arange(self.im_height))
@@ -365,7 +361,7 @@ class SuperpixelExtraction():
         # Generate mask
         mask1 = residual < HUBER_RANGE
         mask2 = residual > -HUBER_RANGE
-        mask = np.multiply(mask1, mask2)
+        mask = mask1 & mask2
         #
         inlier_num = np.sum(mask)
         mask = np.tile(mask, (1, 3))
