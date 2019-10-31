@@ -75,8 +75,8 @@ body {
   
   a {
     text-decoration: none;
-    border-bottom: 1px solid #ccc;
-    color: inherit;
+    /* border-bottom: 1px solid #ccc; */
+    /* color: inherit; */
   }
   
   .navbar a {

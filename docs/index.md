@@ -2,6 +2,7 @@
 bibliography: [related_work.bib]
 csl: [ieee.csl]
 css: [main.css]
+link-citations: true
 ---
 
 # CS6476 Final Project
@@ -90,6 +91,7 @@ dataset [@Menze2015CVPR_KITTI].  We showed that it can indeed produce dense reco
 
 ![kitti](./results/kitti/kitti.png){width=45%}
 ![kitti](./results/kitti/kitti_front.png){width=45%}
+
 ![kitti](./results/kitti/kitti_side.png){width=45%}
 ![kitti](./results/kitti/kitti_top.png){width=45%}
 
