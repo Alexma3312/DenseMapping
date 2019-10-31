@@ -1,25 +1,34 @@
 ---
-bibliography: [./related_work.bib]
-csl: [./ieee.csl]
-css: [./main.css]
+bibliography: [related_work.bib]
+csl: [ieee.csl]
+css: [main.css]
 ---
 
 # CS6476 Final Project
 ## Dense Mapping using Feature Matching and Superpixel Clustering
 
+<p style="color:#808080;margin:16px 0 4px 0;font-size:20px">
 Mandy Xie, Shicong Ma, Gerry Chen
-
+</p>
+<p style="color:#404040;margin:0 0 16px 0">
 October 31, 2019
+</p>
+
+<hr />
 
 ### Abstract
 <!-- One or two sentences on the motivation behind the problem you are solving. One or two sentences describing the approach you took. One or two sentences on the main result you obtained. -->
+One of the fundamental tasks for robot autonomous navigation is to perceive and
+digitalize the surrounding 3D environment [@handa2014benchmark]. We replicate
+the results of [@Wang19icra_surfelDense] to produce semi-dense, surfel-based
+reconstruction using superpixels.
 
-### Teaser figure
+<!-- ### Teaser figure -->
 <!-- A figure that conveys the main idea behind the project or the main application being addressed. -->
 ![superpixel annotation on RGB
-image](./kitti_superpixels_rgb.gif){width=100%}
+image](./results/superpixels/kitti_superpixels_rgb.gif){width=100%}
 ![superpixel annotation on depth
-image](./kitti_superpixels_depth.gif){width=100%}
+image](./results/superpixels/kitti_superpixels_depth.gif){width=100%}
 
 ### Introduction
 <!-- Motivation behind the problem you are solving, what applications it has, any brief background on the particular domain you are working in (if not regular RBG photographs), etc. If you are using a new way to solve an existing problem, briefly mention and describe the existing approaches and tell us how your approach is new. -->
@@ -50,10 +59,12 @@ environment, similar to Figures 4b or 8 of the original paper
 The idea behind dense mapping is to first generate frame related poses, then
 reconstruct the dense map based on pre-generated poses and surfels.
 
-1. Select a RGB-D dataset [@handa2014benchmark,sturm12iros_TUM,Menze2015CVPR_KITTI]
+1. Select a RGB-D dataset [@handa2014benchmark; @sturm12iros_TUM; @Menze2015CVPR_KITTI]
 
 2. Read pose information from the dataset / Use a sparse SLAM system (VINS [@qin2018vins]/ORB-SLAM2 [@mur2017orb]) to
 estimate camera poses
+
+3. Run code from [@Wang19github] directly to confirm functionality and set benchmark/expectations.
 
 3. **(Suggested implementation)** -- Single frame Superpixels extraction from RGB-D images using a k-means approach adapted from SLIC [@achanta2012slic] - IV.D section in [@Wang19icra_surfelDense]
 
@@ -69,16 +80,26 @@ estimate camera poses
 We have started with the _kt3_ sequence of the ICL-NIUM dataset [@handa2014benchmark].  Images and
 depth maps have been extracted and examples shown below.
 
-![rgb image from ICL-NIUM dataset](../dataset/rgb/0.png){width=45%}
-![depth image from ICL-NIUM dataset](../dataset/depth/0.png){width=45%}
+![rgb image from ICL-NIUM dataset](./results/superpixels/icl_rgb0.png){width=45%}
+![depth image from ICL-NIUM dataset](./results/superpixels/icl_depth0.png){width=45%}
+
+#### Run Existing Code
+The code written for the paper was run to ensure that the results could be
+reproduced.  Below are some results of running the code for dense reconstruction on images from the KITTI
+dataset [@Menze2015CVPR_KITTI].  We showed that it can indeed produce dense reconstructions.
+
+![kitti](./results/kitti/kitti.png){width=45%}
+![kitti](./results/kitti/kitti_front.png){width=45%}
+![kitti](./results/kitti/kitti_side.png){width=45%}
+![kitti](./results/kitti/kitti_top.png){width=45%}
 
 #### Superpixel Extraction
 We have completed single-frame superpixel generation.  The results are shown
 below.
 
-![superpixel annotation on RGB image](./superpixels_rgb.gif){width=45%}
+![superpixel annotation on RGB image](./results/superpixels/superpixels_rgb.gif){width=45%}
 ![superpixel annotation on depth
-image](./superpixels_depth.gif){width=45%}
+image](./results/superpixels/superpixels_depth.gif){width=45%}
 
 We follow the standard implementation as described in the paper:
 1. Initialize superpixel seeds - 
@@ -104,9 +125,9 @@ iteration to the next.
 The images below demonstrate that the superpixels are indeed segmenting properly
 as they tend to "hug" similarly colored/depthed regions.
 
-![superpixel annotation on RGB image](./kitti_superpixels_rgb.png){width=100%}
+![superpixel annotation on RGB image](./results/superpixels/kitti_superpixels_rgb.png){width=100%}
 ![superpixel annotation on depth
-image](./kitti_superpixels_depth.png){width=100%}
+image](./results/superpixels/kitti_superpixels_depth.png){width=100%}
 
 ### Conclusion and future work
 <!-- Conclusion would likely make the same points as the abstract. Discuss any future ideas you have to make your approach better. -->

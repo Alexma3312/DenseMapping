@@ -11,7 +11,7 @@
       span.underline{text-decoration: underline;}
       div.column{display: inline-block; vertical-align: top; width: 50%;}
   </style>
-  <link rel="stylesheet" href="./main.css" />
+  <link rel="stylesheet" href="main.css" />
   <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
   <![endif]-->
@@ -19,13 +19,19 @@
 <body>
 <h1 id="cs6476-final-project">CS6476 Final Project</h1>
 <h2 id="dense-mapping-using-feature-matching-and-superpixel-clustering">Dense Mapping using Feature Matching and Superpixel Clustering</h2>
-<p>Mandy Xie, Shicong Ma, Gerry Chen</p>
-<p>October 31, 2019</p>
+<p style="color:#808080;margin:16px 0 4px 0;font-size:20px">
+Mandy Xie, Shicong Ma, Gerry Chen
+</p>
+<p style="color:#404040;margin:0 0 16px 0">
+October 31, 2019
+</p>
+<hr />
 <h3 id="abstract">Abstract</h3>
 <!-- One or two sentences on the motivation behind the problem you are solving. One or two sentences describing the approach you took. One or two sentences on the main result you obtained. -->
-<h3 id="teaser-figure">Teaser figure</h3>
+<p>One of the fundamental tasks for robot autonomous navigation is to perceive and digitalize the surrounding 3D environment <span class="citation" data-cites="handa2014benchmark">[1]</span>. We replicate the results of <span class="citation" data-cites="Wang19icra_surfelDense">[2]</span> to produce semi-dense, surfel-based reconstruction using superpixels.</p>
+<!-- ### Teaser figure -->
 <!-- A figure that conveys the main idea behind the project or the main application being addressed. -->
-<p><img src="./kitti_superpixels_rgb.gif" style="width:100.0%" alt="superpixel annotation on RGB image" /> <img src="./kitti_superpixels_depth.gif" style="width:100.0%" alt="superpixel annotation on depth image" /></p>
+<p><img src="./results/superpixels/kitti_superpixels_rgb.gif" style="width:100.0%" alt="superpixel annotation on RGB image" /> <img src="./results/superpixels/kitti_superpixels_depth.gif" style="width:100.0%" alt="superpixel annotation on depth image" /></p>
 <h3 id="introduction">Introduction</h3>
 <!-- Motivation behind the problem you are solving, what applications it has, any brief background on the particular domain you are working in (if not regular RBG photographs), etc. If you are using a new way to solve an existing problem, briefly mention and describe the existing approaches and tell us how your approach is new. -->
 <p>One of the fundamental tasks for robot autonomous navigation is to perceive and digitalize the surrounding 3D environment <span class="citation" data-cites="handa2014benchmark">[1]</span>. To be usable in mobile robot applications, the mapping system needs to fast and densely recover the environment in order to provide sufficient information for navigation.</p>
@@ -34,9 +40,10 @@
 <h3 id="approach">Approach</h3>
 <p>The idea behind dense mapping is to first generate frame related poses, then reconstruct the dense map based on pre-generated poses and surfels.</p>
 <ol type="1">
-<li><p>Select a RGB-D dataset <span class="citation" data-cites="handa2014benchmark">[1, p. sturm12iros]</span></p></li>
-<li><p>Read pose information from the dataset / Use a sparse SLAM system (VINS <span class="citation" data-cites="qin2018vins">[3]</span>/ORB-SLAM2 <span class="citation" data-cites="mur2017orb">[4]</span>) to estimate camera poses</p></li>
-<li><p><strong>(Suggested implementation)</strong> – Single frame Superpixels extraction from RGB-D images using a k-means approach adapted from SLIC <span class="citation" data-cites="achanta2012slic">[5]</span> - IV.D section in <span class="citation" data-cites="Wang19icra_surfelDense">[2]</span></p></li>
+<li><p>Select a RGB-D dataset <span class="citation" data-cites="handa2014benchmark sturm12iros_TUM Menze2015CVPR_KITTI">[1], [3], [4]</span></p></li>
+<li><p>Read pose information from the dataset / Use a sparse SLAM system (VINS <span class="citation" data-cites="qin2018vins">[5]</span>/ORB-SLAM2 <span class="citation" data-cites="mur2017orb">[6]</span>) to estimate camera poses</p></li>
+<li><p>Run code from <span class="citation" data-cites="Wang19github">[7]</span> directly to confirm functionality and set benchmark/expectations.</p></li>
+<li><p><strong>(Suggested implementation)</strong> – Single frame Superpixels extraction from RGB-D images using a k-means approach adapted from SLIC <span class="citation" data-cites="achanta2012slic">[8]</span> - IV.D section in <span class="citation" data-cites="Wang19icra_surfelDense">[2]</span></p></li>
 <li><p><strong>(Suggested implementation)</strong> – Single frame surfel generation based on extracted superpixels. - IV.E section in <span class="citation" data-cites="Wang19icra_surfelDense">[2]</span></p></li>
 <li><p><strong>(Suggested implementation)</strong> – Surfel fusion and Surfel Cloud update. - IV.G section in <span class="citation" data-cites="Wang19icra_surfelDense">[2]</span></p></li>
 </ol>
@@ -45,10 +52,13 @@
 <!-- Provide details about the experimental set up (number of images/videos, number of datasets you experimented with, train/test split if you used machine learning algorithms, etc.). Describe the evaluation metrics you used to evaluate how well your approach is working. Include clear figures and tables, as well as illustrative qualitative examples if appropriate. Be sure to include obvious baselines to see if your approach is doing better than a naive approach (e.g. for classification accuracy, how well would a classifier do that made random decisions?). Also discuss any parameters of your algorithms, and tell us how you set the values of those parameters. You can also show us how the performance varies as you change those parameter values. Be sure to discuss any trends you see in your results, and explain why these trends make sense. Are the results as expected? Why? -->
 <h4 id="dataset">Dataset</h4>
 <p>We have started with the <em>kt3</em> sequence of the ICL-NIUM dataset <span class="citation" data-cites="handa2014benchmark">[1]</span>. Images and depth maps have been extracted and examples shown below.</p>
-<p><img src="../dataset/rgb/0.png" style="width:45.0%" alt="rgb image from ICL-NIUM dataset" /> <img src="../dataset/depth/0.png" style="width:45.0%" alt="depth image from ICL-NIUM dataset" /></p>
+<p><img src="./results/superpixels/icl_rgb0.png" style="width:45.0%" alt="rgb image from ICL-NIUM dataset" /> <img src="./results/superpixels/icl_depth0.png" style="width:45.0%" alt="depth image from ICL-NIUM dataset" /></p>
+<h4 id="run-existing-code">Run Existing Code</h4>
+<p>The code written for the paper was run to ensure that the results could be reproduced. Below are some results of running the code for dense reconstruction on images from the KITTI dataset <span class="citation" data-cites="Menze2015CVPR_KITTI">[4]</span>. We showed that it can indeed produce dense reconstructions.</p>
+<p><img src="./results/kitti/kitti.png" style="width:45.0%" alt="kitti" /> <img src="./results/kitti/kitti_front.png" style="width:45.0%" alt="kitti" /> <img src="./results/kitti/kitti_side.png" style="width:45.0%" alt="kitti" /> <img src="./results/kitti/kitti_top.png" style="width:45.0%" alt="kitti" /></p>
 <h4 id="superpixel-extraction">Superpixel Extraction</h4>
 <p>We have completed single-frame superpixel generation. The results are shown below.</p>
-<p><img src="./superpixels_rgb.gif" style="width:45.0%" alt="superpixel annotation on RGB image" /> <img src="./superpixels_depth.gif" style="width:45.0%" alt="superpixel annotation on depth image" /></p>
+<p><img src="./results/superpixels/superpixels_rgb.gif" style="width:45.0%" alt="superpixel annotation on RGB image" /> <img src="./results/superpixels/superpixels_depth.gif" style="width:45.0%" alt="superpixel annotation on depth image" /></p>
 <p>We follow the standard implementation as described in the paper: 1. Initialize superpixel seeds - Superpixel seeds are initialized on a grid of predefined size 2. Update superpixels 1. Pixels are assigned to their nearest superpixel 2. Superpixel properties (x, y, size, intensity, depth) are updated accordingly.</p>
 <p>The number of times that step 2 is repeated depends on the image. For example, the ICL-NIUM dataset image requires only 10 iterations or so to stabilize, but the KITTI dataset image requires roughly 25 to stabilize. One metric that can potentially be used in the future as a stopping criteria is the sum of distances traveled by the superpixels from one iteration to the next. The superpixel iteration is complete when they sufficiently small changes occur from one iteration to the next.</p>
 <h4 id="surfel-generation">Surfel Generation</h4>
@@ -56,7 +66,7 @@
 <h3 id="qualitative-results">Qualitative results</h3>
 <!-- Show several visual examples of inputs/outputs of your system (success cases and failures) that help us better understand your approach. -->
 <p>The images below demonstrate that the superpixels are indeed segmenting properly as they tend to “hug” similarly colored/depthed regions.</p>
-<p><img src="./kitti_superpixels_rgb.png" style="width:100.0%" alt="superpixel annotation on RGB image" /> <img src="./kitti_superpixels_depth.png" style="width:100.0%" alt="superpixel annotation on depth image" /></p>
+<p><img src="./results/superpixels/kitti_superpixels_rgb.png" style="width:100.0%" alt="superpixel annotation on RGB image" /> <img src="./results/superpixels/kitti_superpixels_depth.png" style="width:100.0%" alt="superpixel annotation on depth image" /></p>
 <h3 id="conclusion-and-future-work">Conclusion and future work</h3>
 <!-- Conclusion would likely make the same points as the abstract. Discuss any future ideas you have to make your approach better. -->
 <h3 id="references">References</h3>
@@ -68,14 +78,23 @@
 <div id="ref-Wang19icra_surfelDense">
 <p>[2] K. Wang, F. Gao, and S. Shen, “Real-time scalable dense surfel mapping,” in <em>2019 international conference on robotics and automation (icra)</em>, 2019, pp. 6919–6925.</p>
 </div>
+<div id="ref-sturm12iros_TUM">
+<p>[3] J. Sturm, N. Engelhard, F. Endres, W. Burgard, and D. Cremers, “A benchmark for the evaluation of rgb-d slam systems,” in <em>Proc. Of the international conference on intelligent robot systems (iros)</em>, 2012.</p>
+</div>
+<div id="ref-Menze2015CVPR_KITTI">
+<p>[4] M. Menze and A. Geiger, “Object scene flow for autonomous vehicles,” in <em>Conference on computer vision and pattern recognition (cvpr)</em>, 2015.</p>
+</div>
 <div id="ref-qin2018vins">
-<p>[3] T. Qin, P. Li, and S. Shen, “Vins-mono: A robust and versatile monocular visual-inertial state estimator,” <em>IEEE Transactions on Robotics</em>, vol. 34, no. 4, pp. 1004–1020, 2018.</p>
+<p>[5] T. Qin, P. Li, and S. Shen, “Vins-mono: A robust and versatile monocular visual-inertial state estimator,” <em>IEEE Transactions on Robotics</em>, vol. 34, no. 4, pp. 1004–1020, 2018.</p>
 </div>
 <div id="ref-mur2017orb">
-<p>[4] R. Mur-Artal and J. D. Tardós, “Orb-slam2: An open-source slam system for monocular, stereo, and rgb-d cameras,” <em>IEEE Transactions on Robotics</em>, vol. 33, no. 5, pp. 1255–1262, 2017.</p>
+<p>[6] R. Mur-Artal and J. D. Tardós, “Orb-slam2: An open-source slam system for monocular, stereo, and rgb-d cameras,” <em>IEEE Transactions on Robotics</em>, vol. 33, no. 5, pp. 1255–1262, 2017.</p>
+</div>
+<div id="ref-Wang19github">
+<p>[7] https://github.com/HKUST-Aerial-Robotics/DenseSurfelMapping.</p>
 </div>
 <div id="ref-achanta2012slic">
-<p>[5] R. Achanta, A. Shaji, K. Smith, A. Lucchi, P. Fua, and S. Süsstrunk, “SLIC superpixels compared to state-of-the-art superpixel methods,” <em>IEEE transactions on pattern analysis and machine intelligence</em>, vol. 34, no. 11, pp. 2274–2282, 2012.</p>
+<p>[8] R. Achanta, A. Shaji, K. Smith, A. Lucchi, P. Fua, and S. Süsstrunk, “SLIC superpixels compared to state-of-the-art superpixel methods,” <em>IEEE transactions on pattern analysis and machine intelligence</em>, vol. 34, no. 11, pp. 2274–2282, 2012.</p>
 </div>
 </div>
 </body>
