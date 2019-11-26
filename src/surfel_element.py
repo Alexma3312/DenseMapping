@@ -1,5 +1,6 @@
 """Surfel Element."""
 
+from __future__ import annotations
 from typing import Tuple
 from superpixel_seed import SuperpixelSeed
 import numpy as np
@@ -24,10 +25,13 @@ class SurfelElement():
         self.update_times = update_times
         self.last_update = last_update
 
-    def change_coordinates(self, Twc):
+    def change_coordinates(self, Twc) -> SurfelElement:
         """Transforms surfel from camera pose into world coordinates
         Arguments:
-            Twc: camera pose in world coordinates"""
+            Twc: camera pose in world coordinates
+        Returns:
+            surfel: SurfelElement in new coordinates
+        """
         p = np.array([self.px, self.py, self.pz, 1])
         p = Twc.dot(p)
         n = np.array([self.nx, self.ny, self.nz, 0])
@@ -47,3 +51,19 @@ class SurfelElement():
         x = self.px / self.pz * camera_parameters['fx'] + camera_parameters['cx']
         y = self.py / self.pz * camera_parameters['fy'] + camera_parameters['cy']
         return x, y
+
+    def is_fuseable(self, surfel: SurfelElement) -> bool:
+        """Test whether another surfel is a correspondence and can be fused or not
+        Arguments:
+            surfel: other surfel
+        Returns:
+            is_fuseable: True if correspond else False
+        """
+        return False
+    
+    def fuse_surfel(self, surfel: SurfelElement) -> None:
+        """Fuses this surfel with another Surfel.  This surfel changes to the fused version.
+        Arguments:
+            surfel: other surfel
+        """
+        return

@@ -63,5 +63,13 @@ class TestSurfelElement(unittest.TestCase):
         self.assertEqual(x, 50)
         self.assertEqual(y, 100)
 
+    def test_is_fuseable(self):
+        """Tests is_fuseable"""
+        pass
+
+    def test_fuse_surfel(self):
+        """Tests fuse_surfel"""
+        pass
+
 if __name__ == "__main__":
     unittest.main()
