@@ -243,11 +243,11 @@ class TestSuperpixelExtraction(unittest.TestCase):
         # Test for bad view angles
         space_map = np.array([[[0, 0, 1], [-1, 0, 1]], [[1, 0, 1], [1, 1, 1]]])
         mask = np.array([[[True, True, True]]])
-        expected_pixels_norms = np.array([[[0, 0, 0]]])
-        actual_pixels_norms = self.spExtractor.calculate_pixels_norms(
+        # expected_pixels_norms = np.array([[[None, None, None]]])
+        actual_pixels_norms = self.spExtractor.calculate_pixels_norms_for_loop(
             space_map)
         np.testing.assert_array_almost_equal(
-            actual_pixels_norms, expected_pixels_norms, err_msg="Bad view angles test fail.")
+            np.array([[[True, True, True]]]), np.isnan(actual_pixels_norms), err_msg="Bad view angles test fail.")
         # Test for return result
         space_map = np.array([[[2, 2, 2], [2.1, 2.1, 2.1]], [
                              [1.9, 2.1, 1.9], [1, 1, 1]]])

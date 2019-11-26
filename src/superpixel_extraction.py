@@ -219,6 +219,9 @@ class SuperpixelExtraction():
                 norm_z = right[0] * down[1] - right[1] * down[0]
                 norm = np.array([[norm_x],[norm_y],[norm_z]])
                 norm_length = np.linalg.norm(norm,2)
+                if norm_length == 0:
+                    norm_map[row_i][col_i] = None
+                    continue
                 norm /= norm_length
                 view_angle = np.dot(norm.T, my.reshape(3,1)) / np.linalg.norm(my,2)
                 if(view_angle > -MAX_ANGLE_COS and view_angle < MAX_ANGLE_COS):
