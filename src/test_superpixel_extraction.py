@@ -259,6 +259,11 @@ class TestSuperpixelExtraction(unittest.TestCase):
         np.testing.assert_array_almost_equal(
             actual_pixels_norms, expected_pixels_norms, err_msg="Return Result test fail.")
 
+        actual_pixels_norms = self.spExtractor.calculate_pixels_norms_for_loop(
+            space_map)
+        np.testing.assert_array_almost_equal(
+            actual_pixels_norms, expected_pixels_norms, err_msg="Return Result test fail.")
+
     # @unittest.skip("skip test_get_huber_norm")
     def test_get_huber_norm(self):
         pixelNorms = np.array(
@@ -357,7 +362,7 @@ class TestSuperpixelExtraction(unittest.TestCase):
         pixel_inlier_norms = np.array(
             [[1, 0, 0], [0, 1, 0], [1, 0, 0], [0.99, 0.141, 0]])
         pixel_inlier_positions = np.array(
-            [[1, 3, 0], [1, 1, 0], [1.1, 5, 5], [0.9, -1, -5]])
+            [[1, 3, 2], [1, 1, 2], [1.1, 5, 5], [0.9, -1, -5]])
 
         # norm = np.array([2., 2., 1.])
         # avg = np.array([1, 0, 0])
