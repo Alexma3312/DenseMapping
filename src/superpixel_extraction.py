@@ -117,10 +117,7 @@ class SuperpixelExtraction():
             # size
             xs = xs - sp.x
             ys = ys - sp.y
-            if xs.shape[0] is 0 or ys.shape[0] is 0:
-                sp.size = 0
-            else:
-                sp.size = np.sqrt(np.max(np.square(xs) + np.square(ys)))
+            sp.size = np.sqrt(np.max(np.square(xs) + np.square(ys)))
         print("updated seeds in\t{:0.3f}s".format(time.time() - t))
         return superpixels
 
@@ -137,7 +134,7 @@ class SuperpixelExtraction():
         """
         t = time.time()
         space_map = self.calculate_spaces()
-        norm_map = self.calculate_pixels_norms(space_map)
+        norm_map = self.calculate_pixels_norms_for_loop(space_map)
         superpixels = self.calculate_sp_depth_norms(
             pixels, superpixels, space_map, norm_map)
         print("Calculate Norms in\t{:0.3f}s".format(time.time() - t))
@@ -168,7 +165,8 @@ class SuperpixelExtraction():
             distances[valid, idx] = \
                 ((xx[valid] - superpixel.x)**2 + (yy[valid] - superpixel.y)**2) / self.Ns \
                 + (self.image[valid] - superpixel.mean_intensity)**2 / self.Nc \
-                + (1.0 / self.depth[valid] - 1.0 / superpixel.mean_depth)**2 / self.Nd
+                + (1.0 / self.depth[valid] - 1.0 /
+                   superpixel.mean_depth)**2 / self.Nd
         return distances
 
     # ****************************************************************
@@ -201,8 +199,34 @@ class SuperpixelExtraction():
         col = np.expand_dims(col, axis=2)
         row = np.expand_dims(row, axis=2)
         depth = np.expand_dims(depth, axis=2)
-        space_map = np.concatenate(( col, row,depth), axis=2)
+        space_map = np.concatenate((col, row, depth), axis=2)
         return space_map
+
+    def calculate_pixels_norms_for_loop(self, space_map, MAX_ANGLE_COS=0.1):
+        norm_map = np.empty((space_map.shape[0]-1,space_map.shape[1]-1,3))
+        row_num, col_num,_ = space_map.shape
+        for row_i in range(row_num-1):
+            for col_i in range(col_num-1):
+                my = space_map[row_i][col_i]
+                right = space_map[row_i][col_i+1]
+                down = space_map[row_i+1][col_i]
+                if (my[2] < 0.1 or right[2] < 0.1 or down[2] < 0.1):
+                    continue
+                right -= my
+                down -= my 
+                norm_x = right[1] * down[2] - right[2] * down[1]
+                norm_y = right[2] * down[0] - right[0] * down[2]
+                norm_z = right[0] * down[1] - right[1] * down[0]
+                norm = np.array([[norm_x],[norm_y],[norm_z]])
+                norm_length = np.linalg.norm(norm,2)
+                norm /= norm_length
+                view_angle = np.dot(norm.T, my.reshape(3,1)) / np.linalg.norm(my,2)
+                if(view_angle > -MAX_ANGLE_COS and view_angle < MAX_ANGLE_COS):
+                    continue
+                norm_map[row_i][col_i] = norm.reshape(3,)
+        
+        return norm_map
+        
 
     def calculate_pixels_norms(self, space_map, MAX_ANGLE_COS=0.1):
         """Calculate the single pixel normalized norm along x,y,z for all pixels
@@ -213,7 +237,8 @@ class SuperpixelExtraction():
         """
         # filter pixel with bad depth
         space_map_mask = space_map[:, :, -1] < 0.1
-        mask = space_map_mask[:-1, :-1] | space_map_mask[:-1, 1:] | space_map_mask[1:, :-1]
+        mask = space_map_mask[:-1, :-1] | space_map_mask[:-
+                                                         1, 1:] | space_map_mask[1:, :-1]
         mask = np.tile(np.expand_dims(mask, axis=2), (1, 1, 3))
 
         my = space_map[:-1, :-1, :]
@@ -251,7 +276,8 @@ class SuperpixelExtraction():
         view_angle = np.ma.divide(np.ma.multiply(norm_x, my_x) + np.ma.multiply(norm_y, my_y)+np.ma.multiply(
             norm_z, my_z), np.ma.sqrt(np.ma.multiply(my_x, my_x) + np.ma.multiply(my_y, my_y)+np.ma.multiply(my_z, my_z)))
 
-        angle_mask = (view_angle > -MAX_ANGLE_COS) & (view_angle < MAX_ANGLE_COS)
+        angle_mask = (
+            view_angle > -MAX_ANGLE_COS) & (view_angle < MAX_ANGLE_COS)
 
         norm_x = np.ma.expand_dims(
             np.ma.array(norm_x, mask=angle_mask), axis=2)
@@ -472,6 +498,7 @@ class SuperpixelExtraction():
         new_superpixel_seeds = list(filter(None.__ne__, new_superpixel_seeds))
 
         return new_superpixel_seeds
+
 
 if __name__ == "__main__":
     pass
