@@ -5,7 +5,14 @@ from surfel_generation import SurfelGeneration
 from superpixel_seed import SuperpixelSeed
 import numpy as np
 
+camera_parameters = {'fx': 1, 'fy': 1, 'cx': 0, 'cy': 0}
+
 class TestSurfelGeneration(unittest.TestCase):
+
+    def test_init(self):
+        sg = SurfelGeneration(camera_parameters)
+        self.assertEqual(len(sg.all_surfels), 0)
+
     def test_create_surfels(self):
         """Test initialize Surfels from superpixels."""
         # initialize_surfels
@@ -13,7 +20,7 @@ class TestSurfelGeneration(unittest.TestCase):
 
     def test_update_surfels(self):
         "Test update surfels"
-        sg = SurfelGeneration()
+        sg = SurfelGeneration(camera_parameters)
         sp = SuperpixelSeed(0, 0, 1,
                             0, 0, 1,
                             0, 0, 1, 0, 0, 0, 0, 0, 0, 0)
