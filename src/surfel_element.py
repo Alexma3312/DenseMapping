@@ -63,6 +63,11 @@ class SurfelElement():
         Returns:
             is_fuseable: True if correspond else False
         """
+        n_new =  np.array([[surfel.nx],[surfel.ny],[surfel.nz]])
+        n_local=  np.array([[self.nx],[self.ny],[self.nz]])
+
+        if ((abs(surfel.pz-self.pz)<(self.pz/2)) and float(np.dot(n_new.T,n_local))>0.8):
+            return True
         return False
 
     def fuse_surfel(self, surfel#: SurfelElement

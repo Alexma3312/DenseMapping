@@ -65,7 +65,15 @@ class TestSurfelElement(unittest.TestCase):
 
     def test_is_fuseable(self):
         """Tests is_fuseable"""
-        pass
+        p = np.array([1, 2, 1])
+        camera_parameters = {'fx': 100, 'fy': 100,
+                             'cx': 0, 'cy': 0}
+        surf_local = SurfelElement(p[0], p[1], p[2], 1, 1, 1, 0, 0, 0, 0, 0)
+        surf_new = SurfelElement(1, 2, 1.2, 1, 1, 1, 0, 0, 0, 0, 0)
+        self.assertEqual(True, surf_local.is_fuseable(surf_new))
+        surf_new = SurfelElement(1, 2, 5, 0, 0, 0, 0, 0, 0, 0, 0)
+        self.assertEqual(False, surf_local.is_fuseable(surf_new))
+        
 
     def test_fuse_surfel(self):
         """Tests fuse_surfel"""
