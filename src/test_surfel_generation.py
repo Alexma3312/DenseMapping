@@ -25,15 +25,15 @@ class TestSurfelGeneration(unittest.TestCase):
         # initialize_surfels
         x, y = 1, 1
         size = 2
-        norm_x, norm_y, norm_z = [1,1,1]
-        position_x, position_y, position_z = [1,1,1]
+        norm_x, norm_y, norm_z = [8,9,0]
+        position_x, position_y, position_z = [5,6,7]
         view_cos = 0.1
         mean_depth = 5
         mean_intensity = 100
         fused = False
         stable = True
         min_eigen_value = 10
-        max_eigen_value = 10
+        max_eigen_value = 1
         superpixel_1 = SuperpixelSeed(x, y, size, norm_x, norm_y, norm_z, position_x, position_y, position_z,
                                       view_cos, mean_depth, mean_intensity, fused, stable, min_eigen_value, max_eigen_value)
         superpixel_2 = SuperpixelSeed(x, y, size, norm_x, norm_y, norm_z, position_x, position_y, position_z,
@@ -42,6 +42,8 @@ class TestSurfelGeneration(unittest.TestCase):
 
         surfel_generation_instance.create_surfels(1, superpixels, np.eye(4))
         pass
+
+
 
     # @unittest.skip("skip test_update_surfels")
     def test_update_surfels(self):

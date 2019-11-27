@@ -490,9 +490,6 @@ class SuperpixelExtraction():
             superpixel_seed.view_cos = view_cos
             superpixel_seed.size = np.sqrt(max_dist)
 
-            # TODO:Surfel size
-            # surfel_size =
-
             return superpixel_seed
 
         new_superpixel_seeds = [sp_update(
