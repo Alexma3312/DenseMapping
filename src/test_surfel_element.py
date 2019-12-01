@@ -77,7 +77,33 @@ class TestSurfelElement(unittest.TestCase):
 
     def test_fuse_surfel(self):
         """Tests fuse_surfel"""
-        pass
+        p = np.array([1, 2, 1])
+        surf_local = SurfelElement(1, 2, 3, 4, 5, 6, 2, 255, 8, 8, 10)
+        surf_new = SurfelElement(15, 16, 17, 18, 19, 20, 3, 200, 2, 1, 5)
+        expect_px, expect_py, expect_pz = 3.8, 4.8, 5.8
+        expect_nx, expect_ny, expect_nz = 6.8, 7.8, 8.8
+        expect_size = 2
+        expect_color = 200
+        expect_weight = 10
+        expect_update_times = 9
+        expect_last_update = 5
+        surf_local.fuse_surfel(surf_new)
+        # S_p
+        self.assertEqual(expect_px, surf_local.px)
+        self.assertEqual(expect_py, surf_local.py)
+        self.assertEqual(expect_pz, surf_local.pz)
+        # S_n
+        self.assertEqual(expect_nx, surf_local.nx)
+        self.assertEqual(expect_ny, surf_local.ny)
+        self.assertEqual(expect_nz, surf_local.nz)
+        # others
+        self.assertEqual(expect_size, surf_local.size)
+        self.assertEqual(expect_color, surf_local.color)
+        self.assertEqual(expect_weight, surf_local.weight)
+        self.assertEqual(expect_update_times, surf_local.update_times)
+        self.assertEqual(expect_last_update, surf_local.last_update)
+
+        
 
 if __name__ == "__main__":
     unittest.main()

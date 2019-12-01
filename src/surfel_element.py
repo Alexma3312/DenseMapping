@@ -10,12 +10,12 @@ class SurfelElement():
         """Surfel Element Data Structure.
         Arguments:
             px,py,pz: the surfel center
-            nx,ny,nz:
-            size: 
-            color:
-            weight:
-            update_times: 
-            last_update:
+            nx,ny,nz: the surfel normal in three axes
+            size: superpixel.size * \ fabs(superpixel.mean_depth / (camera_f * superpixel.view_cos))
+            color: intensity
+            weight: min(1.0 / superpixel.mean_depth / superpixel.mean_depth, 1.0)
+            update_times: number of update times, initialize as 1
+            last_update: reference frame
         """
         self.px, self.py, self.pz = px, py, pz
         self.nx, self.ny, self.nz = nx, ny, nz
@@ -76,4 +76,21 @@ class SurfelElement():
         Arguments:
             surfel: other surfel
         """
-        return
+        # S_c
+        self.color = surfel.color
+        # S_i
+        self.last_update = surfel.last_update
+        # S_t
+        self.update_times += 1
+        # S_r
+        self.size = min(self.size ,surfel.size)
+        # S_p
+        self.px = (self.px*self.weight+surfel.px*surfel.weight)/(self.weight + surfel.weight)
+        self.py = (self.py*self.weight+surfel.py*surfel.weight)/(self.weight + surfel.weight)
+        self.pz = (self.pz*self.weight+surfel.pz*surfel.weight)/(self.weight + surfel.weight)
+        # S_n
+        self.nx = (self.nx*self.weight+surfel.nx*surfel.weight)/(self.weight + surfel.weight)
+        self.ny = (self.ny*self.weight+surfel.ny*surfel.weight)/(self.weight + surfel.weight)
+        self.nz = (self.nz*self.weight+surfel.nz*surfel.weight)/(self.weight + surfel.weight)
+        # S_w
+        self.weight += surfel.weight
