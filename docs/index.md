@@ -84,6 +84,10 @@ depth maps have been extracted and examples shown below.
 ![rgb image from ICL-NIUM dataset](./results/superpixels/icl_rgb0.png){width=45%}
 ![depth image from ICL-NIUM dataset](./results/superpixels/icl_depth0.png){width=45%}
 
+rgb image from ICL-NIUM dataset     |  depth image from ICL-NIUM dataset
+:-------------------------:|:-------------------------:
+<img align="center" src="./results/superpixels/icl_rgb0.png" width="500"/> | <img align="center" src="./results/superpixels/icl_depth0.png" width="500"/>
+
 #### Run Existing Code
 The code written for the paper was run to ensure that the results could be
 reproduced.  Below are some results of running the code for dense reconstruction on images from the KITTI
@@ -123,6 +127,10 @@ iteration to the next.
 <!-- norm calculation -->
 We are in the process of calculating the norm which is needed for surfel
 generation.  We expect to complete this very soon.
+
+The difficulties are 
+1. Using matrix manipulation with numpy instead of for loop and multi-threads in C++ to reduce computationl cost.
+2. To understand the meaning of different values in a surfel vector. 
 
 ### Qualitative results
 <!-- Show several visual examples of inputs/outputs of your system (success cases and failures) that help us better understand your approach. -->
