@@ -52,28 +52,54 @@ October 31, 2019
 <!-- Provide details about the experimental set up (number of images/videos, number of datasets you experimented with, train/test split if you used machine learning algorithms, etc.). Describe the evaluation metrics you used to evaluate how well your approach is working. Include clear figures and tables, as well as illustrative qualitative examples if appropriate. Be sure to include obvious baselines to see if your approach is doing better than a naive approach (e.g. for classification accuracy, how well would a classifier do that made random decisions?). Also discuss any parameters of your algorithms, and tell us how you set the values of those parameters. You can also show us how the performance varies as you change those parameter values. Be sure to discuss any trends you see in your results, and explain why these trends make sense. Are the results as expected? Why? -->
 <h4 id="dataset">Dataset</h4>
 <p>We have started with the <em>kt3</em> sequence of the ICL-NIUM dataset <span class="citation" data-cites="handa2014benchmark">[<a href="#ref-handa2014benchmark" role="doc-biblioref">1</a>]</span>. Images and depth maps have been extracted and examples shown below.</p>
-<p><img src="./results/superpixels/icl_rgb0.png" style="width:45.0%" alt="rgb image from ICL-NIUM dataset" /> <img src="./results/superpixels/icl_depth0.png" style="width:45.0%" alt="depth image from ICL-NIUM dataset" /></p>
+{% comment %} <p><img src="./results/superpixels/icl_rgb0.png" style="width:45.0%" alt="rgb image from ICL-NIUM dataset" /> <img src="./results/superpixels/icl_depth0.png" style="width:45.0%" alt="depth image from ICL-NIUM dataset" /></p> {% endcomment %}
 <table>
 <thead>
 <tr class="header">
-<th style="text-align: center;">rgb image from ICL-NIUM dataset</th>
-<th style="text-align: center;">depth image from ICL-NIUM dataset</th>
+<th style="text-align: center;">RGB Image</th>
+<th style="text-align: center;">Depth Image</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><img align="center" src="./results/superpixels/icl_rgb0.png" width="500"/></td>
-<td style="text-align: center;"><img align="center" src="./results/superpixels/icl_depth0.png" width="500"/></td>
+<td style="text-align: center;"><img align="center" src="./results/superpixels/icl_rgb0.png" width="400"/></td>
+<td style="text-align: center;"><img align="center" src="./results/superpixels/icl_depth0.png" width="400"/></td>
 </tr>
 </tbody>
 </table>
 <h4 id="run-existing-code">Run Existing Code</h4>
 <p>The code written for the paper was run to ensure that the results could be reproduced. Below are some results of running the code for dense reconstruction on images from the KITTI dataset <span class="citation" data-cites="Menze2015CVPR_KITTI">[<a href="#ref-Menze2015CVPR_KITTI" role="doc-biblioref">4</a>]</span>. We showed that it can indeed produce dense reconstructions.</p>
-<p><img src="./results/kitti/kitti.png" style="width:45.0%" alt="kitti" /> <img src="./results/kitti/kitti_front.png" style="width:45.0%" alt="kitti" /></p>
-<p><img src="./results/kitti/kitti_side.png" style="width:45.0%" alt="kitti" /> <img src="./results/kitti/kitti_top.png" style="width:45.0%" alt="kitti" /></p>
+{% comment %} <p><img src="./results/kitti/kitti.png" style="width:45.0%" alt="kitti" /> <img src="./results/kitti/kitti_front.png" style="width:45.0%" alt="kitti" /></p>
+<p><img src="./results/kitti/kitti_side.png" style="width:45.0%" alt="kitti" /> <img src="./results/kitti/kitti_top.png" style="width:45.0%" alt="kitti" /></p> {% endcomment %}
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img align="center" src="./results/kitti/kitti.png" width="300"/></td>
+<td style="text-align: center;"><img align="center" src="./results/kitti/kitti_front.png" width="300"/></td>
+</tr>
+</tbody>
+</table>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img align="center" src="./results/kitti/kitti_side.png" width="300"/></td>
+<td style="text-align: center;"><img align="center" src="./results/kitti/kitti_top.png" width="300"/></td>
+</tr>
+</tbody>
+</table>
 <h4 id="superpixel-extraction">Superpixel Extraction</h4>
 <p>We have completed single-frame superpixel generation. The results are shown below.</p>
-<p><img src="./results/superpixels/superpixels_rgb.gif" style="width:45.0%" alt="superpixel annotation on RGB image" /> <img src="./results/superpixels/superpixels_depth.gif" style="width:45.0%" alt="superpixel annotation on depth image" /></p>
+{% comment %} <p><img src="./results/superpixels/superpixels_rgb.gif" style="width:45.0%" alt="superpixel annotation on RGB image" /> <img src="./results/superpixels/superpixels_depth.gif" style="width:45.0%" alt="superpixel annotation on depth image" /></p> {% endcomment %}
+{% comment %} image display {% endcomment %}
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img align="center" src="./results/superpixels/superpixels_rgb.gif" width="400"/></td>
+<td style="text-align: center;"><img align="center" src="./results/superpixels/superpixels_depth.gif" width="400"/></td>
+</tr>
+</tbody>
+</table>
+
 <p>We follow the standard implementation as described in the paper: 1. Initialize superpixel seeds - Superpixel seeds are initialized on a grid of predefined size 2. Update superpixels 1. Pixels are assigned to their nearest superpixel 2. Superpixel properties (x, y, size, intensity, depth) are updated accordingly.</p>
 <p>The number of times that step 2 is repeated depends on the image. For example, the ICL-NIUM dataset image requires only 10 iterations or so to stabilize, but the KITTI dataset image requires roughly 25 to stabilize. One metric that can potentially be used in the future as a stopping criteria is the sum of distances traveled by the superpixels from one iteration to the next. The superpixel iteration is complete when they sufficiently small changes occur from one iteration to the next.</p>
 <h4 id="surfel-generation">Surfel Generation</h4>
