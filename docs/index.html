@@ -51,11 +51,11 @@ October 31, 2019
 <h2 id="experiments-and-results">Experiments and results</h2>
 <!-- Provide details about the experimental set up (number of images/videos, number of datasets you experimented with, train/test split if you used machine learning algorithms, etc.). Describe the evaluation metrics you used to evaluate how well your approach is working. Include clear figures and tables, as well as illustrative qualitative examples if appropriate. Be sure to include obvious baselines to see if your approach is doing better than a naive approach (e.g. for classification accuracy, how well would a classifier do that made random decisions?). Also discuss any parameters of your algorithms, and tell us how you set the values of those parameters. You can also show us how the performance varies as you change those parameter values. Be sure to discuss any trends you see in your results, and explain why these trends make sense. Are the results as expected? Why? -->
 <h3 id="dataset">Dataset</h3>
-<p>We have started with the <em>kt3</em> sequence of the ICL-NIUM dataset <span class="citation" data-cites="handa2014benchmark">[<a href="#ref-handa2014benchmark">1</a>]</span>. Images and depth maps have been extracted and examples shown below.</p>
+<p>We have started with the <em>kt3</em> sequence of the ICL-NIUM dataset <span class="citation" data-cites="handa2014benchmark">[<a href="#ref-handa2014benchmark">1</a>]</span>. Images and depth maps have been extracted and examples <a href="#sec:dataset">shown below</a>.</p>
 <table>
 <thead>
 <tr class="header">
-<th style="text-align: center;">rgb image from ICL-NIUM dataset</th>
+<th style="text-align: center;">rgb image from ICL-NIUM dataset<span id="sec:dataset"></span></th>
 <th style="text-align: center;">depth image from ICL-NIUM dataset</th>
 </tr>
 </thead>
@@ -72,8 +72,8 @@ October 31, 2019
 <p><img src="./results/kitti/kitti.png" alt="kitti" style="width:45.0%" /> <img src="./results/kitti/kitti_front.png" alt="kitti" style="width:45.0%" /></p>
 <p><img src="./results/kitti/kitti_side.png" alt="kitti" style="width:45.0%" /> <img src="./results/kitti/kitti_top.png" alt="kitti" style="width:45.0%" /></p>
 <h3 id="superpixel-extraction">Superpixel Extraction</h3>
-<p>We have completed single-frame superpixel generation. The results are shown below.</p>
-<p><img src="./results/superpixels/superpixels_rgb.gif" alt="superpixel annotation on RGB image" style="width:45.0%" /> <img src="./results/superpixels/superpixels_depth.gif" alt="superpixel annotation on depth image" style="width:45.0%" /></p>
+<p>We have completed single-frame superpixel generation. The results are <a href="#fig:sp_extr">shown below</a>.</p>
+<p><img src="./results/superpixels/superpixels_rgb.gif" alt="superpixel annotation on RGB image" id="fig:sp_extr" style="width:45.0%" /> <img src="./results/superpixels/superpixels_depth.gif" alt="superpixel annotation on depth image" style="width:45.0%" /></p>
 <p>We follow the standard implementation as described in the paper:</p>
 <ol type="1">
 <li>Initialize superpixel seeds - Superpixel seeds are initialized on a grid of predefined size<br />
@@ -114,11 +114,20 @@ Fuse extrated local surfels with newly initalized surfels if they have similar d
 <h2 id="parameter-tuning">Parameter Tuning</h2>
 <p>A number of parameters during this process can be tuned and a few will be discussed:</p>
 <h3 id="number-of-frames">Number of frames</h3>
-<p>The number of frames to use to generate a surfel cloud significantly affects the result. This is because the pose estimate that we read in was not completely accurate, so errors accrue with more frames causing inconsistencies in the surfel cloud. At the same time, too few frames results in sparser clouds with more gaps. Shown below are examples of surfel clouds generated with 1, 3, 25, and 50 frames. <img src="./results/frames.gif" alt="effect of number of frames on surfel cloud result" /></p>
+<p>The number of frames to use to generate a surfel cloud significantly affects the result. This is because the pose estimate that we read in was not completely accurate, so errors accrue with more frames causing inconsistencies in the surfel cloud. At the same time, too few frames results in sparser clouds with more gaps. <a href="#fig:frames">Shown below</a> are examples of surfel clouds generated with 1, 3, 25, and 50 frames.</p>
+<figure>
+<img src="./results/frames.gif" alt="Figure: Effect of the number of frames used on surfel cloud result" id="fig:frames" /><figcaption><strong>Figure:</strong> Effect of the number of frames used on surfel cloud result</figcaption>
+</figure>
 <h3 id="superpixel-size">Superpixel Size</h3>
-<p>The generated surfels result varies when we change the parameters, such as the size of superpixels and the size of surfels. The number of superpixels in our implementation does not change during the k-means process so the size of initialized superpixels affects the general size scale of the final superpixels as well. Similarly, surfel size is dependent upon superpixel size because surfels are initialized from superpixels, so the superpixel initialization density also affects the final sizes of the surfels. Shown below are examples of surfel clouds generated with initialization superpixel sizes of 50x50, 25x25, 12x12, and 9x9. We see that too large superpixels lose detail while too small superpixels become sparse. <img src="./results/size.gif" alt="effect of superpixel initialization size on surfel cloud" /></p>
+<p>The generated surfels result varies when we change the parameters, such as the size of superpixels and the size of surfels. The number of superpixels in our implementation does not change during the k-means process so the size of initialized superpixels affects the general size scale of the final superpixels as well. Similarly, surfel size is dependent upon superpixel size because surfels are initialized from superpixels, so the superpixel initialization density also affects the final sizes of the surfels. <a href="#fig:size">Shown below</a> are examples of surfel clouds generated with initialization superpixel sizes of 50x50, 25x25, 12x12, and 9x9. We see that too large superpixels lose detail while too small superpixels become sparse.</p>
+<figure>
+<img src="./results/size.gif" alt="Figure: Effect of superpixel initialization size on surfel cloud" id="fig:size" /><figcaption><strong>Figure:</strong> Effect of superpixel initialization size on surfel cloud</figcaption>
+</figure>
 <h3 id="outlier-removal">Outlier Removal</h3>
-<p>Some surfels are poorly conditioned due to factors such as oblique viewpoint, small superpixel parent, only being visible in few frames, distance to camera, and other factors. Several checks exist in our code to eliminate obvious outliers. One example is removing surfels which don’t appear in many frames. Surfels which appear in multiple frames get “fused” and we keep track of how many times a given surfel has been fused. The animation below compares a raw surfel cloud and one which removes surfels fused less than 3 times. We notice that including these “outlier” surfels generates a more complete cloud, but at the expense of extra noise. For example, there is a cluster of surfels to the right of the filing cabinet which are not oriented correctly. <img src="./results/outliers.gif" alt="Effect of outlier removal on surfel cloud" /></p>
+<p>Some surfels are poorly conditioned due to factors such as oblique viewpoint, small superpixel parent, only being visible in few frames, distance to camera, and other factors. Several checks exist in our code to eliminate obvious outliers. One example is removing surfels which don’t appear in many frames. Surfels which appear in multiple frames get “fused” and we keep track of how many times a given surfel has been fused. The <a href="#fig:outlier">animation below</a> compares a raw surfel cloud and one which removes surfels fused less than 3 times. We notice that including these “outlier” surfels generates a more complete cloud, but at the expense of extra noise. For example, there is a cluster of surfels to the right of the filing cabinet which are not oriented correctly.</p>
+<figure>
+<img src="./results/outliers.gif" alt="Figure: Effect of outlier removal on surfel cloud" id="fig:outlier" /><figcaption><strong>Figure:</strong> Effect of outlier removal on surfel cloud</figcaption>
+</figure>
 <h2 id="qualitative-results">Qualitative results</h2>
 <!-- Show several visual examples of inputs/outputs of your system (success cases and failures) that help us better understand your approach. -->
 <p>The images below demonstrate that the superpixels are indeed segmenting properly as they tend to “hug” similarly colored/depthed regions.</p>

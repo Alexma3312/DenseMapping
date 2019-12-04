@@ -75,14 +75,11 @@ estimate camera poses
 
 <!-- 6. 3D mesh with surfel cloud. -->
 
-## Experiments and results
-<!-- Provide details about the experimental set up (number of images/videos, number of datasets you experimented with, train/test split if you used machine learning algorithms, etc.). Describe the evaluation metrics you used to evaluate how well your approach is working. Include clear figures and tables, as well as illustrative qualitative examples if appropriate. Be sure to include obvious baselines to see if your approach is doing better than a naive approach (e.g. for classification accuracy, how well would a classifier do that made random decisions?). Also discuss any parameters of your algorithms, and tell us how you set the values of those parameters. You can also show us how the performance varies as you change those parameter values. Be sure to discuss any trends you see in your results, and explain why these trends make sense. Are the results as expected? Why? -->
-
 ### Dataset
 We have started with the _kt3_ sequence of the ICL-NIUM dataset [@handa2014benchmark].  Images and
-depth maps have been extracted and examples shown below.
+depth maps have been extracted and examples [shown below](#sec:dataset).
 
-rgb image from ICL-NIUM dataset     |  depth image from ICL-NIUM dataset
+rgb image from ICL-NIUM dataset[]{#sec:dataset}     |  depth image from ICL-NIUM dataset
 :-------------------------:|:-------------------------:
 <img align="center" src="./results/superpixels/icl_rgb0.png" width="500"/> | <img align="center" src="./results/superpixels/icl_depth0.png" width="500"/>
 <br />
@@ -99,10 +96,10 @@ dataset [@Menze2015CVPR_KITTI].  We showed that it can indeed produce dense reco
 ![kitti](./results/kitti/kitti_top.png){width=45%}
 
 ### Superpixel Extraction
-We have completed single-frame superpixel generation.  The results are shown
-below.
+We have completed single-frame superpixel generation.  The results are [shown
+below](#fig:sp_extr).
 
-![superpixel annotation on RGB image](./results/superpixels/superpixels_rgb.gif){width=45%}
+![superpixel annotation on RGB image](./results/superpixels/superpixels_rgb.gif){#fig:sp_extr width=45%}
 ![superpixel annotation on depth
 image](./results/superpixels/superpixels_depth.gif){width=45%}
 
@@ -122,14 +119,6 @@ potentially be used in the future as a stopping criteria is the sum of distances
 traveled by the superpixels from one iteration to the next.  The superpixel
 iteration is complete when they sufficiently small changes occur from one
 iteration to the next.
-
-<!-- Show several visual examples of inputs/outputs of your system (success cases and failures) that help us better understand your approach. -->
-The images below demonstrate that the superpixels are indeed segmenting properly
-as they tend to "hug" similarly colored/depthed regions.
-
-![superpixel annotation on RGB image](./results/superpixels/kitti_superpixels_rgb.png){width=100%}
-![superpixel annotation on depth
-image](./results/superpixels/kitti_superpixels_depth.png){width=100%}
 
 ### Surfel Generation and Fusion
 <!-- norm calculation -->
@@ -168,17 +157,29 @@ different normal directions.
 We have now recreated the dense reconstruction surfel cloud results from [@Wang19icra_surfelDense]
 that we sought out to achieve.
 
-## Parameter Tuning
+## Experiments and results
+<!-- Provide details about the experimental set up (number of images/videos, number of datasets you experimented with, train/test split if you used machine learning algorithms, etc.). Describe the evaluation metrics you used to evaluate how well your approach is working. Include clear figures and tables, as well as illustrative qualitative examples if appropriate. Be sure to include obvious baselines to see if your approach is doing better than a naive approach (e.g. for classification accuracy, how well would a classifier do that made random decisions?). Also discuss any parameters of your algorithms, and tell us how you set the values of those parameters. You can also show us how the performance varies as you change those parameter values. Be sure to discuss any trends you see in your results, and explain why these trends make sense. Are the results as expected? Why? -->
 
-A number of parameters during this process can be tuned and a few will be discussed:
+A number of parameters can be tuned for surfel generation and a few will be discussed:
 
-### Number of frames
+1. K-means iterations for superpixel extraction
+2. Number of frames used in surfel cloud generation
+3. Superpixel size used in initialization of superpixel seeds
+4. Outlier removal criteria
+
+We then finish with a qualitative description of the resulting surfel clouds.
+
+### K-means Iterations 
+As mentioned earlier and shown in both 
+
+### Number of Frames
 The number of frames to use to generate a surfel cloud
 significantly affects the result.  This is because the pose estimate that we read in was not
 completely accurate, so errors accrue with more frames causing inconsistencies in the surfel cloud.
-At the same time, too few frames results in sparser clouds with more gaps.  Shown below are examples
+At the same time, too few frames results in sparser clouds with more gaps.  [Shown below](#fig:frames) are examples
 of surfel clouds generated with 1, 3, 25, and 50 frames.
-![effect of number of frames on surfel cloud result](./results/frames.gif)
+
+![**Figure:** Effect of the number of frames used on surfel cloud result](./results/frames.gif){#fig:frames}
 
 ### Superpixel Size
 The generated surfels result varies when we change the parameters, such as the size of superpixels
@@ -186,32 +187,34 @@ and the size of surfels.  The number of superpixels in our implementation does n
 k-means process so the size of initialized superpixels affects the general size scale of the final
 superpixels as well.  Similarly, surfel size is dependent upon superpixel size because surfels are
 initialized from superpixels, so the superpixel initialization density also affects the final sizes
-of the surfels.  Shown below are examples of surfel clouds generated with initialization superpixel
+of the surfels.  [Shown below](#fig:size) are examples of surfel clouds generated with initialization superpixel
 sizes of 50x50, 25x25, 12x12, and 9x9.  We see that too large superpixels lose detail while too
 small superpixels become sparse.
-![effect of superpixel initialization size on surfel cloud](./results/size.gif)
+
+![**Figure:** Effect of superpixel initialization size on surfel cloud](./results/size.gif){#fig:size}
 
 ### Outlier Removal
 Some surfels are poorly conditioned due to factors such as oblique viewpoint, small superpixel
 parent, only being visible in few frames, distance to camera, and other factors.  Several checks
 exist in our code to eliminate obvious outliers.  One example is removing surfels which don't appear
 in many frames.  Surfels which appear in multiple frames get "fused" and we keep track of how many
-times a given surfel has been fused.  The animation below compares a raw surfel cloud and one which
+times a given surfel has been fused.  The [animation below](#fig:outlier) compares a raw surfel cloud and one which
 removes surfels fused less than 3 times.  We notice that including these "outlier" surfels generates
 a more complete cloud, but at the expense of extra noise.  For example, there is a cluster of surfels to the
 right of the filing cabinet which are not oriented correctly.
-![Effect of outlier removal on surfel cloud](./results/outliers.gif)
 
-## Qualitative results
+![**Figure:** Effect of outlier removal on surfel cloud](./results/outliers.gif){#fig:outlier}
+
+## Qualitative Results
 <!-- Show several visual examples of inputs/outputs of your system (success cases and failures) that help us better understand your approach. -->
-The images below demonstrate that the superpixels are indeed segmenting properly
+The superpixel-segmented [images below](#fig:kitti_sp) from the KITTI [@Menze2015CVPR_KITTI] dataset demonstrate that the superpixels are indeed segmenting properly
 as they tend to "hug" similarly colored/depthed regions.
 
-![superpixel annotation on RGB image](./results/superpixels/kitti_superpixels_rgb.png){width=100%}
+![superpixel annotation on RGB image](./results/superpixels/kitti_superpixels_rgb.png){fig:kitti_sp width=100%}
 ![superpixel annotation on depth
 image](./results/superpixels/kitti_superpixels_depth.png){width=100%}
 
-## Conclusion and future work
+## Conclusion and Future Work
 <!-- Conclusion would likely make the same points as the abstract. Discuss any future ideas you have to make your approach better. -->
 We recreated the results of [@Wang19icra_surfelDense] by creating a surfel
 cloud given RGBD images and camera poses. The difficulties in this project are 
