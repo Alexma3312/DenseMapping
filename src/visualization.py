@@ -1,11 +1,15 @@
 import cv2
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.patches import Circle
 import numpy as np
 
 from superpixel_extraction import SuperpixelExtraction
 from surfel_generation import SurfelGeneration
 from utilities.data_helper import read_ground_truth_poses
+from utilities.patch2d_to_3d import pathpatch_2d_to_3d, pathpatch_translate
+from surfel_element import SurfelElement
+from typing import List
 
 def rgb2gray(rgb):
     if (rgb.ndim==3):
@@ -39,6 +43,38 @@ def plot_sp(image, superpixel_idx, superpixels, toPlot=True):
         #     [sp.y*image.shape[0]/superpixel_idx.shape[0] for sp in superpixels], s=1)
         plt.draw();plt.pause(0.001)
     return image_sp
+
+def plot_surfels(all_surfels: List[SurfelElement]):
+    print('plotting surfels...')
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    for surfel in all_surfels:
+        p = Circle((0, 0), 0.01 + 0*surfel.size / 10000000, facecolor=(surfel.color,)*3, alpha=.8)
+        ax.add_patch(p)
+        pathpatch_2d_to_3d(p, z=0, normal=(surfel.nx, surfel.ny, surfel.nz))
+        pathpatch_translate(p, (surfel.px, surfel.py, surfel.pz))
+    
+    # calculate bounds
+    mins = [1e9, 1e9, 1e9]
+    maxs = [-1e9, -1e9, -1e9]
+    for surfel in all_surfels:
+        mins[0] = min(mins[0], surfel.px)
+        mins[1] = min(mins[1], surfel.py)
+        mins[2] = min(mins[2], surfel.pz)
+        maxs[0] = max(maxs[0], surfel.px)
+        maxs[1] = max(maxs[1], surfel.py)
+        maxs[2] = max(maxs[2], surfel.pz)
+    rs = [maxs[i]-mins[i] for i in range(3)]
+    mins = [m-0.1*r for m,r in zip(mins, rs)]
+    maxs = [m+0.1*r for m,r in zip(maxs, rs)]
+    ax.set_xlim([mins[0], maxs[0]])
+    ax.set_ylim([mins[1], maxs[1]])
+    ax.set_zlim([mins[2], maxs[2]])
+
+    print('done plotting')
+    plt.show()
 
 def get_all_superpixels(folder_rgb, folder_depth, filenames):
     print('Extracting superpixels for all frames...')
@@ -90,7 +126,9 @@ def main():
         all_surfels = np.load('../dataset/results/surfels.npy').all_surfels
     else:
         sg = get_all_surfels(all_superpixels)
-        np.save('../dataset/results/surfels', sg)
+        np.save('../dataset/results/surfels', [sg])
+        all_surfels = sg.all_surfels
+    plot_surfels(all_surfels)
 
 def main_old():
     image_full = plt.imread('../dataset/rgb/kitti.png')

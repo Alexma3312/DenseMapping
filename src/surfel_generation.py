@@ -65,7 +65,7 @@ class SurfelGeneration():
             if (sp.mean_depth == 0) or (sp.fused) or (sp.view_cos < self.MAX_ANGLE_COS):
                 superpixels.remove(sp)
         new_surfels = self.create_surfels(frame_idx, superpixels, pose)
-        print(new_surfels)
+        # print(new_surfels)
         projected_locs = np.zeros((len(self.all_surfels), 2))
         for i in range(len(self.all_surfels)):
             projected_locs[i, :] = \
