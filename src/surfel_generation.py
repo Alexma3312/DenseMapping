@@ -9,7 +9,7 @@ import numpy as np
 
 class SurfelGeneration():
     """Surfel Generation."""
-    def __init__(self, camera_parameters, MAX_ANGLE_COS=0.1, VERBOSE=False):
+    def __init__(self, camera_parameters, MAX_ANGLE_COS=.1, VERBOSE=False):
         self.all_surfels = []
         self.camera_parameters = camera_parameters
         self.MAX_ANGLE_COS = MAX_ANGLE_COS
@@ -30,6 +30,8 @@ class SurfelGeneration():
         inverse_pose = np.zeros((4,4))
         inverse_pose[0:3, 0:3] = pose[0:3, 0:3].transpose()
         inverse_pose[0:3, 3] = -np.dot(inverse_pose[0:3, 0:3], pose[0:3, 3])
+        inverse_pose[3, 3] = 1
+
         surfels = []
         for superpixel in superpixels:
             px = superpixel.posi_x
@@ -51,7 +53,7 @@ class SurfelGeneration():
             last_update = frame_idx
             surfel = SurfelElement(
                 px, py, pz, nx, ny, nz, new_size, color, weight, update_times, last_update)
-            surfels.append(surfel.change_coordinates(inverse_pose))
+            surfels.append(surfel.change_coordinates(pose))
         return surfels
 
     def update_surfels(self, frame_idx, superpixels: List[SuperpixelSeed], pose) -> None:
@@ -61,8 +63,9 @@ class SurfelGeneration():
             superpixels: list of SuperpixelSeed
             pose: camera pose in world coordinates
         """
-        for sp in superpixels:
-            if (sp.mean_depth == 0) or (sp.fused) or (sp.view_cos < self.MAX_ANGLE_COS):
+        superpixels_copy = superpixels.copy()
+        for sp in superpixels_copy:
+            if (sp.mean_depth == 0) or (sp.fused) or (sp.view_cos < self.MAX_ANGLE_COS) or np.isnan(sp.view_cos):
                 superpixels.remove(sp)
         new_surfels = self.create_surfels(frame_idx, superpixels, pose)
         # print(new_surfels)
