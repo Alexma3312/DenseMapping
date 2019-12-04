@@ -9,6 +9,7 @@ from surfel_generation import SurfelGeneration
 from utilities.data_helper import read_ground_truth_poses
 from utilities.patch2d_to_3d import pathpatch_2d_to_3d, pathpatch_translate
 from surfel_element import SurfelElement
+from superpixel_seed import SuperpixelSeed
 from typing import List
 
 def rgb2gray(rgb):
@@ -44,14 +45,35 @@ def plot_sp(image, superpixel_idx, superpixels, toPlot=True):
         plt.draw();plt.pause(0.001)
     return image_sp
 
+def plot_superpixels(all_superpixels: List[SuperpixelSeed]):
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    all_x = [sp.posi_x for sp in all_superpixels]
+    all_y = [sp.posi_y for sp in all_superpixels]
+    all_z = [sp.posi_z for sp in all_superpixels]
+    ax.scatter(all_x, all_y, all_z)
+
+    plt.show()
+
 def plot_surfels(all_surfels: List[SurfelElement]):
     print('plotting surfels...')
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
+    all_sizes = np.array([surfel.size for surfel in all_surfels])
+    all_sizes[np.isinf(all_sizes)] = np.nan
+
+    all_surfels_trans = []
     for surfel in all_surfels:
-        p = Circle((0, 0), 0.01 + 0*surfel.size / 10000000, facecolor=(surfel.color,)*3, alpha=.8)
+        surfel_t = surfel
+        surfel_t.nx, surfel_t.ny, surfel_t.nz = surfel_t.nx, surfel_t.nz, -surfel_t.ny
+        surfel_t.px, surfel_t.py, surfel_t.pz = surfel_t.px, surfel_t.pz, -surfel_t.py
+        all_surfels_trans.append(surfel_t)
+    for surfel in all_surfels_trans:
+        p = Circle((0, 0), 1*0.01 + 0*0.1*surfel.size / np.nanmax(all_sizes), facecolor=(surfel.color,)*3, alpha=.8)
         ax.add_patch(p)
         pathpatch_2d_to_3d(p, z=0, normal=(surfel.nx, surfel.ny, surfel.nz))
         pathpatch_translate(p, (surfel.px, surfel.py, surfel.pz))
@@ -59,7 +81,7 @@ def plot_surfels(all_surfels: List[SurfelElement]):
     # calculate bounds
     mins = [1e9, 1e9, 1e9]
     maxs = [-1e9, -1e9, -1e9]
-    for surfel in all_surfels:
+    for surfel in all_surfels_trans:
         mins[0] = min(mins[0], surfel.px)
         mins[1] = min(mins[1], surfel.py)
         mins[2] = min(mins[2], surfel.pz)
@@ -80,13 +102,14 @@ def get_all_superpixels(folder_rgb, folder_depth, filenames):
     print('Extracting superpixels for all frames...')
     all_superpixels = []
     for i, filename in enumerate(filenames):
-        print('now processing frame {:d} of {:d}'.format(i+1, len(filenames)))
+        print('now processing frame {:d} of {:d} ('.format(i+1, len(filenames)) + filename + ')')
         image_full = plt.imread(folder_rgb + filename)
-        image_full = gray2rgb(image_full)
+        if (image_full.ndim < 3):
+            image_full = gray2rgb(image_full)
         depth_full = plt.imread(folder_depth + filename)# / 5000
         depth_full = rgb2gray(depth_full)
         scale = 0.5
-        image = cv2.resize(image_full,
+        image = cv2.resize(rgb2gray(image_full),
             (int(np.size(image_full,1)*scale), int(np.size(image_full,0)*scale)))
         depth = cv2.resize(depth_full,
             (int(np.size(depth_full,1)*scale), int(np.size(depth_full,0)*scale)))# * scale
@@ -101,7 +124,9 @@ def get_all_superpixels(folder_rgb, folder_depth, filenames):
         all_superpixels.append(superpixels)
     return all_superpixels
 
-def get_all_surfels(all_superpixels):
+def get_all_surfels(all_superpixels, indexes=None):
+    if (indexes == None):
+        indexes = [i for i in range(len(filenames))]
     print('Fusing all surfels...')
     poses = read_ground_truth_poses()
     scale = 0.5
@@ -109,31 +134,36 @@ def get_all_surfels(all_superpixels):
                         'cx': 319.5*scale, 'cy': 239.5*scale}
     sg = SurfelGeneration(camera_parameters)
     for i, superpixels in enumerate(all_superpixels):
-        print('updating surfels for frame {:d} of {:d}'.format(i+1, len(all_superpixels)))
-        sg.update_surfels(i, list(superpixels), poses[i])
+        print('updating surfels for frame #{:d} ({:d} of {:d})'.format(indexes[i], i+1, len(all_superpixels)))
+        sg.update_surfels(i, list(superpixels), poses[indexes[i]])
+        print(poses[indexes[i]])
+        return sg
     return sg
 
 def main():
+    folder_rgb = '../dataset/rgb/'
+    folder_depth = '../dataset/depth/'
+    indexes = [i for i in range(0, 200, 100)]
+    filenames = ['{:d}.png'.format(i) for i in indexes]
+
     if True:
-        all_superpixels = np.load('../dataset/results/all_superpixels.npy')
+        all_superpixels = np.load('../dataset/results/all_superpixels_3.npy')
     else:
-        folder_rgb = '../dataset/rgb/'
-        folder_depth = '../dataset/depth/'
-        filenames = ['{:d}.png'.format(i) for i in range(2)]
         all_superpixels = get_all_superpixels(folder_rgb, folder_depth, filenames)
-        np.save('../dataset/results/all_superpixels', all_superpixels)
+        np.save('../dataset/results/all_superpixels_3', all_superpixels)
     if False:
         all_surfels = np.load('../dataset/results/surfels.npy').all_surfels
     else:
-        sg = get_all_surfels(all_superpixels)
+        sg = get_all_surfels(all_superpixels, indexes=indexes)
         np.save('../dataset/results/surfels', [sg])
         all_surfels = sg.all_surfels
+    # plot_superpixels(all_superpixels[0])
     plot_surfels(all_surfels)
 
 def main_old():
-    image_full = plt.imread('../dataset/rgb/kitti.png')
-    image_full = gray2rgb(image_full)
-    depth_full = plt.imread('../dataset/depth/kitti.png')# / 5000
+    image_full = plt.imread('../dataset/rgb/0.png')
+    # image_full = gray2rgb(image_full)
+    depth_full = plt.imread('../dataset/depth/0.png')# / 5000
     depth_full = rgb2gray(depth_full)
     scale = 0.5
     image = cv2.resize(image_full,
@@ -156,16 +186,16 @@ def main_old():
     plt.draw();plt.pause(0.001)
     # superpixels
     superpixels = spExtractor.init_seeds()
-    for i in range(25):
+    for i in range(5):
         superpixel_idx = spExtractor.assign_pixels(superpixels)
         superpixels = spExtractor.update_seeds(superpixel_idx, superpixels)
         # plt.subplot(2,1,1)
         image_sp = plot_sp(image_full, superpixel_idx, superpixels, toPlot=False)
         # plt.subplot(2,1,2)
         depth_sp = plot_sp(depth_full, superpixel_idx, superpixels, toPlot=False)
-        plt.imsave('../dataset/results/kitti_superpixels_rgb{:02d}'.format(i), image_sp)
-        plt.imsave('../dataset/results/kitti_superpixels_depth{:02d}'.format(i), depth_sp)
-    # superpixels = spExtractor.calc_norms(superpixel_idx, superpixels)
+        # plt.imsave('../dataset/results/kitti_superpixels_rgb{:02d}'.format(i), image_sp)
+        # plt.imsave('../dataset/results/kitti_superpixels_depth{:02d}'.format(i), depth_sp)
+    superpixels = spExtractor.calc_norms(superpixel_idx, superpixels)
 
     # # plotting
     plt.subplot(2,1,1)
@@ -173,24 +203,24 @@ def main_old():
     plt.subplot(2,1,2)
     depth_sp = plot_sp(depth_full, superpixel_idx, superpixels)
 
-    plt.imsave('../dataset/results/kitti_superpixels_rgb', image_sp)
-    plt.imsave('../dataset/results/kitti_superpixels_depth', depth_sp)
+    # plt.imsave('../dataset/results/kitti_superpixels_rgb', image_sp)
+    # plt.imsave('../dataset/results/kitti_superpixels_depth', depth_sp)
 
-    # plt.figure(2)
-    # ax1 = plt.subplot(1,1,1, projection='3d')
-    # xs = np.array([sp.posi_x for sp in superpixels])
-    # ys = np.array([sp.posi_y for sp in superpixels])
-    # zs = np.array([sp.posi_z for sp in superpixels])
-    # ints = np.array([sp.mean_intensity for sp in superpixels])
-    # xns = np.array([sp.norm_x for sp in superpixels])
-    # yns = np.array([sp.norm_y for sp in superpixels])
-    # zns = np.array([sp.norm_z for sp in superpixels])
-    # normnorms = np.sqrt(np.square(xns) + np.square(yns) + np.square(zns))
-    # xns = xns / normnorms / 15
-    # yns = yns / normnorms / 15
-    # zns = zns / normnorms / 15
-    # ax1.scatter(xs, zs, -ys)#, c=ints, cmap='Greys')
-    # # ax1.quiver(xs, zs, -ys, xns, zns, -yns)
+    plt.figure(2)
+    ax1 = plt.subplot(1,1,1, projection='3d')
+    xs = np.array([sp.posi_x for sp in superpixels])
+    ys = np.array([sp.posi_y for sp in superpixels])
+    zs = np.array([sp.posi_z for sp in superpixels])
+    ints = np.array([sp.mean_intensity for sp in superpixels])
+    xns = np.array([sp.norm_x for sp in superpixels])
+    yns = np.array([sp.norm_y for sp in superpixels])
+    zns = np.array([sp.norm_z for sp in superpixels])
+    normnorms = np.sqrt(np.square(xns) + np.square(yns) + np.square(zns))
+    xns = xns / normnorms / 15
+    yns = yns / normnorms / 15
+    zns = zns / normnorms / 15
+    ax1.scatter(xs, zs, -ys)#, c=ints, cmap='Greys')
+    # ax1.quiver(xs, zs, -ys, xns, zns, -yns)
 
     # # im3 = spExtractor.calculate_spaces()
     # # xs = im3[:,:,0].flatten()
