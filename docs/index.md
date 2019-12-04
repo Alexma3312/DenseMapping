@@ -127,9 +127,9 @@ method as described in the paper:
 
 1. Surfel Initialization:  
     Initialize superpixel cluster that has enough assigned seeds with a set of reasonable initial
-    value.  
+    values.  
 2. Surfel Fusion:  
-    Fuse extrated local surfels with newly initalized surfels if they have similar depth and normals. 
+    Fuse extracted local surfels with newly initalized surfels if they have similar depth and normals. 
     Transform fused local surfels into the global frame, and remove those are updated less than 5
     times.
 
