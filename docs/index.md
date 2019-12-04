@@ -53,7 +53,7 @@ accompanying camera poses and the **output** is a surfel cloud map of the
 environment, similar to Figures 4b or 8 of the original paper
 [@Wang19icra_surfelDense].
 
-## Approach
+## Implementation
 The idea behind dense mapping is to first generate frame related poses, then
 reconstruct the dense map based on pre-generated poses and surfels.
 
@@ -242,7 +242,7 @@ cloud below](#fig:qualitativeSurfel).
 
 ## Conclusion and Future Work
 <!-- Conclusion would likely make the same points as the abstract. Discuss any future ideas you have to make your approach better. -->
-We recreated the results of [@Wang19icra_surfelDense] by creating a surfel
+We successfully recreated the results of [@Wang19icra_surfelDense] by creating a surfel
 cloud given RGBD images and camera poses.
 Furthermore, we investigated and reported the effects of various parameters on the resulting surfel
 clouds and discussed qualitative results from our reconstructions.

@@ -39,7 +39,7 @@ Dec 4, 2019
 <p>One of the fundamental tasks for robot autonomous navigation is to perceive and digitalize the surrounding 3D environment <span class="citation" data-cites="handa2014benchmark">[<a href="#ref-handa2014benchmark">1</a>]</span>. To be usable in mobile robot applications, the mapping system needs to fast and densely recover the environment in order to provide sufficient information for navigation.</p>
 <p>Unlike other 3d reconstruction methods that reconstructs the environment as a 3D point cloud, we hope to extract surfels  based on extracted superpixels from intensity and depth images and construct a surfel cloud. This approach is introduced by <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense">2</a>]</span> which can greatly reduces the memory burden of mapping system when applied to large-scale missions. More importantly, outliers and noise from low-quality depth maps can be reduced based on extracted superpixels.</p>
 <p>The <strong>goal</strong> of our project is to reproduce results of Wang et al’s, namely implementing superpixel extraction, surfel initialization, and surfel fusion to generate a surfel-based reconstruction given a camera poses from a sparse SLAM implementation. The <strong>input</strong> to our system is an RGB-D video stream with accompanying camera poses and the <strong>output</strong> is a surfel cloud map of the environment, similar to Figures 4b or 8 of the original paper <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense">2</a>]</span>.</p>
-<h2 id="approach">Approach</h2>
+<h2 id="implementation">Implementation</h2>
 <p>The idea behind dense mapping is to first generate frame related poses, then reconstruct the dense map based on pre-generated poses and surfels.</p>
 <ol type="1">
 <li><p>Select an RGB-D dataset <span class="citation" data-cites="handa2014benchmark sturm12iros_TUM Menze2015CVPR_KITTI">[<a href="#ref-handa2014benchmark">1</a>], [<a href="#ref-sturm12iros_TUM">3</a>], [<a href="#ref-Menze2015CVPR_KITTI">4</a>]</span></p></li>
@@ -154,7 +154,7 @@ Fuse extrated local surfels with newly initalized surfels if they have similar d
 </figure>
 <h2 id="conclusion-and-future-work">Conclusion and Future Work</h2>
 <!-- Conclusion would likely make the same points as the abstract. Discuss any future ideas you have to make your approach better. -->
-<p>We recreated the results of <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense">2</a>]</span> by creating a surfel cloud given RGBD images and camera poses. Furthermore, we investigated and reported the effects of various parameters on the resulting surfel clouds and discussed qualitative results from our reconstructions.</p>
+<p>We successfully recreated the results of <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense">2</a>]</span> by creating a surfel cloud given RGBD images and camera poses. Furthermore, we investigated and reported the effects of various parameters on the resulting surfel clouds and discussed qualitative results from our reconstructions.</p>
 <p>During this project, several difficulties were faces, such as</p>
 <ul>
 <li>Debugging conversions between camera projections, coordinate frames, and data types</li>
