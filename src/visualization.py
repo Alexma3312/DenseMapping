@@ -106,13 +106,14 @@ def get_all_superpixels(folder_rgb, folder_depth, filenames, folder_cache='../da
     print('Extracting superpixels for all frames...')
     all_superpixels = []
     for i, filename in enumerate(filenames):
-        try:
-            superpixels = np.load(folder_cache+filename[:-4]+'.npy')
-            print('loaded frame {:d} of {:d} ('.format(i+1, len(filenames)) + filename + ') from cache')
-            all_superpixels.append(superpixels)
-            continue
-        except FileNotFoundError:
-            pass
+        if folder_cache is not None:
+            try:
+                superpixels = np.load(folder_cache+filename[:-4]+'.npy')
+                print('loaded frame {:d} of {:d} ('.format(i+1, len(filenames)) + filename + ') from cache')
+                all_superpixels.append(superpixels)
+                continue
+            except FileNotFoundError:
+                pass
         print('now processing frame {:d} of {:d} ('.format(i+1, len(filenames)) + filename + ')')
         image_full = plt.imread(folder_rgb + filename)
         if (image_full.ndim < 3):
@@ -158,23 +159,32 @@ def main():
     folder_depth = '../dataset/depth/'
     # indexes = [i for i in range(0, 400, 100)]
     # indexes = [i for i in range(0, 15, 3)]
-    indexes = [i for i in range(0, 250, 10)]
+    indexes = [i for i in range(0, 10, 10)]
     filenames = ['{:d}.png'.format(i) for i in indexes]
 
     if False:
         all_superpixels = np.load('../dataset/results/all_superpixels_good.npy')
     else:
+        # all_superpixels = get_all_superpixels(folder_rgb, folder_depth, filenames,
+        #                                       folder_cache='../dataset/superpixels_extra_coarse/')
         all_superpixels = get_all_superpixels(folder_rgb, folder_depth, filenames,
-                                              folder_cache='../dataset/superpixels_fine/')
+                                              folder_cache=None)
         # np.save('../dataset/results/all_superpixels_good', all_superpixels)
     if False:
-        all_surfels = np.load('../dataset/results/surfels.npy').all_surfels
+        all_surfels = np.load('../dataset/results/surfels.npy')[0].all_surfels
     else:
         sg = get_all_surfels(all_superpixels, indexes=indexes)
-        np.save('../dataset/results/surfels', [sg])
+        # np.save('../dataset/results/surfels1', [sg])
         all_surfels = sg.all_surfels
+    # print('removing outliers')
+    # all_surfels_copy = all_surfels.copy()
+    # for surfel in all_surfels_copy:
+    #     if (surfel.update_times < 3):
+    #         all_surfels.remove(surfel)
+    print('exporting...')
+    generate_pointcloud(all_surfels, '../dataset/test1.ply')
+
     # plot_superpixels(all_superpixels[0])
-    generate_pointcloud(all_surfels, '../dataset/test.ply')
     # plot_surfels(all_surfels)
 
 def main_old():
