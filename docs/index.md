@@ -107,11 +107,11 @@ below.
 ![superpixel annotation on depth
 image](./results/superpixels/superpixels_depth.gif){width=45%}
 
-We follow the standard implementation as described in the paper:
+We follow the standard implementation as described in the paper:  
 1. Initialize superpixel seeds - 
-    Superpixel seeds are initialized on a grid of predefined size
-2. Update superpixels
-    1. Pixels are assigned to their nearest superpixel
+    Superpixel seeds are initialized on a grid of predefined size  
+2. Update superpixels  
+    1. Pixels are assigned to their nearest superpixel  
     2. Superpixel properties (x, y, size, intensity, depth) are updated
        accordingly.
 
@@ -135,12 +135,39 @@ Surfels are modeled with the superpixels extracted from intensity and depth imag
     Fuse extrated local surfels with newly initalized surfels if they have similar depth and normals. 
     Transform fused local surfels into the global frame, and remove those are updated less than 5 times.
 
-For a single-frame surfel generation, the results are shown below:
+A number of parameters during this process can be tuned and a few will be discussed.
 
-For multipule-frame surfel generation, the results are shown below:
+##### Number of frames
+The number of frames to use to generate a surfel cloud
+significantly affects the result.  This is because the pose estimate that we read in was not
+completely accurate, so errors accrue with more frames causing inconsistencies in the surfel cloud.
+At the same time, too few frames results in sparser clouds with more gaps.  Shown below are examples
+of surfel clouds generated with 1, 3, 25, and 50 frames.
+![effect of number of frames on surfel cloud result](./results/frames.gif)
 
-The generated surfels result varies when we change the parameters, such as the size of superpixels and the size of surfels. Different results are shown as following:
+##### Superpixel Size
+The generated surfels result varies when we change the parameters, such as the size of superpixels
+and the size of surfels.  The number of superpixels in our implementation does not change during the
+k-means process so the size of initialized superpixels affects the general size scale of the final
+superpixels as well.  Similarly, surfel size is dependent upon superpixel size because surfels are
+initialized from superpixels, so the superpixel initialization density also affects the final sizes
+of the surfels.  Shown below are examples of surfel clouds generated with initialization superpixel
+sizes of 50x50, 25x25, 12x12, and 9x9.  We see that too large superpixels lose detail while too
+small superpixels become sparse.
+![effect of superpixel initialization size on surfel cloud](./results/size.gif)
 
+##### Outlier Removal
+Some surfels are poorly conditioned due to factors such as oblique viewpoint, small superpixel
+parent, only being visible in few frames, distance to camera, and other factors.  Several checks
+exist in our code to eliminate obvious outliers.  One example is removing surfels which don't appear
+in many frames.  Surfels which appear in multiple frames get "fused" and we keep track of how many
+times a given surfel has been fused.  The animation below compares a raw surfel cloud and one which
+removes surfels fused less than 3 times.  We notice that including these "outlier" surfels generates
+a more complete cloud, but at the expense of extra noise.  For example, there is a cluster of surfels to the
+right of the filing cabinet which are not oriented correctly.
+![Effect of outlier removal on surfel cloud](./results/outliers.gif)
+
+##### difficulties
 The difficulties are 
 1. Using matrix manipulation with numpy instead of for loop and multi-threads in C++ to reduce computationl cost.
 2. To understand the meaning of different values in a surfel vector. 
