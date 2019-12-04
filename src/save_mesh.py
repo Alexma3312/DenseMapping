@@ -62,6 +62,8 @@ def generate_pointcloud(surfels,ply_file):
         surfel_norm = np.array([surfel.nx, surfel.ny, surfel.nz])
         x_dir = np.array([-surfel.ny,surfel.nx,0])
         y_dir = np.cross(surfel_norm,x_dir)
+        x_dir = x_dir / np.linalg.norm(x_dir)
+        y_dir = y_dir / np.linalg.norm(y_dir)
         radius = surfel.size
         h_r = radius*0.5
         t_r = radius*0.86603
