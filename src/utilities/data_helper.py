@@ -62,7 +62,7 @@ def read_ground_truth_poses():
     Return:
         rgb_img - height x width x 3 numpy array
     """
-    file_path = 'dataset/traj3.gt.freiburg'
+    file_path = '../dataset/traj3.gt.freiburg'
     with open(file_path) as file:
         lines = file.readlines()[:]
     def get_pose(line):

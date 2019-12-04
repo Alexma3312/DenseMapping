@@ -41,9 +41,10 @@ def plot_sp(image, superpixel_idx, superpixels, toPlot=True):
     return image_sp
 
 def get_all_superpixels(folder_rgb, folder_depth, filenames):
+    print('Extracting superpixels for all frames...')
     all_superpixels = []
     for i, filename in enumerate(filenames):
-        print('now processing file {:d} of {:d}'.format(i+1, len(filenames)))
+        print('now processing frame {:d} of {:d}'.format(i+1, len(filenames)))
         image_full = plt.imread(folder_rgb + filename)
         image_full = gray2rgb(image_full)
         depth_full = plt.imread(folder_depth + filename)# / 5000
@@ -65,17 +66,18 @@ def get_all_superpixels(folder_rgb, folder_depth, filenames):
     return all_superpixels
 
 def get_all_surfels(all_superpixels):
+    print('Fusing all surfels...')
+    poses = read_ground_truth_poses()
     scale = 0.5
     camera_parameters = {'fx': 525*scale, 'fy': 525*scale,
                         'cx': 319.5*scale, 'cy': 239.5*scale}
     sg = SurfelGeneration(camera_parameters)
     for i, superpixels in enumerate(all_superpixels):
         print('updating surfels for frame {:d} of {:d}'.format(i+1, len(all_superpixels)))
-        sg.update_seeds(i, superpixels)
+        sg.update_surfels(i, list(superpixels), poses[i])
     return sg
 
 def main():
-    poses = read_ground_truth_poses()
     if True:
         all_superpixels = np.load('../dataset/results/all_superpixels.npy')
     else:
