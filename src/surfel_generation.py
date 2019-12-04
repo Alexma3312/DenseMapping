@@ -87,3 +87,7 @@ class SurfelGeneration():
             if not did_fuse:
                 # print('bad surfel.')
                 self.all_surfels.append(new_surfels[i]) # todo: update projected_locs
+        all_surfels_copy = self.all_surfels.copy()
+        for surfel in all_surfels_copy:
+            if ((frame_idx - surfel.last_update) > 10) and (surfel.update_times < 5):
+                self.all_surfels.remove(surfel)

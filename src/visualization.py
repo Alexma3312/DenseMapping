@@ -73,6 +73,8 @@ def plot_surfels(all_surfels: List[SurfelElement]):
         surfel_t.px, surfel_t.py, surfel_t.pz = surfel_t.px, surfel_t.pz, -surfel_t.py
         all_surfels_trans.append(surfel_t)
     for surfel in all_surfels_trans:
+        if surfel.update_times < 3:
+            continue
         # p = Circle((0, 0), 0*0.01 + 1*surfel.size / np.nanmax(all_sizes), facecolor=(surfel.color,)*3, alpha=.8)
         p = Circle((0, 0), surfel.size, facecolor=(surfel.color,)*3, alpha=.8)
         ax.add_patch(p)
