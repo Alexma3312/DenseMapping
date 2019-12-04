@@ -33,7 +33,7 @@ class SuperpixelExtraction():
         self.Nd = weights['Nd']
         self.sp_size = sp_size
 
-    def extract_superpixels(self) -> List[SuperpixelSeed]:
+    def extract_superpixels(self, verbose=False, iterations=5) -> List[SuperpixelSeed]:
         """Extracts superpixels from an RGB image and depth image
         Member dependencies:
             image, depth
@@ -43,7 +43,7 @@ class SuperpixelExtraction():
             superpixels: list of SuperpixelSeed
         """
         superpixels = self.init_seeds()
-        for _ in range(5):
+        for _ in range(iterations):
             superpixel_idx = self.assign_pixels(superpixels)
             superpixels = self.update_seeds(superpixel_idx, superpixels)
         superpixels = self.calc_norms(superpixel_idx, superpixels)

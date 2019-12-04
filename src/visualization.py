@@ -4,7 +4,8 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 from superpixel_extraction import SuperpixelExtraction
-
+from surfel_generation import SurfelGeneration
+from utilities.data_helper import read_ground_truth_poses
 
 def rgb2gray(rgb):
     if (rgb.ndim==3):
@@ -39,8 +40,57 @@ def plot_sp(image, superpixel_idx, superpixels, toPlot=True):
         plt.draw();plt.pause(0.001)
     return image_sp
 
-def main():
+def get_all_superpixels(folder_rgb, folder_depth, filenames):
+    all_superpixels = []
+    for i, filename in enumerate(filenames):
+        print('now processing file {:d} of {:d}'.format(i+1, len(filenames)))
+        image_full = plt.imread(folder_rgb + filename)
+        image_full = gray2rgb(image_full)
+        depth_full = plt.imread(folder_depth + filename)# / 5000
+        depth_full = rgb2gray(depth_full)
+        scale = 0.5
+        image = cv2.resize(image_full,
+            (int(np.size(image_full,1)*scale), int(np.size(image_full,0)*scale)))
+        depth = cv2.resize(depth_full,
+            (int(np.size(depth_full,1)*scale), int(np.size(depth_full,0)*scale)))# * scale
+        imgray = rgb2gray(image)
+        camera_parameters = {'fx': 525*scale, 'fy': 525*scale,
+                            'cx': 319.5*scale, 'cy': 239.5*scale}
+        weights = {'Ns': 200, 'Nc': 2, 'Nd': 5}
+        spExtractor = SuperpixelExtraction(imgray, depth, camera_parameters,
+                                        weights=weights, sp_size=int(25*scale))
 
+        superpixels = spExtractor.extract_superpixels(iterations=5)
+        all_superpixels.append(superpixels)
+    return all_superpixels
+
+def get_all_surfels(all_superpixels):
+    scale = 0.5
+    camera_parameters = {'fx': 525*scale, 'fy': 525*scale,
+                        'cx': 319.5*scale, 'cy': 239.5*scale}
+    sg = SurfelGeneration(camera_parameters)
+    for i, superpixels in enumerate(all_superpixels):
+        print('updating surfels for frame {:d} of {:d}'.format(i+1, len(all_superpixels)))
+        sg.update_seeds(i, superpixels)
+    return sg
+
+def main():
+    poses = read_ground_truth_poses()
+    if True:
+        all_superpixels = np.load('../dataset/results/all_superpixels.npy')
+    else:
+        folder_rgb = '../dataset/rgb/'
+        folder_depth = '../dataset/depth/'
+        filenames = ['{:d}.png'.format(i) for i in range(2)]
+        all_superpixels = get_all_superpixels(folder_rgb, folder_depth, filenames)
+        np.save('../dataset/results/all_superpixels', all_superpixels)
+    if False:
+        all_surfels = np.load('../dataset/results/surfels.npy').all_surfels
+    else:
+        sg = get_all_surfels(all_superpixels)
+        np.save('../dataset/results/surfels', sg)
+
+def main_old():
     image_full = plt.imread('../dataset/rgb/kitti.png')
     image_full = gray2rgb(image_full)
     depth_full = plt.imread('../dataset/depth/kitti.png')# / 5000
