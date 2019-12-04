@@ -312,6 +312,8 @@ class SuperpixelExtraction():
         initNorm = np.mean(pixel_inlier_norms, axis=0)
         initNorm = initNorm / np.linalg.norm(initNorm)
         initNorm = np.concatenate((initNorm, bias), axis=0)
+
+        return initNorm
         # optimize
         points = pixel_inlier_positions-center
 
@@ -436,9 +438,9 @@ class SuperpixelExtraction():
         # make sure the avg_x, avg_y, and avg_z are one the surfel
         k = -1 * (avg_x * norm[0] + avg_y *
                   norm[1] + avg_z * norm[2]) - norm[3]
-        avg_x += k * norm[0]
-        avg_y += k * norm[1]
-        avg_z += k * norm[2]
+        # avg_x += k * norm[0]
+        # avg_y += k * norm[1]
+        # avg_z += k * norm[2]
         mean_depth = avg_z
         # Calculate view cos and update norm
         norm, view_cos = self.calc_view_cos(
