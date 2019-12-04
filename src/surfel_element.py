@@ -28,7 +28,7 @@ class SurfelElement():
     def change_coordinates(self, Twc):# -> SurfelElement:
         """Transforms surfel from camera pose into world coordinates
         Arguments:
-            Twc: camera pose in world coordinates
+            Twc: camera pose in world coordinates (actually this is backwards I think)
         Returns:
             surfel: SurfelElement in new coordinates
         """
@@ -66,7 +66,7 @@ class SurfelElement():
         n_new =  np.array([[surfel.nx],[surfel.ny],[surfel.nz]])
         n_local=  np.array([[self.nx],[self.ny],[self.nz]])
 
-        if ((abs(surfel.pz-self.pz)<(self.pz/2)) and float(np.dot(n_new.T,n_local))>0.8):
+        if ((abs(surfel.pz-self.pz)<(self.pz/2)) and abs(float(np.dot(n_new.T,n_local)))>0.8):
             return True
         return False
 

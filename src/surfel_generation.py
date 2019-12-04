@@ -27,6 +27,9 @@ class SurfelGeneration():
         Returns:
             surfels: a list of surfel elements
         """
+        inverse_pose = np.zeros((4,4))
+        inverse_pose[0:3, 0:3] = pose[0:3, 0:3].transpose()
+        inverse_pose[0:3, 3] = -np.dot(inverse_pose[0:3, 0:3], pose[0:3, 3])
         surfels = []
         for superpixel in superpixels:
             px = superpixel.posi_x
@@ -48,7 +51,7 @@ class SurfelGeneration():
             last_update = frame_idx
             surfel = SurfelElement(
                 px, py, pz, nx, ny, nz, new_size, color, weight, update_times, last_update)
-            surfels.append(surfel)
+            surfels.append(surfel.change_coordinates(inverse_pose))
         return surfels
 
     def update_surfels(self, frame_idx, superpixels: List[SuperpixelSeed], pose) -> None:
@@ -73,7 +76,7 @@ class SurfelGeneration():
             candidate_surfels = dists2 < sp.size
             did_fuse = False
             for surfel_i in np.argwhere(candidate_surfels):
-                surfel = new_surfels[surfel_i[i]]
+                surfel = self.all_surfels[surfel_i[i]]
                 if surfel.is_fuseable(new_surfels[i]):
                     surfel.fuse_surfel(new_surfels[i])
                     did_fuse = True

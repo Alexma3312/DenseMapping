@@ -49,9 +49,9 @@ class TestSurfelGeneration(unittest.TestCase):
     def test_update_surfels(self):
         "Test update surfels"
         sg = surfel_generation_instance
-        sp = SuperpixelSeed(0, 0, 1,
+        sp = SuperpixelSeed(2, 0, 1,
                             0, 0, 1,
-                            0, 0, 1, 1, 1, 0, 0, 0, 0, 0)
+                            2, 0, 1, 1, 1, 0, 0, 0, 0, 0)
         pose0 = np.array([[1, 0, 0, 0], [0, 1, 0, 0],
                           [0, 0, 1, 0], [0, 0, 0, 1]])
         sg.update_surfels(0, [sp], pose0)
@@ -60,8 +60,9 @@ class TestSurfelGeneration(unittest.TestCase):
         sg.update_surfels(1, [sp], pose0)
         # surfel in same location and norm should be fused
         self.assertEqual(len(sg.all_surfels), 1)
-        sp.posi_x = 1
-        sp.posi_z = 0
+        sp.x = -1
+        sp.posi_x = -1
+        sp.posi_z = 2
         sp.norm_x = 1
         sp.norm_z = 0
         pose1 = np.array([[0, 0, -1, 0], [0, 1, 0, 0],
