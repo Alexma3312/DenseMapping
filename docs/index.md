@@ -26,7 +26,8 @@ reconstruction using superpixels.
 
 <!-- ### Teaser figure -->
 <!-- A figure that conveys the main idea behind the project or the main application being addressed. -->
-![**Figure:** Example semi-dense reconstruction based on a surfel map](./results/comparison01.png)
+<!-- ![**Figure:** Example semi-dense reconstruction based on a surfel map](./results/comparison01.png) -->
+<iframe width="560" height="315" src="https://www.youtube.com/embed/hQQgOFnOHQQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="display: block; margin: 0 auto;"></iframe>
 
 ## Introduction
 <!-- Motivation behind the problem you are solving, what applications it has, any brief background on the particular domain you are working in (if not regular RBG photographs), etc. If you are using a new way to solve an existing problem, briefly mention and describe the existing approaches and tell us how your approach is new. -->

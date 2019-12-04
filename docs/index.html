@@ -5,12 +5,11 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>index</title>
-  <style>
-    code{white-space: pre-wrap;}
-    span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
   </style>
   <link rel="stylesheet" href="main.css" />
   <!--[if lt IE 9]>
@@ -29,30 +28,30 @@ Dec 4, 2019
 <hr />
 <h2 id="abstract">Abstract</h2>
 <!-- One or two sentences on the motivation behind the problem you are solving. One or two sentences describing the approach you took. One or two sentences on the main result you obtained. -->
-<p>One of the fundamental tasks for robot autonomous navigation is to perceive and digitalize the surrounding 3D environment <span class="citation" data-cites="handa2014benchmark">[<a href="#ref-handa2014benchmark" role="doc-biblioref">1</a>]</span>. We replicate the results of <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense" role="doc-biblioref">2</a>]</span> to produce semi-dense, surfel-based reconstruction using superpixels.</p>
+<p>One of the fundamental tasks for robot autonomous navigation is to perceive and digitalize the surrounding 3D environment <span class="citation" data-cites="handa2014benchmark">[<a href="#ref-handa2014benchmark">1</a>]</span>. We replicate the results of <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense">2</a>]</span> to produce semi-dense, surfel-based reconstruction using superpixels.</p>
 <!-- ### Teaser figure -->
 <!-- A figure that conveys the main idea behind the project or the main application being addressed. -->
-<figure>
-<img src="./results/comparison01.png" alt="" /><figcaption><strong>Figure:</strong> Example semi-dense reconstruction based on a surfel map</figcaption>
-</figure>
+<!-- ![**Figure:** Example semi-dense reconstruction based on a surfel map](./results/comparison01.png) -->
+<iframe width="560" height="315" src="https://www.youtube.com/embed/hQQgOFnOHQQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="display: block; margin: 0 auto;">
+</iframe>
 <h2 id="introduction">Introduction</h2>
 <!-- Motivation behind the problem you are solving, what applications it has, any brief background on the particular domain you are working in (if not regular RBG photographs), etc. If you are using a new way to solve an existing problem, briefly mention and describe the existing approaches and tell us how your approach is new. -->
-<p>One of the fundamental tasks for robot autonomous navigation is to perceive and digitalize the surrounding 3D environment <span class="citation" data-cites="handa2014benchmark">[<a href="#ref-handa2014benchmark" role="doc-biblioref">1</a>]</span>. To be usable in mobile robot applications, the mapping system needs to fast and densely recover the environment in order to provide sufficient information for navigation.</p>
-<p>Unlike other 3d reconstruction methods that reconstructs the environment as a 3D point cloud, we hope to extract surfels  based on extracted superpixels from intensity and depth images and construct a surfel cloud. This approach is introduced by <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense" role="doc-biblioref">2</a>]</span> which can greatly reduces the memory burden of mapping system when applied to large-scale missions. More importantly, outliers and noise from low-quality depth maps can be reduced based on extracted superpixels.</p>
-<p>The <strong>goal</strong> of our project is to reproduce results of Wang et al’s, namely implementing superpixel extraction, surfel initialization, and surfel fusion to generate a surfel-based reconstruction given a camera poses from a sparse SLAM implementation. The <strong>input</strong> to our system is an RGB-D video stream with accompanying camera poses and the <strong>output</strong> is a surfel cloud map of the environment, similar to Figures 4b or 8 of the original paper <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense" role="doc-biblioref">2</a>]</span>.</p>
+<p>One of the fundamental tasks for robot autonomous navigation is to perceive and digitalize the surrounding 3D environment <span class="citation" data-cites="handa2014benchmark">[<a href="#ref-handa2014benchmark">1</a>]</span>. To be usable in mobile robot applications, the mapping system needs to fast and densely recover the environment in order to provide sufficient information for navigation.</p>
+<p>Unlike other 3d reconstruction methods that reconstructs the environment as a 3D point cloud, we hope to extract surfels  based on extracted superpixels from intensity and depth images and construct a surfel cloud. This approach is introduced by <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense">2</a>]</span> which can greatly reduces the memory burden of mapping system when applied to large-scale missions. More importantly, outliers and noise from low-quality depth maps can be reduced based on extracted superpixels.</p>
+<p>The <strong>goal</strong> of our project is to reproduce results of Wang et al’s, namely implementing superpixel extraction, surfel initialization, and surfel fusion to generate a surfel-based reconstruction given a camera poses from a sparse SLAM implementation. The <strong>input</strong> to our system is an RGB-D video stream with accompanying camera poses and the <strong>output</strong> is a surfel cloud map of the environment, similar to Figures 4b or 8 of the original paper <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense">2</a>]</span>.</p>
 <h2 id="implementation">Implementation</h2>
 <p>The idea behind dense mapping is to first generate frame related poses, then reconstruct the dense map based on pre-generated poses and surfels.</p>
 <ol type="1">
-<li><p>Select an RGB-D dataset <span class="citation" data-cites="handa2014benchmark sturm12iros_TUM Menze2015CVPR_KITTI">[<a href="#ref-handa2014benchmark" role="doc-biblioref">1</a>], [<a href="#ref-sturm12iros_TUM" role="doc-biblioref">3</a>], [<a href="#ref-Menze2015CVPR_KITTI" role="doc-biblioref">4</a>]</span></p></li>
-<li><p>Read pose information from the dataset / Use a sparse SLAM system (VINS <span class="citation" data-cites="qin2018vins">[<a href="#ref-qin2018vins" role="doc-biblioref">5</a>]</span>/ORB-SLAM2 <span class="citation" data-cites="mur2017orb">[<a href="#ref-mur2017orb" role="doc-biblioref">6</a>]</span>) to estimate camera poses</p></li>
-<li><p>Run code from <span class="citation" data-cites="Wang19github">[<a href="#ref-Wang19github" role="doc-biblioref">7</a>]</span> directly to confirm functionality and set benchmark/expectations.</p></li>
-<li><p><strong>(Implementation)</strong> – Single frame Superpixels extraction from RGB-D images using a k-means approach adapted from SLIC <span class="citation" data-cites="achanta2012slic">[<a href="#ref-achanta2012slic" role="doc-biblioref">8</a>]</span> - IV.D section in <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense" role="doc-biblioref">2</a>]</span></p></li>
-<li><p><strong>(Implementation)</strong> – Single frame surfel generation based on extracted superpixels. - IV.E section in <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense" role="doc-biblioref">2</a>]</span></p></li>
-<li><p><strong>(Implementation)</strong> – Surfel fusion and Surfel Cloud update. - IV.G section in <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense" role="doc-biblioref">2</a>]</span></p></li>
+<li><p>Select an RGB-D dataset <span class="citation" data-cites="handa2014benchmark sturm12iros_TUM Menze2015CVPR_KITTI">[<a href="#ref-handa2014benchmark">1</a>], [<a href="#ref-sturm12iros_TUM">3</a>], [<a href="#ref-Menze2015CVPR_KITTI">4</a>]</span></p></li>
+<li><p>Read pose information from the dataset / Use a sparse SLAM system (VINS <span class="citation" data-cites="qin2018vins">[<a href="#ref-qin2018vins">5</a>]</span>/ORB-SLAM2 <span class="citation" data-cites="mur2017orb">[<a href="#ref-mur2017orb">6</a>]</span>) to estimate camera poses</p></li>
+<li><p>Run code from <span class="citation" data-cites="Wang19github">[<a href="#ref-Wang19github">7</a>]</span> directly to confirm functionality and set benchmark/expectations.</p></li>
+<li><p><strong>(Implementation)</strong> – Single frame Superpixels extraction from RGB-D images using a k-means approach adapted from SLIC <span class="citation" data-cites="achanta2012slic">[<a href="#ref-achanta2012slic">8</a>]</span> - IV.D section in <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense">2</a>]</span></p></li>
+<li><p><strong>(Implementation)</strong> – Single frame surfel generation based on extracted superpixels. - IV.E section in <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense">2</a>]</span></p></li>
+<li><p><strong>(Implementation)</strong> – Surfel fusion and Surfel Cloud update. - IV.G section in <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense">2</a>]</span></p></li>
 </ol>
 <!-- 6. 3D mesh with surfel cloud. -->
 <h3 id="dataset">Dataset</h3>
-<p>We have started with the <em>kt3</em> sequence of the ICL-NIUM dataset <span class="citation" data-cites="handa2014benchmark">[<a href="#ref-handa2014benchmark" role="doc-biblioref">1</a>]</span>. Images and depth maps have been extracted and examples <a href="#sec:dataset">shown below</a>.</p>
+<p>We have started with the <em>kt3</em> sequence of the ICL-NIUM dataset <span class="citation" data-cites="handa2014benchmark">[<a href="#ref-handa2014benchmark">1</a>]</span>. Images and depth maps have been extracted and examples <a href="#sec:dataset">shown below</a>.</p>
 <table>
 <thead>
 <tr class="header">
@@ -69,12 +68,12 @@ Dec 4, 2019
 </table>
 <p><br /></p>
 <h3 id="run-existing-code">Run Existing Code</h3>
-<p>The code written for the paper was run to ensure that the results could be reproduced. Below are some results of running the code for dense reconstruction on images from the KITTI dataset <span class="citation" data-cites="Menze2015CVPR_KITTI">[<a href="#ref-Menze2015CVPR_KITTI" role="doc-biblioref">4</a>]</span>. We showed that it can indeed produce dense reconstructions.</p>
-<p><img src="./results/kitti/kitti.png" style="width:45.0%" alt="kitti" /> <img src="./results/kitti/kitti_front.png" style="width:45.0%" alt="kitti" /></p>
-<p><img src="./results/kitti/kitti_side.png" style="width:45.0%" alt="kitti" /> <img src="./results/kitti/kitti_top.png" style="width:45.0%" alt="kitti" /></p>
+<p>The code written for the paper was run to ensure that the results could be reproduced. Below are some results of running the code for dense reconstruction on images from the KITTI dataset <span class="citation" data-cites="Menze2015CVPR_KITTI">[<a href="#ref-Menze2015CVPR_KITTI">4</a>]</span>. We showed that it can indeed produce dense reconstructions.</p>
+<p><img src="./results/kitti/kitti.png" alt="kitti" style="width:45.0%" /> <img src="./results/kitti/kitti_front.png" alt="kitti" style="width:45.0%" /></p>
+<p><img src="./results/kitti/kitti_side.png" alt="kitti" style="width:45.0%" /> <img src="./results/kitti/kitti_top.png" alt="kitti" style="width:45.0%" /></p>
 <h3 id="superpixel-extraction">Superpixel Extraction</h3>
 <p>We have completed single-frame superpixel generation. The results are <a href="#fig:sp_extr">shown below</a>.</p>
-<p><img src="./results/superpixels/superpixels_rgb.gif" id="fig:sp_extr" style="width:45.0%" alt="superpixel annotation on RGB image" /> <img src="./results/superpixels/superpixels_depth.gif" style="width:45.0%" alt="superpixel annotation on depth image" /></p>
+<p><img src="./results/superpixels/superpixels_rgb.gif" alt="superpixel annotation on RGB image" id="fig:sp_extr" style="width:45.0%" /> <img src="./results/superpixels/superpixels_depth.gif" alt="superpixel annotation on depth image" style="width:45.0%" /></p>
 <p>We follow the standard implementation as described in the paper:</p>
 <ol type="1">
 <li>Initialize superpixel seeds - Superpixel seeds are initialized on a grid of predefined size<br />
@@ -99,16 +98,16 @@ Initialize superpixel cluster that has enough assigned seeds with a set of reaso
 <li>Surfel Fusion:<br />
 Fuse extracted local surfels with newly initalized surfels if they have similar depth and normals. Transform fused local surfels into the global frame, and remove those are updated less than 5 times.</li>
 </ol>
-<p>For the surfel initialization, we transform each superpixel into a surfel according to the correspondence equations given in <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense" role="doc-biblioref">2</a>]</span>. An example of a single frame with each superpixel processed in this manner is <a href="#fig:multiframesurfel">shown below</a>.</p>
+<p>For the surfel initialization, we transform each superpixel into a surfel according to the correspondence equations given in <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense">2</a>]</span>. An example of a single frame with each superpixel processed in this manner is <a href="#fig:multiframesurfel">shown below</a>.</p>
 <figure>
-<img src="./results/frames01.png" id="fig:singleframesurfel" alt="" /><figcaption><strong>Figure:</strong> Single frame surfel reconstruction</figcaption>
+<img src="./results/frames01.png" alt="Figure: Single frame surfel reconstruction" id="fig:singleframesurfel" /><figcaption><strong>Figure:</strong> Single frame surfel reconstruction</figcaption>
 </figure>
 <p>To process additional frames, each new surfel from a superpixel in the frame to be added must first be checked amongst all existing surfels to see if it is similar enough to be fused. If not, then a new surfel is initialized. An example of a cloud consisting of a few frames containing fused surfels is <a href="#fig:multiframesurfel">shown below</a>.</p>
 <figure>
-<img src="./results/comparison01.png" id="fig:multiframesurfel" alt="" /><figcaption><strong>Figure:</strong> Multi-frame surfel fusion result</figcaption>
+<img src="./results/comparison01.png" alt="Figure: Multi-frame surfel fusion result" id="fig:multiframesurfel" /><figcaption><strong>Figure:</strong> Multi-frame surfel fusion result</figcaption>
 </figure>
 <p>We can see that the reconstruction is much better filled in (denser) and also has better detail. For example, the filing cabinet achieves much better resolution when putting multiple frames together. This is partly because multiple surfels can occupy the same location in space if they have different normal directions.</p>
-<p>We have now recreated the dense reconstruction surfel cloud results from <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense" role="doc-biblioref">2</a>]</span> that we sought out to achieve.</p>
+<p>We have now recreated the dense reconstruction surfel cloud results from <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense">2</a>]</span> that we sought out to achieve.</p>
 <h2 id="experiments-and-results">Experiments and results</h2>
 <!-- Provide details about the experimental set up (number of images/videos, number of datasets you experimented with, train/test split if you used machine learning algorithms, etc.). Describe the evaluation metrics you used to evaluate how well your approach is working. Include clear figures and tables, as well as illustrative qualitative examples if appropriate. Be sure to include obvious baselines to see if your approach is doing better than a naive approach (e.g. for classification accuracy, how well would a classifier do that made random decisions?). Also discuss any parameters of your algorithms, and tell us how you set the values of those parameters. You can also show us how the performance varies as you change those parameter values. Be sure to discuss any trends you see in your results, and explain why these trends make sense. Are the results as expected? Why? -->
 <p>A number of parameters can be tuned for surfel generation and a few will be discussed:</p>
@@ -120,27 +119,27 @@ Fuse extracted local surfels with newly initalized surfels if they have similar 
 </ol>
 <p>We then finish with a qualitative description of the resulting surfel clouds.</p>
 <h3 id="k-means-iterations">K-means Iterations</h3>
-<p>As mentioned earlier and shown in both the <a href="#fig:sp_extr">figure above</a> and the <a href="#fig:sp_iter">figure below</a>, the process of extracting superpixels is an iterative one based on k-means. This means that the number of iterations to run k-means affects how closely the superpixels will converge to the optimal superpixel assignments. The animated figures illustrate how the superpixel assignments change as more iterations are run. We found that, for the ICL-NIUM dataset, roughly 10 iterations were sufficient while roughly 25 were required for the KITTI dataset. We follow the lead of the reference paper <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense" role="doc-biblioref">2</a>]</span> and consider the number of iterations a human-tuned parameter instead of setting a convergence stopping criterion.</p>
-<p><img src="./results/superpixels/kitti_superpixels_rgb.gif" id="fig:sp_iter" style="width:100.0%" alt="superpixel annotation on RGB image" /> <img src="./results/superpixels/kitti_superpixels_depth.gif" style="width:100.0%" alt="superpixel annotation on depth image" /> <strong>Figure:</strong> Superpixel extraction over multiple iterations</p>
+<p>As mentioned earlier and shown in both the <a href="#fig:sp_extr">figure above</a> and the <a href="#fig:sp_iter">figure below</a>, the process of extracting superpixels is an iterative one based on k-means. This means that the number of iterations to run k-means affects how closely the superpixels will converge to the optimal superpixel assignments. The animated figures illustrate how the superpixel assignments change as more iterations are run. We found that, for the ICL-NIUM dataset, roughly 10 iterations were sufficient while roughly 25 were required for the KITTI dataset. We follow the lead of the reference paper <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense">2</a>]</span> and consider the number of iterations a human-tuned parameter instead of setting a convergence stopping criterion.</p>
+<p><img src="./results/superpixels/kitti_superpixels_rgb.gif" alt="superpixel annotation on RGB image" id="fig:sp_iter" style="width:100.0%" /> <img src="./results/superpixels/kitti_superpixels_depth.gif" alt="superpixel annotation on depth image" style="width:100.0%" /> <strong>Figure:</strong> Superpixel extraction over multiple iterations</p>
 <h3 id="number-of-frames">Number of Frames</h3>
 <p>The number of frames to use to generate a surfel cloud significantly affects the result. This is because the pose estimate that we read in was not completely accurate, so errors accrue with more frames causing inconsistencies in the surfel cloud. At the same time, too few frames results in sparser clouds with more gaps. <a href="#fig:frames">Shown below</a> are examples of surfel clouds generated with 1, 3, 25, and 50 frames.</p>
 <figure>
-<img src="./results/frames.gif" id="fig:frames" alt="" /><figcaption><strong>Figure:</strong> Effect of the number of frames used on surfel cloud result</figcaption>
+<img src="./results/frames.gif" alt="Figure: Effect of the number of frames used on surfel cloud result" id="fig:frames" /><figcaption><strong>Figure:</strong> Effect of the number of frames used on surfel cloud result</figcaption>
 </figure>
 <h3 id="superpixel-size">Superpixel Size</h3>
 <p>The generated surfels result varies when we change the parameters, such as the size of superpixels and the size of surfels. The number of superpixels in our implementation does not change during the k-means process so the size of initialized superpixels affects the general size scale of the final superpixels as well. Similarly, surfel size is dependent upon superpixel size because surfels are initialized from superpixels, so the superpixel initialization density also affects the final sizes of the surfels. <a href="#fig:size">Shown below</a> are examples of surfel clouds generated with initialization superpixel sizes of 50x50, 25x25, 12x12, and 9x9. We see that too large superpixels lose detail while too small superpixels become sparse.</p>
 <figure>
-<img src="./results/size.gif" id="fig:size" alt="" /><figcaption><strong>Figure:</strong> Effect of superpixel initialization size on surfel cloud</figcaption>
+<img src="./results/size.gif" alt="Figure: Effect of superpixel initialization size on surfel cloud" id="fig:size" /><figcaption><strong>Figure:</strong> Effect of superpixel initialization size on surfel cloud</figcaption>
 </figure>
 <h3 id="outlier-removal">Outlier Removal</h3>
 <p>Some surfels are poorly conditioned due to factors such as oblique viewpoint, small superpixel parent, only being visible in few frames, distance to camera, and other factors. Several checks exist in our code to eliminate obvious outliers. One example is removing surfels which don’t appear in many frames. Surfels which appear in multiple frames get “fused” and we keep track of how many times a given surfel has been fused. The <a href="#fig:outlier">animation below</a> compares a raw surfel cloud and one which removes surfels fused less than 3 times. We notice that including these “outlier” surfels generates a more complete cloud, but at the expense of extra noise. For example, there is a cluster of surfels to the right of the filing cabinet which are not oriented correctly.</p>
 <figure>
-<img src="./results/outliers.gif" id="fig:outlier" alt="" /><figcaption><strong>Figure:</strong> Effect of outlier removal on surfel cloud</figcaption>
+<img src="./results/outliers.gif" alt="Figure: Effect of outlier removal on surfel cloud" id="fig:outlier" /><figcaption><strong>Figure:</strong> Effect of outlier removal on surfel cloud</figcaption>
 </figure>
 <h3 id="qualitative-results">Qualitative Results</h3>
 <!-- Show several visual examples of inputs/outputs of your system (success cases and failures) that help us better understand your approach. -->
-<p>The superpixel-segmented <a href="#fig:kitti_sp">images below</a> from the KITTI <span class="citation" data-cites="Menze2015CVPR_KITTI">[<a href="#ref-Menze2015CVPR_KITTI" role="doc-biblioref">4</a>]</span> dataset demonstrate that the superpixels are indeed segmenting properly as they tend to “hug” similarly colored/depthed regions.</p>
-<p><img src="./results/superpixels/kitti_superpixels_rgb.png" id="fig:kitti_sp" style="width:100.0%" alt="superpixel annotation on RGB image" /> <img src="./results/superpixels/kitti_superpixels_depth.png" style="width:100.0%" alt="superpixel annotation on depth image" /></p>
+<p>The superpixel-segmented <a href="#fig:kitti_sp">images below</a> from the KITTI <span class="citation" data-cites="Menze2015CVPR_KITTI">[<a href="#ref-Menze2015CVPR_KITTI">4</a>]</span> dataset demonstrate that the superpixels are indeed segmenting properly as they tend to “hug” similarly colored/depthed regions.</p>
+<p><img src="./results/superpixels/kitti_superpixels_rgb.png" alt="superpixel annotation on RGB image" id="fig:kitti_sp" style="width:100.0%" /> <img src="./results/superpixels/kitti_superpixels_depth.png" alt="superpixel annotation on depth image" style="width:100.0%" /></p>
 <p>Converting the superpixels into surfels appears correct based on:</p>
 <ol type="1">
 <li>The locations of the surfels clearly traces out the room shape (see <a href="#fig:dataset">reference image</a>)</li>
@@ -151,11 +150,11 @@ Fuse extracted local surfels with newly initalized surfels if they have similar 
 </ol>
 <p>We can observe these qualitatively from the <a href="#fig:dataset">rgb image</a> and <a href="#fig:qualitativeSurfel">example surfel cloud below</a>.</p>
 <figure>
-<img src="./results/snapshot00.png" id="fig:qualitativeSurfel" alt="" /><figcaption><strong>Figure:</strong> Surfel cloud from 25 frames which matches expectations</figcaption>
+<img src="./results/snapshot00.png" alt="Figure: Surfel cloud from 25 frames which matches expectations" id="fig:qualitativeSurfel" /><figcaption><strong>Figure:</strong> Surfel cloud from 25 frames which matches expectations</figcaption>
 </figure>
 <h2 id="conclusion-and-future-work">Conclusion and Future Work</h2>
 <!-- Conclusion would likely make the same points as the abstract. Discuss any future ideas you have to make your approach better. -->
-<p>We successfully recreated the results of <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense" role="doc-biblioref">2</a>]</span> by creating a surfel cloud given RGBD images and camera poses. Furthermore, we investigated and reported the effects of various parameters on the resulting surfel clouds and discussed qualitative results from our reconstructions.</p>
+<p>We successfully recreated the results of <span class="citation" data-cites="Wang19icra_surfelDense">[<a href="#ref-Wang19icra_surfelDense">2</a>]</span> by creating a surfel cloud given RGBD images and camera poses. Furthermore, we investigated and reported the effects of various parameters on the resulting surfel clouds and discussed qualitative results from our reconstructions.</p>
 <p>During this project, several difficulties were faces, such as</p>
 <ul>
 <li>Debugging conversions between camera projections, coordinate frames, and data types</li>
@@ -172,7 +171,7 @@ Fuse extracted local surfels with newly initalized surfels if they have similar 
 </ul>
 <h2 id="references">References</h2>
 <!-- List out all the references you have used for your work -->
-<div id="refs" class="references" role="doc-bibliography">
+<div id="refs" class="references">
 <div id="ref-handa2014benchmark">
 <p>[1] A. Handa, T. Whelan, J. McDonald, and A. J. Davison, “A benchmark for rgb-d visual odometry, 3D reconstruction and slam,” in <em>2014 ieee international conference on robotics and automation (icra)</em>, 2014, pp. 1524–1531.</p>
 </div>
