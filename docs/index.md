@@ -125,8 +125,15 @@ iteration to the next.
 
 #### Surfel Generation
 <!-- norm calculation -->
-We are in the process of calculating the norm which is needed for surfel
-generation.  We expect to complete this very soon.
+<!-- We are in the process of calculating the norm which is needed for surfel
+generation.  We expect to complete this very soon. -->
+
+Surfels are modeled with the superpixels extracted from intensity and depth images in the following method as described in the paper:
+1. Surfel Initialization:
+    Initialize superpixel cluster that has enough assigned seeds with a set of reasonable initial value.
+2. Surfel Fusion:
+    Fuse extrated local surfels with newly initalized surfels if they have similar depth and normals. 
+    Transform fused local surfels into the global frame, and remove those are updated less than 5 times.
 
 The difficulties are 
 1. Using matrix manipulation with numpy instead of for loop and multi-threads in C++ to reduce computationl cost.
