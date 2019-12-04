@@ -4,7 +4,6 @@ import unittest
 from surfel_generation import SurfelGeneration
 from superpixel_seed import SuperpixelSeed
 import numpy as np
-from mock import patch
 
 camera_parameters = {'fx': 1, 'fy': 1, 'cx': 0, 'cy': 0}
 MAX_ANGLE_COS = 0.1
@@ -61,7 +60,7 @@ class TestSurfelGeneration(unittest.TestCase):
         self.assertEqual((100, 100, 1/25, 1, 99), (surfel_2.size,
                                                    surfel_2.color, surfel_2.weight, surfel_2.update_times, surfel_2.last_update))
 
-    @unittest.skip("skip test_update_surfels")
+    # @unittest.skip("skip test_update_surfels")
     def test_update_surfels(self):
         "Test update surfels"
         sg = surfel_generation_instance
@@ -77,8 +76,8 @@ class TestSurfelGeneration(unittest.TestCase):
         # surfel in same location and norm should be fused
         self.assertEqual(len(sg.all_surfels), 1)
         sp.x = -1
-        sp.posi_x = -1
-        sp.posi_z = 2
+        sp.posi_x = 1
+        sp.posi_z = -2
         sp.norm_x = 1
         sp.norm_z = 0
         pose1 = np.array([[0, 0, -1, 0], [0, 1, 0, 0],
