@@ -14,6 +14,7 @@ surfel_generation_instance = SurfelGeneration(camera_parameters,
                                               MAX_ANGLE_COS=MAX_ANGLE_COS,
                                               VERBOSE=VERBOSE)
 
+
 class TestSurfelGeneration(unittest.TestCase):
 
     def test_init(self):
@@ -25,8 +26,8 @@ class TestSurfelGeneration(unittest.TestCase):
         # initialize_surfels
         x, y = 1, 1
         size = 2
-        norm_x, norm_y, norm_z = [8,9,0]
-        position_x, position_y, position_z = [5,6,7]
+        norm_x, norm_y, norm_z = [8, 9, 0]
+        position_x, position_y, position_z = [5, 6, 7]
         view_cos = 0.1
         mean_depth = 5
         mean_intensity = 100
@@ -36,16 +37,31 @@ class TestSurfelGeneration(unittest.TestCase):
         max_eigen_value = 1
         superpixel_1 = SuperpixelSeed(x, y, size, norm_x, norm_y, norm_z, position_x, position_y, position_z,
                                       view_cos, mean_depth, mean_intensity, fused, stable, min_eigen_value, max_eigen_value)
-        superpixel_2 = SuperpixelSeed(x, y, size, norm_x, norm_y, norm_z, position_x, position_y, position_z,
+        superpixel_2 = SuperpixelSeed(x, y, size, norm_x+10, norm_y+10, norm_z+10, position_x+10, position_y+10, position_z+10,
                                       view_cos, mean_depth, mean_intensity, fused, stable, min_eigen_value, max_eigen_value)
         superpixels = [superpixel_1, superpixel_2]
 
-        surfel_generation_instance.create_surfels(1, superpixels, np.eye(4))
-        pass
+        frame_index = 99
+        surfels = surfel_generation_instance.create_surfels(
+            frame_index, superpixels, np.eye(4))
+        surfel_1 = surfels[0]
+        surfel_2 = surfels[1]
+        # Surfel 1 
+        self.assertEqual((5, 6, 7), (surfel_1.px,
+                                     surfel_1.py, surfel_1.pz))
+        self.assertEqual((8, 9, 0), (surfel_1.nx,
+                                     surfel_1.ny, surfel_1.nz))
+        self.assertEqual((100, 100, 1/25, 1, 99), (surfel_1.size,
+                                                   surfel_1.color, surfel_1.weight, surfel_1.update_times, surfel_1.last_update))
+        # Surfel 2
+        self.assertEqual((15, 16, 17), (surfel_2.px,
+                                     surfel_2.py, surfel_2.pz))
+        self.assertEqual((18, 19, 10), (surfel_2.nx,
+                                     surfel_2.ny, surfel_2.nz))
+        self.assertEqual((100, 100, 1/25, 1, 99), (surfel_2.size,
+                                                   surfel_2.color, surfel_2.weight, surfel_2.update_times, surfel_2.last_update))
 
-
-
-    # @unittest.skip("skip test_update_surfels")
+    @unittest.skip("skip test_update_surfels")
     def test_update_surfels(self):
         "Test update surfels"
         sg = surfel_generation_instance
