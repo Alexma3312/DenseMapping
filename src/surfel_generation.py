@@ -76,7 +76,7 @@ class SurfelGeneration():
             candidate_surfels = dists2 < sp.size
             did_fuse = False
             for surfel_i in np.argwhere(candidate_surfels):
-                surfel = self.all_surfels[surfel_i[i]]
+                surfel = self.all_surfels[surfel_i[0]]
                 if surfel.is_fuseable(new_surfels[i]):
                     surfel.fuse_surfel(new_surfels[i])
                     did_fuse = True
