@@ -135,6 +135,12 @@ Surfels are modeled with the superpixels extracted from intensity and depth imag
     Fuse extrated local surfels with newly initalized surfels if they have similar depth and normals. 
     Transform fused local surfels into the global frame, and remove those are updated less than 5 times.
 
+For a single-frame surfel generation, the results are shown below:
+
+For multipule-frame surfel generation, the results are shown below:
+
+The generated surfels result varies when we change the parameters, such as the size of superpixels and the size of surfels. Different results are shown as following:
+
 The difficulties are 
 1. Using matrix manipulation with numpy instead of for loop and multi-threads in C++ to reduce computationl cost.
 2. To understand the meaning of different values in a surfel vector. 
@@ -151,7 +157,7 @@ image](./results/superpixels/kitti_superpixels_depth.png){width=100%}
 ### Conclusion and future work
 <!-- Conclusion would likely make the same points as the abstract. Discuss any future ideas you have to make your approach better. -->
 We will recreate the results of [@Wang19icra_surfelDense] by creating a surfel
-cloud given RGBD images and camera poses.
+cloud given RGBD images and camera poses. 
 
 ### References
 <!-- List out all the references you have used for your work -->
