@@ -11,6 +11,7 @@ from utilities.patch2d_to_3d import pathpatch_2d_to_3d, pathpatch_translate
 from surfel_element import SurfelElement
 from superpixel_seed import SuperpixelSeed
 from typing import List
+from save_mesh import generate_pointcloud
 
 def rgb2gray(rgb):
     if (rgb.ndim==3):
@@ -73,6 +74,8 @@ def plot_surfels(all_surfels: List[SurfelElement]):
         surfel_t.px, surfel_t.py, surfel_t.pz = surfel_t.px, surfel_t.pz, -surfel_t.py
         all_surfels_trans.append(surfel_t)
     for surfel in all_surfels_trans:
+        if surfel.update_times < 3:
+            continue
         # p = Circle((0, 0), 0*0.01 + 1*surfel.size / np.nanmax(all_sizes), facecolor=(surfel.color,)*3, alpha=.8)
         p = Circle((0, 0), surfel.size, facecolor=(surfel.color,)*3, alpha=.8)
         ax.add_patch(p)
@@ -99,10 +102,17 @@ def plot_surfels(all_surfels: List[SurfelElement]):
     print('done plotting')
     plt.show()
 
-def get_all_superpixels(folder_rgb, folder_depth, filenames):
+def get_all_superpixels(folder_rgb, folder_depth, filenames, folder_cache='../dataset/superpixels/'):
     print('Extracting superpixels for all frames...')
     all_superpixels = []
     for i, filename in enumerate(filenames):
+        try:
+            superpixels = np.load(folder_cache+filename[:-4]+'.npy')
+            print('loaded frame {:d} of {:d} ('.format(i+1, len(filenames)) + filename + ') from cache')
+            all_superpixels.append(superpixels)
+            continue
+        except FileNotFoundError:
+            pass
         print('now processing frame {:d} of {:d} ('.format(i+1, len(filenames)) + filename + ')')
         image_full = plt.imread(folder_rgb + filename)
         if (image_full.ndim < 3):
@@ -119,10 +129,12 @@ def get_all_superpixels(folder_rgb, folder_depth, filenames):
                             'cx': 319.5*scale, 'cy': 239.5*scale}
         weights = {'Ns': 200, 'Nc': 2, 'Nd': 5}
         spExtractor = SuperpixelExtraction(imgray, depth, camera_parameters,
-                                        weights=weights, sp_size=int(25*scale))
+                                        weights=weights, sp_size=int(12*scale))
 
         superpixels = spExtractor.extract_superpixels(iterations=5)
         all_superpixels.append(superpixels)
+        if folder_cache is not None:
+            np.save(folder_cache+filename[:-4], superpixels)
     return all_superpixels
 
 def get_all_surfels(all_superpixels, indexes=None):
@@ -145,14 +157,16 @@ def main():
     folder_rgb = '../dataset/rgb/'
     folder_depth = '../dataset/depth/'
     # indexes = [i for i in range(0, 400, 100)]
-    indexes = [i for i in range(0, 15, 3)]
+    # indexes = [i for i in range(0, 15, 3)]
+    indexes = [i for i in range(0, 250, 10)]
     filenames = ['{:d}.png'.format(i) for i in indexes]
 
-    if True:
-        all_superpixels = np.load('../dataset/results/all_superpixels_7.npy')
+    if False:
+        all_superpixels = np.load('../dataset/results/all_superpixels_good.npy')
     else:
-        all_superpixels = get_all_superpixels(folder_rgb, folder_depth, filenames)
-        np.save('../dataset/results/all_superpixels_7', all_superpixels)
+        all_superpixels = get_all_superpixels(folder_rgb, folder_depth, filenames,
+                                              folder_cache='../dataset/superpixels_fine/')
+        # np.save('../dataset/results/all_superpixels_good', all_superpixels)
     if False:
         all_surfels = np.load('../dataset/results/surfels.npy').all_surfels
     else:
@@ -160,7 +174,8 @@ def main():
         np.save('../dataset/results/surfels', [sg])
         all_surfels = sg.all_surfels
     # plot_superpixels(all_superpixels[0])
-    plot_surfels(all_surfels)
+    generate_pointcloud(all_surfels, '../dataset/test.ply')
+    # plot_surfels(all_surfels)
 
 def main_old():
     image_full = plt.imread('../dataset/rgb/0.png')
