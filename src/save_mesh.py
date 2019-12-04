@@ -71,12 +71,12 @@ def generate_pointcloud(surfels,ply_file):
         point4 = surfel_position + x_dir * radius
         point5 = surfel_position - x_dir * h_r + y_dir * t_r
         point6 = surfel_position + x_dir * h_r + y_dir * t_r
-        surfel_mesh.append("%f %f %f %d %d %d\n"%(point1[0],point1[1],point1[2],surfel.color,surfel.color,surfel.color))
-        surfel_mesh.append("%f %f %f %d %d %d\n"%(point2[0],point2[1],point2[2],surfel.color,surfel.color,surfel.color))
-        surfel_mesh.append("%f %f %f %d %d %d\n"%(point3[0],point3[1],point3[2],surfel.color,surfel.color,surfel.color))
-        surfel_mesh.append("%f %f %f %d %d %d\n"%(point4[0],point4[1],point4[2],surfel.color,surfel.color,surfel.color))
-        surfel_mesh.append("%f %f %f %d %d %d\n"%(point5[0],point5[1],point5[2],surfel.color,surfel.color,surfel.color))
-        surfel_mesh.append("%f %f %f %d %d %d\n"%(point6[0],point6[1],point6[2],surfel.color,surfel.color,surfel.color))
+        surfel_mesh.append("%f %f %f %d %d %d\n"%(point1[0],point1[1],point1[2],surfel.color*255,surfel.color*255,surfel.color*255))
+        surfel_mesh.append("%f %f %f %d %d %d\n"%(point2[0],point2[1],point2[2],surfel.color*255,surfel.color*255,surfel.color*255))
+        surfel_mesh.append("%f %f %f %d %d %d\n"%(point3[0],point3[1],point3[2],surfel.color*255,surfel.color*255,surfel.color*255))
+        surfel_mesh.append("%f %f %f %d %d %d\n"%(point4[0],point4[1],point4[2],surfel.color*255,surfel.color*255,surfel.color*255))
+        surfel_mesh.append("%f %f %f %d %d %d\n"%(point5[0],point5[1],point5[2],surfel.color*255,surfel.color*255,surfel.color*255))
+        surfel_mesh.append("%f %f %f %d %d %d\n"%(point6[0],point6[1],point6[2],surfel.color*255,surfel.color*255,surfel.color*255))
         #
         p1 = i*6 + 0 
         p2 = i*6 + 1 
@@ -88,7 +88,7 @@ def generate_pointcloud(surfels,ply_file):
         points.append("3 %d %d %d\n"%(p2,p4,p3)) 
         points.append("3 %d %d %d\n"%(p3,p4,p5)) 
         points.append("3 %d %d %d\n"%(p5,p4,p6)) 
-    
+
     numSurfels = len(surfels)
     numPoints = numSurfels*6
     file = open(ply_file,"w")
@@ -101,13 +101,12 @@ property float z
 property uchar red
 property uchar green
 property uchar blue
-element face 
+element face %d
 property list uchar int vertex_index
 end_header
 %s
-'''%(len(surfel_mesh),"".join(surfel_mesh)))
+'''%(numPoints,numSurfels*4,"".join(surfel_mesh)))
     file.write("".join(points))
-
 
     file.close()
 
