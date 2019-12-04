@@ -77,7 +77,8 @@ def read_ground_truth_poses():
         rotation = Rot3()
         point = Point3(x,y,z)
         rot = rotation.Quaternion(qw,qx,qy,qz)
-        return Pose3(rot, point)
+        pose3 = Pose3(rot, point)
+        return pose3.matrix()
 
     poses = [get_pose(line) for line in lines]
     return poses
