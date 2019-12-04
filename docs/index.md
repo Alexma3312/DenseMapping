@@ -123,6 +123,14 @@ traveled by the superpixels from one iteration to the next.  The superpixel
 iteration is complete when they sufficiently small changes occur from one
 iteration to the next.
 
+<!-- Show several visual examples of inputs/outputs of your system (success cases and failures) that help us better understand your approach. -->
+The images below demonstrate that the superpixels are indeed segmenting properly
+as they tend to "hug" similarly colored/depthed regions.
+
+![superpixel annotation on RGB image](./results/superpixels/kitti_superpixels_rgb.png){width=100%}
+![superpixel annotation on depth
+image](./results/superpixels/kitti_superpixels_depth.png){width=100%}
+
 #### Surfel Generation
 <!-- norm calculation -->
 <!-- We are in the process of calculating the norm which is needed for surfel
@@ -139,25 +147,14 @@ For a single-frame surfel generation, the results are shown below:
 
 For multipule-frame surfel generation, the results are shown below:
 
-The generated surfels result varies when we change the parameters, such as the size of superpixels and the size of surfels. Different results are shown as following:
-
-The difficulties are 
-1. Using matrix manipulation with numpy instead of for loop and multi-threads in C++ to reduce computationl cost.
-2. To understand the meaning of different values in a surfel vector. 
-
-### Qualitative results
-<!-- Show several visual examples of inputs/outputs of your system (success cases and failures) that help us better understand your approach. -->
-The images below demonstrate that the superpixels are indeed segmenting properly
-as they tend to "hug" similarly colored/depthed regions.
-
-![superpixel annotation on RGB image](./results/superpixels/kitti_superpixels_rgb.png){width=100%}
-![superpixel annotation on depth
-image](./results/superpixels/kitti_superpixels_depth.png){width=100%}
+The generated surfels result varies when we change the parameters, such as the size of superpixels. Different results are shown as following:
 
 ### Conclusion and future work
 <!-- Conclusion would likely make the same points as the abstract. Discuss any future ideas you have to make your approach better. -->
-We will recreate the results of [@Wang19icra_surfelDense] by creating a surfel
-cloud given RGBD images and camera poses. 
+We recreated the results of [@Wang19icra_surfelDense] by creating a surfel
+cloud given RGBD images and camera poses. The difficulties in this project are 
+1. Using matrix manipulation with numpy instead of for loop and multi-threads in C++ to reduce computationl cost.
+2. To understand the meaning of different values in a surfel vector. 
 
 ### References
-<!-- List out all the references you have used for your work -->
+<!-- List out all the references you have used for your work -->P
