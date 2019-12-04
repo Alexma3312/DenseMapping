@@ -12,7 +12,7 @@ link-citations: true
 Mandy Xie, Shicong Ma, Gerry Chen
 </p>
 <p style="color:#404040;margin:0 0 16px 0">
-October 31, 2019
+Dec 4, 2019
 </p>
 
 <hr />
@@ -26,10 +26,7 @@ reconstruction using superpixels.
 
 <!-- ### Teaser figure -->
 <!-- A figure that conveys the main idea behind the project or the main application being addressed. -->
-![superpixel annotation on RGB
-image](./results/superpixels/kitti_superpixels_rgb.gif){width=100%}
-![superpixel annotation on depth
-image](./results/superpixels/kitti_superpixels_depth.gif){width=100%}
+![**Figure:** Example semi-dense reconstruction based on a surfel map](./results/comparison01.png)
 
 ## Introduction
 <!-- Motivation behind the problem you are solving, what applications it has, any brief background on the particular domain you are working in (if not regular RBG photographs), etc. If you are using a new way to solve an existing problem, briefly mention and describe the existing approaches and tell us how your approach is new. -->
@@ -170,7 +167,20 @@ A number of parameters can be tuned for surfel generation and a few will be disc
 We then finish with a qualitative description of the resulting surfel clouds.
 
 ### K-means Iterations 
-As mentioned earlier and shown in both 
+As mentioned earlier and shown in both the [figure above](#fig:sp_extr) and the [figure
+below](#fig:sp_iter), the process of extracting superpixels is an iterative one based on k-means.
+This means that the number of iterations to run k-means affects how closely the superpixels will
+converge to the optimal superpixel assignments.  The animated figures illustrate how the superpixel
+assignments change as more iterations are run.  We found that, for the ICL-NIUM dataset, roughly 10
+iterations were sufficient while roughly 25 were required for the KITTI dataset.  We follow the lead
+of the reference paper [@Wang19icra_surfelDense] and consider the number of iterations a human-tuned
+parameter instead of setting a convergence stopping criterion.
+
+![superpixel annotation on RGB
+image](./results/superpixels/kitti_superpixels_rgb.gif){#fig:sp_iter width=100%}
+![superpixel annotation on depth
+image](./results/superpixels/kitti_superpixels_depth.gif){width=100%}
+**Figure:** Superpixel extraction over multiple iterations
 
 ### Number of Frames
 The number of frames to use to generate a surfel cloud
@@ -205,22 +215,52 @@ right of the filing cabinet which are not oriented correctly.
 
 ![**Figure:** Effect of outlier removal on surfel cloud](./results/outliers.gif){#fig:outlier}
 
-## Qualitative Results
+### Qualitative Results
 <!-- Show several visual examples of inputs/outputs of your system (success cases and failures) that help us better understand your approach. -->
 The superpixel-segmented [images below](#fig:kitti_sp) from the KITTI [@Menze2015CVPR_KITTI] dataset demonstrate that the superpixels are indeed segmenting properly
 as they tend to "hug" similarly colored/depthed regions.
 
-![superpixel annotation on RGB image](./results/superpixels/kitti_superpixels_rgb.png){fig:kitti_sp width=100%}
+![superpixel annotation on RGB image](./results/superpixels/kitti_superpixels_rgb.png){#fig:kitti_sp width=100%}
 ![superpixel annotation on depth
 image](./results/superpixels/kitti_superpixels_depth.png){width=100%}
+
+Converting the superpixels into surfels appears correct based on:
+
+1. The locations of the surfels clearly traces out the room shape (see [reference image](#fig:dataset))
+2. The orientations of the surfels are aligned with their neighbors to form planar surfaces
+3. The orientations of the surfels match the room shape
+4. The orientations of the surfels near corners are slightly "curved" indicating fusing and
+   averaging is working properly
+5. Overlapping and non-redundancy of surfels from multiple frames indicates fusion is working
+   properly to only add new surfels when they are sufficiently different than the nearby surfels.
+
+We can observe these qualitatively from the [rgb image](#fig:dataset) and [example surfel
+cloud below](#fig:qualitativeSurfel).
+
+
+![**Figure:** Surfel cloud from 25 frames which matches expectations](./results/snapshot00.png){#fig:qualitativeSurfel}
 
 ## Conclusion and Future Work
 <!-- Conclusion would likely make the same points as the abstract. Discuss any future ideas you have to make your approach better. -->
 We recreated the results of [@Wang19icra_surfelDense] by creating a surfel
-cloud given RGBD images and camera poses. The difficulties in this project are 
+cloud given RGBD images and camera poses.
+Furthermore, we investigated and reported the effects of various parameters on the resulting surfel
+clouds and discussed qualitative results from our reconstructions.
 
-1. Using matrix manipulation with numpy instead of for loop and multi-threads in C++ to reduce computationl cost.
-2. To understand the meaning of different values in a surfel vector. 
+During this project, several difficulties were faces, such as
+
+* Debugging conversions between camera projections, coordinate frames, and data types
+* Robustly calculating the normal direction for a surfel which requires applying an outlier-robust
+  method of combining approximate normal directions for each pixel contained in a superpixel
+* Achieving reasonable performance speed using matrix manipulation instead of for loop and multi-threads in C++ to reduce computationl cost
+* Understanding the meaning of different values in a surfel vector 
+
+Future directions include
+
+* Intelligent k-means superpixel stopping criterion
+* Faster speed in superpixel extraction
+* Better pose estimation that can also feed-back pose corrections based on surfel matches
+* Better surfel outlier rejection
 
 ## References
 <!-- List out all the references you have used for your work -->
