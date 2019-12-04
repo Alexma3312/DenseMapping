@@ -27,10 +27,6 @@ class SurfelGeneration():
         Returns:
             surfels: a list of surfel elements
         """
-        inverse_pose = np.zeros((4,4))
-        inverse_pose[0:3, 0:3] = pose[0:3, 0:3].transpose()
-        inverse_pose[0:3, 3] = -np.dot(inverse_pose[0:3, 0:3], pose[0:3, 3])
-        inverse_pose[3, 3] = 1
 
         surfels = []
         for superpixel in superpixels:
@@ -63,6 +59,11 @@ class SurfelGeneration():
             superpixels: list of SuperpixelSeed
             pose: camera pose in world coordinates
         """
+        inverse_pose = np.zeros((4,4))
+        inverse_pose[0:3, 0:3] = pose[0:3, 0:3].transpose()
+        inverse_pose[0:3, 3] = -np.dot(inverse_pose[0:3, 0:3], pose[0:3, 3])
+        inverse_pose[3, 3] = 1
+
         superpixels_copy = superpixels.copy()
         for sp in superpixels_copy:
             if (sp.mean_depth == 0) or (sp.fused) or (sp.view_cos < self.MAX_ANGLE_COS) or np.isnan(sp.view_cos):
@@ -72,11 +73,11 @@ class SurfelGeneration():
         projected_locs = np.zeros((len(self.all_surfels), 2))
         for i in range(len(self.all_surfels)):
             projected_locs[i, :] = \
-                self.all_surfels[i].change_coordinates(pose).back_project(self.camera_parameters)
+                self.all_surfels[i].change_coordinates(inverse_pose).back_project(self.camera_parameters)
         for i, sp in enumerate(superpixels):
             sp_pos = np.array([sp.x, sp.y])
             dists2 = np.sum(np.square(sp_pos - projected_locs), axis=1)
-            candidate_surfels = dists2 < sp.size
+            candidate_surfels = dists2 < (sp.size)
             did_fuse = False
             for surfel_i in np.argwhere(candidate_surfels):
                 surfel = self.all_surfels[surfel_i[0]]
@@ -84,4 +85,5 @@ class SurfelGeneration():
                     surfel.fuse_surfel(new_surfels[i])
                     did_fuse = True
             if not did_fuse:
+                # print('bad surfel.')
                 self.all_surfels.append(new_surfels[i]) # todo: update projected_locs

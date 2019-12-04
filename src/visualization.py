@@ -144,14 +144,15 @@ def get_all_surfels(all_superpixels, indexes=None):
 def main():
     folder_rgb = '../dataset/rgb/'
     folder_depth = '../dataset/depth/'
-    indexes = [i for i in range(0, 400, 100)]
+    # indexes = [i for i in range(0, 400, 100)]
+    indexes = [i for i in range(0, 15, 3)]
     filenames = ['{:d}.png'.format(i) for i in indexes]
 
     if True:
-        all_superpixels = np.load('../dataset/results/all_superpixels_5.npy')
+        all_superpixels = np.load('../dataset/results/all_superpixels_7.npy')
     else:
         all_superpixels = get_all_superpixels(folder_rgb, folder_depth, filenames)
-        np.save('../dataset/results/all_superpixels_5', all_superpixels)
+        np.save('../dataset/results/all_superpixels_7', all_superpixels)
     if False:
         all_surfels = np.load('../dataset/results/surfels.npy').all_surfels
     else:
@@ -176,7 +177,7 @@ def main_old():
                          'cx': 319.5*scale, 'cy': 239.5*scale}
     weights = {'Ns': 200, 'Nc': 2, 'Nd': 5}
     spExtractor = SuperpixelExtraction(imgray, depth, camera_parameters,
-                                       weights=weights, sp_size=int(25*scale))
+                                       weights=weights, sp_size=int(50*scale))
     
     # original images
     plt.figure(1, figsize=(18,8))
